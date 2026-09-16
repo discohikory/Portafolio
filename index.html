@@ -127,16 +127,20 @@
   </div>
 </section>
 
-<!-- MINIJUEGO MEJORADO (STEVE RUNNER) -->
+<!-- MINIJUEGO EVOLUCIONADO: STEVE ADVENTURE (BIOMAS Y NIVELES) -->
 <section id="minijuego" class="section reveal">
-  <div class="title"><span>05</span><h2 class="gradient-title">Minijuego: ¡Steve Runner!</h2></div>
+  <div class="title"><span>05</span><h2 class="gradient-title">Minijuego: ¡Steve Adventure!</h2></div>
   <div class="box game-box glass">
-    <p>¡Ayuda a Steve a saltar los cactus del desierto! Presiona <strong>Espacio</strong> o haz <strong>clic en el juego</strong> para saltar.</p>
-    <div class="game-score-board">Puntuación: <span id="gameScore">0</span> | Récord: <span id="highScore">0</span></div>
+    <p>¡Atraviesa los biomas de Minecraft superando obstáculos! Presiona <strong>Espacio</strong> o haz <strong>clic</strong> para saltar.</p>
+    <div class="game-hud">
+      <div>Bioma: <span id="gameBiomed" class="badge-bio">Desierto 🌵</span></div>
+      <div>Puntuación: <span id="gameScore">0</span></div>
+      <div>Récord: <span id="highScore">0</span></div>
+    </div>
     <div class="canvas-container">
       <canvas id="mcRunnerCanvas" width="600" height="200"></canvas>
       <div id="gameOverlay" class="game-overlay">
-        <span>Presiona ESPACIO o Clic para Jugar ⛏️</span>
+        <span>¡Presiona ESPACIO o Clic para Iniciar Aventura! ⛏️</span>
       </div>
     </div>
   </div>
@@ -165,24 +169,37 @@
   </div>
 </section>
 
-<!-- SECCIÓN DE RESEÑAS CON FIREBASE -->
+<!-- SECCIÓN DE RESEÑAS CON FIREBASE (GOOGLE + CORREO/CONTRASEÑA) -->
 <section id="resenas" class="section reveal">
   <div class="title"><span>07</span><h2 class="gradient-title">Reseñas</h2></div>
   <div class="reviews-head">
-    <div class="review-score"><strong id="reviewAverage">—</strong><span id="reviewStars" class="stars">☆☆☆☆☆</span><small><span id="reviewCount">0</span> reseñas</small></div>
-    <div><p>¿Has trabajado conmigo? Inicia sesión con Google para dejar una reseña.</p></div>
+    <div class="review-score"><strong id="reviewAverage">—</strong><span id="reviewStars" class="stars">☆☆☆☆☆</span><small><span id="reviewCount">0</span> reseñas globales</small></div>
+    <div><p>¿Has trabajado conmigo? Inicia sesión o regístrate para dejar tu opinión sincronizada.</p></div>
   </div>
   
   <div class="review-layout">
     <div id="authPanel" class="box auth-panel glass">
-      <h3>Acceso requerido</h3>
-      <p>Para evitar spam y mantener la calidad del portafolio, debes iniciar sesión con Google para comentar.</p>
-      <button id="loginBtn" class="btn primary login-btn magnetic">Iniciar sesión con Google</button>
+      <h3>Acceso a Reseñas</h3>
+      <p>Elige tu método preferido para identificarte y comentar:</p>
+      
+      <button id="loginGoogleBtn" class="btn primary login-btn magnetic" style="width:100%; justify-content:center; margin-bottom:12px;">Continuar con Google</button>
+      
+      <div class="auth-divider"><span>O usa correo electrónico</span></div>
+
+      <form id="emailAuthForm" class="email-auth-form">
+        <input type="email" id="authEmail" placeholder="Tu correo electrónico" required>
+        <input type="password" id="authPassword" placeholder="Contraseña (mín. 6 caracteres)" required>
+        <div class="auth-buttons-grid">
+          <button type="button" id="emailLoginBtn" class="btn magnetic">Iniciar Sesión</button>
+          <button type="button" id="emailRegisterBtn" class="btn primary magnetic">Registrarse</button>
+        </div>
+        <small id="authErrorMsg" class="auth-error"></small>
+      </form>
     </div>
 
     <form id="reviewForm" class="box review-form glass" style="display: none;">
       <div class="user-info-bar">
-        <span>Sesión iniciada como: <b id="loggedInUser">Usuario</b></span>
+        <span>Conectado como: <b id="loggedInUser">Usuario</b></span>
         <button type="button" id="logoutBtn" class="logout-link">Cerrar sesión</button>
       </div>
       <input type="hidden" id="reviewName">
@@ -197,14 +214,14 @@
       </label>
       <label>Tu Reseña<textarea id="reviewMessage" maxlength="500" minlength="5" required placeholder="Cuéntame brevemente cómo fue trabajar conmigo..."></textarea></label>
       <button class="btn primary magnetic" type="submit">Publicar reseña ↗</button>
-      <small id="reviewStatus" class="review-status">Las reseñas se sincronizan mediante Firebase.</small>
+      <small id="reviewStatus" class="review-status">Sincronizado globalmente en Firebase Firestore.</small>
     </form>
     
     <div id="reviewsList" class="reviews-list"><div class="empty-review glass">Cargando reseñas de la base de datos…</div></div>
   </div>
 </section>
 
-<!-- SECCIÓN DE CONTACTO CORREGIDA Y SEPARADA -->
+<!-- SECCIÓN DE CONTACTO SEPARADA -->
 <section id="contacto" class="contact reveal glass">
   <p class="eyebrow">¿TRABAJAMOS JUNTOS?</p>
   <h2 class="gradient-title">Hablemos sobre tu proyecto.</h2>
@@ -221,7 +238,6 @@
 
 </main>
 
-<!-- TEXTO FINAL CENTRADO -->
 <section class="centered-quote reveal">
   <p>“El verdadero progreso no se mide por el cargo que alcanzas, sino por la huella que dejas en el camino.”</p>
   <strong>— Discohikorybrs</strong>
@@ -232,7 +248,7 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
 import { getFirestore, collection, addDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
-import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
+import { getAuth, signInWithPopup, GoogleAuthProvider, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAy0gIgD7QPwJcpVDFCLtuHQjm4U0rsNVc",
@@ -247,7 +263,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
-const provider = new GoogleAuthProvider();
+const googleProvider = new GoogleAuthProvider();
 
 // Revelación al hacer scroll
 const observer = new IntersectionObserver(es => es.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); }), {threshold: 0.1});
@@ -289,16 +305,24 @@ document.querySelectorAll('.term-btn').forEach(btn => {
   });
 });
 
-// MINIJUEGO MEJORADO (STEVE RUNNER CON GRÁFICOS MEJORADOS)
+// MINIJUEGO EVOLUCIONADO (STEVE ADVENTURE CON BIOMAS Y NIVELES)
 const canvas = document.getElementById('mcRunnerCanvas');
 const ctx = canvas.getContext('2d');
 const gameScoreEl = document.getElementById('gameScore');
 const highScoreEl = document.getElementById('highScore');
+const gameBiomedEl = document.getElementById('gameBiomed');
 const gameOverlay = document.getElementById('gameOverlay');
 
 let gameRunning = false;
 let score = 0;
 let highScore = 0;
+let currentBiomeIndex = 0;
+
+const biomes = [
+  { name: "Desierto 🌵", skyBg: "#1e1b4b", groundTop: "#4ade80", groundBot: "#2e1c0c", obsColor: "#15803d" },
+  { name: "Overworld (Bosque) 🌲", skyBg: "#0f172a", groundTop: "#22c55e", groundBot: "#1e293b", obsColor: "#065f46" },
+  { name: "Nether 🔥", skyBg: "#450a0a", groundTop: "#ef4444", groundBot: "#262626", obsColor: "#b91c1c" }
+];
 
 let steve = {
   x: 60,
@@ -342,6 +366,7 @@ function startGame() {
   obstacles = [];
   gameSpeed = 5;
   frameCount = 0;
+  currentBiomeIndex = 0;
   gameOverlay.style.display = 'none';
   loop();
 }
@@ -359,21 +384,26 @@ function gameOver() {
 function loop() {
   if (!gameRunning) return;
   
+  // Cambiar de bioma cada 100 puntos
+  currentBiomeIndex = Math.floor(score / 100) % biomes.length;
+  let activeBiome = biomes[currentBiomeIndex];
+  gameBiomedEl.textContent = activeBiome.name;
+
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   
-  // Fondo de cielo estilo pixel art
-  ctx.fillStyle = '#0f172a';
+  // Fondo de cielo del bioma actual
+  ctx.fillStyle = activeBiome.skyBg;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  // Nubes de fondo decorativas
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.08)';
-  ctx.fillRect(100 - (frameCount * 0.5) % 700, 30, 60, 18);
-  ctx.fillRect(350 - (frameCount * 0.5) % 700, 60, 80, 20);
+  // Nubes o cenizas decorativas flotantes
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+  ctx.fillRect(120 - (frameCount * 0.6) % 700, 25, 50, 15);
+  ctx.fillRect(400 - (frameCount * 0.6) % 700, 50, 70, 18);
 
-  // Suelo texturizado Minecraft (Pasto + Tierra)
-  ctx.fillStyle = '#2e1c0c';
+  // Suelo del bioma actual
+  ctx.fillStyle = activeBiome.groundBot;
   ctx.fillRect(0, 170, canvas.width, 30);
-  ctx.fillStyle = '#4ade80'; // Pasto superior
+  ctx.fillStyle = activeBiome.groundTop;
   ctx.fillRect(0, 170, canvas.width, 6);
 
   // Física de Steve
@@ -385,30 +415,24 @@ function loop() {
     steve.grounded = true;
   }
 
-  // Dibujar a Steve detallado (Pixel art canvas)
-  // Cabeza
+  // Dibujar a Steve detallado
   ctx.fillStyle = '#d4a373';
   ctx.fillRect(steve.x + 4, steve.y, 20, 16);
-  // Pelo / Gorro
   ctx.fillStyle = '#3d2817';
   ctx.fillRect(steve.x + 4, steve.y, 20, 5);
-  // Ojos
   ctx.fillStyle = '#1e1b4b';
   ctx.fillRect(steve.x + 8, steve.y + 6, 4, 3);
   ctx.fillRect(steve.x + 16, steve.y + 6, 4, 3);
-  // Camisa (Azul celestito Minecraft)
   ctx.fillStyle = '#3b82f6';
   ctx.fillRect(steve.x + 2, steve.y + 16, 24, 18);
-  // Brazos
   ctx.fillStyle = '#d4a373';
   ctx.fillRect(steve.x - 2, steve.y + 16, 4, 14);
-  // Pantalón (Azul marino)
   ctx.fillStyle = '#1e3a8a';
   ctx.fillRect(steve.x + 5, steve.y + 34, 8, 12);
   ctx.fillRect(steve.x + 15, steve.y + 34, 8, 12);
 
-  // Generar obstáculos (Cactus detallados)
-  if (frameCount % 85 === 0) {
+  // Generar obstáculos dinámicos según dificultad
+  if (frameCount % Math.max(50, 85 - Math.floor(score / 50)) === 0) {
     obstacles.push({
       x: canvas.width,
       y: 130,
@@ -422,14 +446,11 @@ function loop() {
     let obs = obstacles[i];
     obs.x -= gameSpeed;
     
-    // Dibujar Cactus con textura
-    ctx.fillStyle = '#15803d';
+    // Dibujar obstáculo texturizado
+    ctx.fillStyle = activeBiome.obsColor;
     ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
-    ctx.fillStyle = '#22c55e';
+    ctx.fillStyle = 'rgba(255,255,255,0.15)';
     ctx.fillRect(obs.x + 3, obs.y + 3, obs.width - 6, obs.height - 6);
-    ctx.fillStyle = '#166534'; // Detalles de espinas/rayas
-    ctx.fillRect(obs.x + 6, obs.y + 8, 3, 24);
-    ctx.fillRect(obs.x + 15, obs.y + 8, 3, 24);
 
     // Colisión precisa
     if (
@@ -442,11 +463,10 @@ function loop() {
       return;
     }
 
-    // Eliminar si sale de pantalla
     if (obs.x + obs.width < 0) {
       obstacles.splice(i, 1);
       score += 10;
-      gameSpeed += 0.08; // Incrementa dificultad gradualmente
+      gameSpeed += 0.1; // Incrementa velocidad por obstáculo superado
     }
   }
 
@@ -456,7 +476,7 @@ function loop() {
 }
 
 // Dibujo inicial estático en canvas
-ctx.fillStyle = '#0f172a';
+ctx.fillStyle = '#1e1b4b';
 ctx.fillRect(0, 0, canvas.width, canvas.height);
 ctx.fillStyle = '#2e1c0c';
 ctx.fillRect(0, 170, canvas.width, 30);
@@ -477,20 +497,26 @@ document.querySelectorAll('.faq-question').forEach(q => {
   });
 });
 
-// Firebase Auth & Reviews
+// Firebase Auth (Google + Email/Password) & Reviews
 const authPanel = document.getElementById('authPanel');
 const form = document.getElementById('reviewForm');
-const loginBtn = document.getElementById('loginBtn');
+const loginGoogleBtn = document.getElementById('loginGoogleBtn');
+const emailLoginBtn = document.getElementById('emailLoginBtn');
+const emailRegisterBtn = document.getElementById('emailRegisterBtn');
 const logoutBtn = document.getElementById('logoutBtn');
 const reviewName = document.getElementById('reviewName');
 const loggedInUser = document.getElementById('loggedInUser');
+const authEmailInput = document.getElementById('authEmail');
+const authPasswordInput = document.getElementById('authPassword');
+const authErrorMsg = document.getElementById('authErrorMsg');
 
 onAuthStateChanged(auth, (user) => {
   if (user) {
     authPanel.style.display = 'none';
     form.style.display = 'flex';
-    reviewName.value = user.displayName || "Usuario Anonimo";
-    loggedInUser.textContent = user.displayName || "Usuario Anonimo";
+    const displayName = user.displayName || user.email.split('@')[0];
+    reviewName.value = displayName;
+    loggedInUser.textContent = displayName;
   } else {
     authPanel.style.display = 'flex';
     form.style.display = 'none';
@@ -498,7 +524,33 @@ onAuthStateChanged(auth, (user) => {
   }
 });
 
-loginBtn.addEventListener('click', () => { signInWithPopup(auth, provider).catch(err => console.error(err)); });
+loginGoogleBtn.addEventListener('click', () => { 
+  signInWithPopup(auth, googleProvider).catch(err => {
+    authErrorMsg.textContent = "Error al iniciar con Google. Verifica tu conexión.";
+  }); 
+});
+
+emailLoginBtn.addEventListener('click', () => {
+  const email = authEmailInput.value.trim();
+  const pass = authPasswordInput.value.trim();
+  if(!email || !pass) { authErrorMsg.textContent = "Completa correo y contraseña."; return; }
+  signInWithEmailAndPassword(auth, email, pass)
+    .catch(err => { authErrorMsg.textContent = "Datos incorrectos o usuario no registrado."; });
+});
+
+emailRegisterBtn.addEventListener('click', async () => {
+  const email = authEmailInput.value.trim();
+  const pass = authPasswordInput.value.trim();
+  if(!email || !pass) { authErrorMsg.textContent = "Completa correo y contraseña."; return; }
+  if(pass.length < 6) { authErrorMsg.textContent = "La contraseña debe tener al menos 6 caracteres."; return; }
+  try {
+    const res = await createUserWithEmailAndPassword(auth, email, pass);
+    await updateProfile(res.user, { displayName: email.split('@')[0] });
+  } catch(err) {
+    authErrorMsg.textContent = "El correo ya está registrado o es inválido.";
+  }
+});
+
 logoutBtn.addEventListener('click', () => { signOut(auth); });
 
 const listEl = document.getElementById('reviewsList');
@@ -517,7 +569,7 @@ function renderReviews(docs){
   });
   let total = 0;
   listEl.innerHTML = '';
-  if(!arr.length) { listEl.innerHTML='<div class="empty-review glass">Aún no hay reseñas. ¡Sé el primero! ⭐</div>'; return; }
+  if(!arr.length) { listEl.innerHTML='<div class="empty-review glass">Aún no hay reseñas globales. ¡Sé el primero! ⭐</div>'; return; }
   arr.forEach(s => {
     const r = s.data();
     total += Number(r.rating) || 0;
@@ -533,7 +585,15 @@ function renderReviews(docs){
   countEl.textContent = arr.length;
 }
 
-onSnapshot(collection(db,'reviews'), s => { renderReviews(s.docs); });
+// SOLUCIÓN DEFINITIVA PARA VER RESEÑAS EN OTROS DISPOSITIVOS:
+// 1. Asegúrate de configurar Cloud Firestore en la consola de Firebase en "Modo de producción" con reglas públicas de lectura.
+// 2. Aquí conectamos en tiempo real con la colección global 'reviews'.
+onSnapshot(collection(db,'reviews'), (s) => { 
+  renderReviews(s.docs); 
+}, (error) => {
+  listEl.innerHTML = '<div class="empty-review glass">Error al cargar reseñas. Revisa las reglas de seguridad de Firestore.</div>';
+});
+
 form.addEventListener('submit', async e => {
   e.preventDefault();
   if(!auth.currentUser) return;
@@ -546,8 +606,8 @@ form.addEventListener('submit', async e => {
       userId: auth.currentUser.uid
     });
     document.getElementById('reviewMessage').value = '';
-    statusEl.textContent = '¡Reseña publicada! ⭐';
-  } catch(err) { statusEl.textContent = 'Error al publicar.'; }
+    statusEl.textContent = '¡Reseña publicada y sincronizada globalmente! ⭐';
+  } catch(err) { statusEl.textContent = 'Error al publicar en la base de datos.'; }
 });
 </script>
 </body>
