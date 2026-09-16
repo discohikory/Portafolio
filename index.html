@@ -16,6 +16,7 @@
     <a href="#virtudes" class="magnetic">Cualidades</a>
     <a href="#experiencia" class="magnetic">Trayectoria</a>
     <a href="#proyectos" class="magnetic">Proyectos</a>
+    <a href="#minijuego" class="magnetic">Minijuego</a>
     <a href="#preguntas" class="magnetic">Preguntas</a>
     <a href="#resenas" class="magnetic">Reseñas</a>
     <a href="#contacto" class="magnetic">Contacto</a>
@@ -42,7 +43,7 @@
   </div>
 </section>
 
-<!-- TERMINAL / EASTER EGG CON ANIMACIÓN -->
+<!-- TERMINAL / EASTER EGG -->
 <section class="fun-panel reveal glass" id="panel-interactivo">
   <div class="fun-head"><div><span class="terminal-dot red"></span><span class="terminal-dot yellow"></span><span class="terminal-dot green"></span></div><small>staff@discohikorybrs:~</small></div>
   <div class="fun-body">
@@ -97,11 +98,12 @@
   </div>
 </section>
 
+<!-- PROYECTOS CON RUTAS DE IMÁGENES CORREGIDAS A TUS NOMBRES EXACTOS -->
 <section id="proyectos" class="section reveal">
   <div class="title"><span>04</span><h2>Proyectos y evidencia</h2></div>
-  <div class="evidence-note glass"><b>📁 Sobre mi evidencia</b><p>Capturas reales de <strong>VoidCraft</strong>, <strong>QuarkCraft</strong> y <strong>SkyLith</strong> correctamente enlazadas.</p></div>
+  <div class="evidence-note glass"><b>📁 Sobre mi evidencia</b><p>Capturas reales de <strong>VoidCraft</strong>, <strong>QuarkCraft</strong> y <strong>SkyLith</strong> sincronizadas correctamente con tus archivos.</p></div>
   <div class="project-grid">
-    <!-- Proyecto 1: VoidCraft (3 fotos) -->
+    <!-- VoidCraft -->
     <article class="project-card glass">
       <div class="project-images three gallery">
         <img src="voidcraft-1_3.jpg" alt="VoidCraft 1" loading="lazy">
@@ -110,28 +112,44 @@
       </div>
       <div class="project-body"><small>01 · MINECRAFT</small><h3>VoidCraft</h3><p>Fui <b>Founder + Lead Developer</b> en este servidor anárquico.</p></div>
     </article>
-    <!-- Proyecto 2: QuarkCraft (3 fotos) -->
+    <!-- QuarkCraft -->
     <article class="project-card glass">
       <div class="project-images three gallery">
         <img src="quarkcraft-1_2.jpg" alt="QuarkCraft 1" loading="lazy">
-        <img src="quarkcraft-2_3.jpg" alt="QuarkCraft 2" loading="lazy">
-        <img src="quarkcraft-3_3.jpg" alt="QuarkCraft 3" loading="lazy">
+        <img src="quarkcraft-2_2.jpg" alt="QuarkCraft 2" loading="lazy">
+        <img src="voidcraft-3_3.jpg" alt="QuarkCraft 3" loading="lazy">
       </div>
       <div class="project-body"><small>02 · MINECRAFT</small><h3>QuarkCraft</h3><p>Participé como <b>Helper</b> con actividad y rango verificado.</p></div>
     </article>
-    <!-- Proyecto 3: SkyLith Network -->
+    <!-- SkyLith Network -->
     <article class="project-card glass">
       <div class="project-images gallery">
-        <img src="Captura de pantalla 2026-09-16 142803_2.jpg" alt="SkyLith Network" loading="lazy">
+        <img src="Captura de pantalla 2026-09-16 142803.png" alt="SkyLith Network" loading="lazy">
       </div>
       <div class="project-body"><small>03 · MINECRAFT</small><h3>SkyLith Network</h3><p>Desempeñándome actualmente como <b>Moderador</b> de la red.</p></div>
     </article>
   </div>
 </section>
 
+<!-- NUEVO MINIJUEGO DE MINECRAFT INTEGRADO -->
+<section id="minijuego" class="section reveal">
+  <div class="title"><span>05</span><h2>Minijuego: ¡Mina de Diamantes!</h2></div>
+  <div class="box game-box glass">
+    <p>¡Rompe los bloques de piedra para encontrar diamantes y acumular puntos como todo un minero pro!</p>
+    <div class="game-stats">
+      <span>Puntuación: <strong id="score">0</strong> 💎</span>
+      <span>Bloques rotos: <strong id="blocksBroken">0</strong></span>
+    </div>
+    <div id="mineGrid" class="mine-grid">
+      <!-- Los bloques se generan por JS -->
+    </div>
+    <button id="resetGameBtn" class="btn primary magnetic" style="margin-top: 15px;">Reiniciar Mina ⛏️</button>
+  </div>
+</section>
+
 <!-- PANTALLA INTERACTIVA DE PREGUNTAS (FAQ) -->
 <section id="preguntas" class="section reveal">
-  <div class="title"><span>05</span><h2>Preguntas Frecuentes (FAQ Interactivo)</h2></div>
+  <div class="title"><span>06</span><h2>Preguntas Frecuentes (FAQ Interactivo)</h2></div>
   <div class="faq-container glass">
     <div class="faq-item active">
       <button class="faq-question">¿Cuál es tu experiencia principal en Minecraft y Discord? <span>+</span></button>
@@ -154,7 +172,7 @@
 
 <!-- SECCIÓN DE RESEÑAS CON FIREBASE -->
 <section id="resenas" class="section reveal">
-  <div class="title"><span>06</span><h2>Reseñas</h2></div>
+  <div class="title"><span>07</span><h2>Reseñas</h2></div>
   <div class="reviews-head">
     <div class="review-score"><strong id="reviewAverage">—</strong><span id="reviewStars" class="stars">☆☆☆☆☆</span><small><span id="reviewCount">0</span> reseñas</small></div>
     <div><p>¿Has trabajado conmigo? Inicia sesión con Google para dejar una reseña.</p></div>
@@ -231,12 +249,12 @@ const db = getFirestore(app);
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 
-// Efecto de revelación fluida al hacer scroll
+// Revelación al hacer scroll
 const observer = new IntersectionObserver(es => es.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); }), {threshold: 0.1});
 document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 window.addEventListener('scroll', () => { document.querySelector('.scroll-progress').style.transform = `scaleX(${scrollY / (document.documentElement.scrollHeight - innerHeight)})`; });
 
-// Animación magnética en botones
+// Animación magnética
 document.querySelectorAll('.magnetic').forEach(btn => {
   btn.addEventListener('mousemove', (e) => {
     const rect = btn.getBoundingClientRect();
@@ -244,12 +262,10 @@ document.querySelectorAll('.magnetic').forEach(btn => {
     const y = e.clientY - rect.top - rect.height / 2;
     btn.style.transform = `translate(${x * 0.2}px, ${y * 0.2}px)`;
   });
-  btn.addEventListener('mouseleave', () => {
-    btn.style.transform = 'translate(0px, 0px)';
-  });
+  btn.addEventListener('mouseleave', () => { btn.style.transform = 'translate(0px, 0px)'; });
 });
 
-// Terminal Interactiva
+// Terminal
 const termResponses = {
   about: "Daniel Esteban Vera Fernandez (Discohikorybrs) — Staff & Developer con más de 4 años de experiencia en Minecraft y Discord.",
   skills: "Habilidades: Moderación avanzada, liderazgo de equipos, gestión de servidores, desarrollo en Minecraft y soporte técnico.",
@@ -272,6 +288,45 @@ document.querySelectorAll('.term-btn').forEach(btn => {
     }
   });
 });
+
+// MINIJUEGO MINECRAFT (Minar bloques)
+let score = 0;
+let blocksBroken = 0;
+const mineGrid = document.getElementById('mineGrid');
+const scoreEl = document.getElementById('score');
+const blocksEl = document.getElementById('blocksBroken');
+
+function initGame() {
+  mineGrid.innerHTML = '';
+  for(let i = 0; i < 12; i++) {
+    const block = document.createElement('div');
+    block.className = 'mine-block';
+    block.innerHTML = '🧱';
+    const isDiamond = Math.random() < 0.25; // 25% de probabilidad de diamante
+    block.dataset.type = isDiamond ? 'diamond' : 'stone';
+    
+    block.addEventListener('click', () => {
+      if(block.classList.contains('mined')) return;
+      block.classList.add('mined');
+      blocksBroken++;
+      blocksEl.textContent = blocksBroken;
+      
+      if(block.dataset.type === 'diamond') {
+        block.innerHTML = '💎';
+        score += 10;
+        scoreEl.textContent = score;
+      } else {
+        block.innerHTML = '🪨';
+        score += 1;
+        scoreEl.textContent = score;
+      }
+    });
+    mineGrid.appendChild(block);
+  }
+}
+
+document.getElementById('resetGameBtn').addEventListener('click', initGame);
+initGame();
 
 // FAQ Interactivo
 document.querySelectorAll('.faq-question').forEach(q => {
