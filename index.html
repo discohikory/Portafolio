@@ -251,13 +251,13 @@ import { getFirestore, collection, addDoc, onSnapshot, serverTimestamp } from "h
 import { getAuth, signInWithPopup, GoogleAuthProvider, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAy0gIgD7QPwJcpVDFCLtuHQjm4U0rsNVc",
-  authDomain: "discohikorybrs-portafolio.firebaseapp.com",
-  projectId: "discohikorybrs-portafolio",
-  storageBucket: "discohikorybrs-portafolio.firebasestorage.app",
-  messagingSenderId: "979145424107",
-  appId: "1:979145424107:web:5144edb5ff4da585b0d2ae",
-  measurementId: "G-YM9EES0G4C"
+  apiKey: "AIzaSyDscswquHyFoLVZUJRprS9VaL94ARBasY0",
+  authDomain: "portafolio-discohikorybrs.firebaseapp.com",
+  projectId: "portafolio-discohikorybrs",
+  storageBucket: "portafoliodiscohikorybrs.firebasestorage.app",
+  messagingSenderId: "130462406567",
+  appId: "1:130462406567:web:2447815ccdb870304c8882",
+  measurementId: "G-B8EP51WSBQ"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -585,9 +585,6 @@ function renderReviews(docs){
   countEl.textContent = arr.length;
 }
 
-// SOLUCIÓN DEFINITIVA PARA VER RESEÑAS EN OTROS DISPOSITIVOS:
-// 1. Asegúrate de configurar Cloud Firestore en la consola de Firebase en "Modo de producción" con reglas públicas de lectura.
-// 2. Aquí conectamos en tiempo real con la colección global 'reviews'.
 onSnapshot(collection(db,'reviews'), (s) => { 
   renderReviews(s.docs); 
 }, (error) => {
