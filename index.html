@@ -10,15 +10,15 @@
 <body>
 <div class="bg"></div><div class="bg-glow"></div><div class="particles" aria-hidden="true"></div><div class="scroll-progress" aria-hidden="true"></div>
 <header>
-  <a class="brand" href="#inicio">◆ Discohikorybrs</a>
+  <a class="brand magnetic" href="#inicio">◆ Discohikorybrs</a>
   <nav>
-    <a href="#sobre-mi">Perfil</a>
-    <a href="#virtudes">Cualidades</a>
-    <a href="#experiencia">Trayectoria</a>
-    <a href="#proyectos">Proyectos</a>
-    <a href="#preguntas">Preguntas</a>
-    <a href="#resenas">Reseñas</a>
-    <a href="#contacto">Contacto</a>
+    <a href="#sobre-mi" class="magnetic">Perfil</a>
+    <a href="#virtudes" class="magnetic">Cualidades</a>
+    <a href="#experiencia" class="magnetic">Trayectoria</a>
+    <a href="#proyectos" class="magnetic">Proyectos</a>
+    <a href="#preguntas" class="magnetic">Preguntas</a>
+    <a href="#resenas" class="magnetic">Reseñas</a>
+    <a href="#contacto" class="magnetic">Contacto</a>
   </nav>
 </header>
 <main>
@@ -42,18 +42,18 @@
   </div>
 </section>
 
-<!-- TERMINAL INTERACTIVA -->
+<!-- TERMINAL / EASTER EGG CON ANIMACIÓN -->
 <section class="fun-panel reveal glass" id="panel-interactivo">
   <div class="fun-head"><div><span class="terminal-dot red"></span><span class="terminal-dot yellow"></span><span class="terminal-dot green"></span></div><small>staff@discohikorybrs:~</small></div>
   <div class="fun-body">
     <div class="terminal-line"><span class="prompt">$</span> <span id="terminalText">explore --portfolio</span><span class="cursor">▌</span></div>
     <p id="terminalResponse">Bienvenido. Haz clic en los botones de abajo para ejecutar comandos interactivos.</p>
     <div class="terminal-actions">
-      <button class="term-btn" data-cmd="about">about</button>
-      <button class="term-btn" data-cmd="skills">skills</button>
-      <button class="term-btn" data-cmd="timeline">timeline</button>
-      <button class="term-btn" data-cmd="contact">contact</button>
-      <button class="term-btn" data-cmd="clear">clear</button>
+      <button class="term-btn magnetic" data-cmd="about">about</button>
+      <button class="term-btn magnetic" data-cmd="skills">skills</button>
+      <button class="term-btn magnetic" data-cmd="timeline">timeline</button>
+      <button class="term-btn magnetic" data-cmd="contact">contact</button>
+      <button class="term-btn magnetic" data-cmd="clear">clear</button>
     </div>
   </div>
 </section>
@@ -99,27 +99,30 @@
 
 <section id="proyectos" class="section reveal">
   <div class="title"><span>04</span><h2>Proyectos y evidencia</h2></div>
-  <div class="evidence-note glass"><b>📁 Sobre mi evidencia</b><p>Capturas reales de <strong>VoidCraft</strong>, <strong>QuarkCraft</strong> y <strong>SkyLith</strong> integradas en el portafolio.</p></div>
+  <div class="evidence-note glass"><b>📁 Sobre mi evidencia</b><p>Capturas reales de <strong>VoidCraft</strong>, <strong>QuarkCraft</strong> y <strong>SkyLith</strong> correctamente enlazadas.</p></div>
   <div class="project-grid">
+    <!-- Proyecto 1: VoidCraft (3 fotos) -->
     <article class="project-card glass">
       <div class="project-images three gallery">
-        <img src="voidcraft-1.jpg" alt="VoidCraft 1" loading="lazy">
-        <img src="voidcraft-2.jpg" alt="VoidCraft 2" loading="lazy">
-        <img src="voidcraft-3.jpg" alt="VoidCraft 3" loading="lazy">
+        <img src="voidcraft-1_3.jpg" alt="VoidCraft 1" loading="lazy">
+        <img src="voidcraft-2_3.jpg" alt="VoidCraft 2" loading="lazy">
+        <img src="voidcraft-3_3.jpg" alt="VoidCraft 3" loading="lazy">
       </div>
       <div class="project-body"><small>01 · MINECRAFT</small><h3>VoidCraft</h3><p>Fui <b>Founder + Lead Developer</b> en este servidor anárquico.</p></div>
     </article>
+    <!-- Proyecto 2: QuarkCraft (3 fotos) -->
     <article class="project-card glass">
       <div class="project-images three gallery">
-        <img src="quarkcraft-1.jpg" alt="QuarkCraft 1" loading="lazy">
-        <img src="quarkcraft-2.jpg" alt="QuarkCraft 2" loading="lazy">
-        <img src="quarkcraft-3.jpg" alt="QuarkCraft 3" loading="lazy">
+        <img src="quarkcraft-1_2.jpg" alt="QuarkCraft 1" loading="lazy">
+        <img src="quarkcraft-2_3.jpg" alt="QuarkCraft 2" loading="lazy">
+        <img src="quarkcraft-3_3.jpg" alt="QuarkCraft 3" loading="lazy">
       </div>
       <div class="project-body"><small>02 · MINECRAFT</small><h3>QuarkCraft</h3><p>Participé como <b>Helper</b> con actividad y rango verificado.</p></div>
     </article>
+    <!-- Proyecto 3: SkyLith Network -->
     <article class="project-card glass">
       <div class="project-images gallery">
-        <img src="skylith-1.jpg" alt="SkyLith Network" loading="lazy">
+        <img src="Captura de pantalla 2026-09-16 142803_2.jpg" alt="SkyLith Network" loading="lazy">
       </div>
       <div class="project-body"><small>03 · MINECRAFT</small><h3>SkyLith Network</h3><p>Desempeñándome actualmente como <b>Moderador</b> de la red.</p></div>
     </article>
@@ -161,7 +164,7 @@
     <div id="authPanel" class="box auth-panel glass">
       <h3>Acceso requerido</h3>
       <p>Para evitar spam y mantener la calidad del portafolio, debes iniciar sesión con Google para comentar.</p>
-      <button id="loginBtn" class="btn primary login-btn">Iniciar sesión con Google</button>
+      <button id="loginBtn" class="btn primary login-btn magnetic">Iniciar sesión con Google</button>
     </div>
 
     <form id="reviewForm" class="box review-form glass" style="display: none;">
@@ -180,7 +183,7 @@
         </select>
       </label>
       <label>Tu Reseña<textarea id="reviewMessage" maxlength="500" minlength="5" required placeholder="Cuéntame brevemente cómo fue trabajar conmigo..."></textarea></label>
-      <button class="btn primary" type="submit">Publicar reseña ↗</button>
+      <button class="btn primary magnetic" type="submit">Publicar reseña ↗</button>
       <small id="reviewStatus" class="review-status">Las reseñas se sincronizan mediante Firebase.</small>
     </form>
     
@@ -228,11 +231,25 @@ const db = getFirestore(app);
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 
+// Efecto de revelación fluida al hacer scroll
 const observer = new IntersectionObserver(es => es.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); }), {threshold: 0.1});
 document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 window.addEventListener('scroll', () => { document.querySelector('.scroll-progress').style.transform = `scaleX(${scrollY / (document.documentElement.scrollHeight - innerHeight)})`; });
 
-// Terminal
+// Animación magnética en botones
+document.querySelectorAll('.magnetic').forEach(btn => {
+  btn.addEventListener('mousemove', (e) => {
+    const rect = btn.getBoundingClientRect();
+    const x = e.clientX - rect.left - rect.width / 2;
+    const y = e.clientY - rect.top - rect.height / 2;
+    btn.style.transform = `translate(${x * 0.2}px, ${y * 0.2}px)`;
+  });
+  btn.addEventListener('mouseleave', () => {
+    btn.style.transform = 'translate(0px, 0px)';
+  });
+});
+
+// Terminal Interactiva
 const termResponses = {
   about: "Daniel Esteban Vera Fernandez (Discohikorybrs) — Staff & Developer con más de 4 años de experiencia en Minecraft y Discord.",
   skills: "Habilidades: Moderación avanzada, liderazgo de equipos, gestión de servidores, desarrollo en Minecraft y soporte técnico.",
