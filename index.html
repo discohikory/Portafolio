@@ -174,14 +174,14 @@
 <div class="lightbox" id="lightbox" aria-hidden="true"><button class="lightbox-close" aria-label="Cerrar">×</button><button class="lightbox-prev" aria-label="Anterior">‹</button><figure><img id="lightbox-img" src="" alt=""><figcaption id="lightbox-caption"></figcaption></figure><button class="lightbox-next" aria-label="Siguiente">›</button></div>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+import { getFirestore, collection, addDoc, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 const firebaseConfig = {
   apiKey: "AIzaSyAy0gIgD7QPwJcpVDFCLtuHQjm4U0rsNVc",
   authDomain: "discohikorybrs-portafolio.firebaseapp.com",
   projectId: "discohikorybrs-portafolio",
   storageBucket: "discohikorybrs-portafolio.firebasestorage.app",
   messagingSenderId: "979145424107",
-  appId: "1:979145424107:web:5144edb5ff4da585b0d2ae",
+  appId: "1:979145424107:web:5144b5ff4da585b0d2ae",
   measurementId: "G-YM9EES0G4C"
 };
 const firebaseApp = initializeApp(firebaseConfig);
@@ -213,10 +213,49 @@ document.querySelectorAll('.question-card').forEach(b=>b.addEventListener('click
 document.getElementById('questionClose').onclick=()=>{qm.classList.remove('open');qm.setAttribute('aria-hidden','true');document.body.classList.remove('modal-open')};qm.addEventListener('click',e=>{if(e.target===qm)document.getElementById('questionClose').click()});
 const form=document.getElementById('reviewForm'), statusEl=document.getElementById('reviewStatus'), listEl=document.getElementById('reviewsList'), avgEl=document.getElementById('reviewAverage'), starsEl=document.getElementById('reviewStars'), countEl=document.getElementById('reviewCount');
 function escapeHtml(v){const d=document.createElement('div');d.textContent=v;return d.innerHTML}
-function renderReviews(docs){const arr=[...docs].sort((a,b)=>{const ta=a.data().createdAt?.toMillis?.()||0,tb=b.data().createdAt?.toMillis?.()||0;return tb-ta});let total=0;listEl.innerHTML='';if(!arr.length){listEl.innerHTML='<div class="empty-review">Aún no hay reseñas. ¡Sé la primera persona en dejar una! ⭐</div>'}arr.forEach(s=>{const r=s.data();total+=Number(r.rating)||0;const date=r.createdAt?.toDate?.();const card=document.createElement('article');card.className='review-card';card.innerHTML=`<div class="review-top"><strong>${escapeHtml(r.name)}</strong><span>${'★'.repeat(Number(r.rating))}${'☆'.repeat(5-Number(r.rating))}</span></div><p>${escapeHtml(r.message)}</p><small>${date?date.toLocaleDateString('es-CO'):'Publicado recientemente'}</small>`;listEl.appendChild(card)});const avg=arr.length?total/arr.length:0;avgEl.textContent=arr.length?avg.toFixed(1):'—';starsEl.textContent='★'.repeat(Math.round(avg))+'☆'.repeat(5-Math.round(avg));countEl.textContent=arr.length}
-const reviewsRef=collection(db,'reviews');
-onSnapshot(reviewsRef,s=>{renderReviews(s.docs);statusEl.textContent='Reseñas sincronizadas ✓'},e=>{console.error('Firestore read error:',e);statusEl.textContent=`No se pudieron cargar las reseñas: ${e.code||e.message}`});
-form.addEventListener('submit',async e=>{e.preventDefault();const btn=form.querySelector('button[type=submit]');btn.disabled=true;statusEl.textContent='Publicando…';const name=document.getElementById('reviewName').value.trim(),rating=Number(document.getElementById('reviewRating').value),message=document.getElementById('reviewMessage').value.trim();if(name.length<2||name.length>40||message.length<5||message.length>500||rating<1||rating>5){statusEl.textContent='Revisa los datos: nombre 2–40, reseña 5–500 y puntuación 1–5.';btn.disabled=false;return}try{const ref=await addDoc(reviewsRef,{name,rating,message,createdAt:serverTimestamp()});form.reset();document.getElementById('reviewRating').value='5';statusEl.textContent='¡Reseña guardada en Firebase! ⭐';setTimeout(()=>{btn.disabled=false},500)}catch(err){console.error('Firestore write error:',err);statusEl.textContent=`No se pudo publicar: ${err.code||err.message}`;btn.disabled=false}});
+function renderReviews(docs){let total=0;listEl.innerHTML='';if(!docs.length){listEl.innerHTML='<div class="empty-review">Aún no hay reseñas. ¡Sé la primera persona en dejar una! ⭐</div>'}docs.forEach(s=>{const r=s.data();total+=Number(r.rating)||0;const date=r.createdAt?.toDate?.();const card=document.createElement('article');card.className='review-card';card.innerHTML=`<div class="review-top"><strong>${escapeHtml(r.name)}</strong><span>${'★'.repeat(Number(r.rating))}${'☆'.repeat(5-Number(r.rating))}</span></div><p>${escapeHtml(r.message)}</p><small>${date?date.toLocaleDateString('es-CO'):''}</small>`;listEl.appendChild(card)});const avg=docs.length?total/docs.length:0;avgEl.textContent=docs.length?avg.toFixed(1):'—';starsEl.textContent='★'.repeat(Math.round(avg))+'☆'.repeat(5-Math.round(avg));countEl.textContent=docs.length}
+async function loadReviews(){
+  statusEl.textContent='Cargando reseñas…';
+  try{
+    const snap=await getDocs(collection(db,'reviews'));
+    const docs=snap.docs.sort((a,b)=>{
+      const ta=a.data().createdAt?.toMillis?.()||0;
+      const tb=b.data().createdAt?.toMillis?.()||0;
+      return tb-ta;
+    });
+    renderReviews(docs);
+    statusEl.textContent=docs.length?`${docs.length} reseña${docs.length===1?'':'s'} cargada${docs.length===1?'':'s'}.`:'Aún no hay reseñas.';
+  }catch(err){
+    console.error('Firestore read error:',err);
+    statusEl.textContent=`Error leyendo reseñas: ${err.code||err.message}`;
+  }
+}
+loadReviews();
+form.addEventListener('submit',async e=>{
+  e.preventDefault();
+  const submit=e.submitter||form.querySelector('button[type="submit"]');
+  if(submit) submit.disabled=true;
+  statusEl.textContent='Publicando…';
+  const name=document.getElementById('reviewName').value.trim(),rating=Number(document.getElementById('reviewRating').value),message=document.getElementById('reviewMessage').value.trim();
+  if(name.length<2||name.length>40||message.length<5||message.length>500||rating<1||rating>5){
+    statusEl.textContent='Revisa los datos: nombre 2–40, reseña 5–500 y puntuación 1–5.';
+    if(submit) submit.disabled=false;
+    return;
+  }
+  try{
+    const ref=await addDoc(collection(db,'reviews'),{name,rating,message,createdAt:serverTimestamp()});
+    console.log('Reseña guardada en Firestore:',ref.id);
+    form.reset();
+    document.getElementById('reviewRating').value='5';
+    await loadReviews();
+    statusEl.textContent='¡Reseña guardada en Firebase! ⭐';
+  }catch(err){
+    console.error('Firestore write error:',err);
+    statusEl.textContent=`No se pudo guardar en Firebase: ${err.code||err.message}`;
+  }finally{
+    if(submit) submit.disabled=false;
+  }
+});
 </script>
 </body>
 </html>
