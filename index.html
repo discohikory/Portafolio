@@ -205,13 +205,79 @@ const qm=document.getElementById('questionModal');function openQuestion(key){con
 
 const form=document.getElementById('reviewForm'),statusEl=document.getElementById('reviewStatus'),listEl=document.getElementById('reviewsList'),avgEl=document.getElementById('reviewAverage'),starsEl=document.getElementById('reviewStars'),countEl=document.getElementById('reviewCount');
 function escapeHtml(v){const d=document.createElement('div');d.textContent=v;return d.innerHTML}
-function renderReviews(items){items=[...items].sort((a,b)=>{const ta=a.data().createdAt?.toMillis?.()||a.data().createdAt?.seconds*1000||0;const tb=b.data().createdAt?.toMillis?.()||b.data().createdAt?.seconds*1000||0;return tb-ta});let total=0;listEl.innerHTML='';if(!items.length)listEl.innerHTML='<div class="empty-review">Aún no hay reseñas. ¡Sé la primera persona en dejar una! ⭐</div>';items.forEach(s=>{const r=s.data();total+=Number(r.rating)||0;const date=r.createdAt?.toDate?.()||((r.createdAt?.seconds)?new Date(r.createdAt.seconds*1000):null);const card=document.createElement('article');card.className='review-card';card.innerHTML=`<div class="review-top"><strong>${escapeHtml(r.name||'Anónimo')}</strong><span>${'★'.repeat(Number(r.rating)||0)}${'☆'.repeat(5-(Number(r.rating)||0))}</span></div><p>${escapeHtml(r.message||'')}</p><small>${date?date.toLocaleDateString('es-CO'):''}</small>`;listEl.appendChild(card)});const avg=items.length?total/items.length:0;avgEl.textContent=items.length?avg.toFixed(1):'—';starsEl.textContent='★'.repeat(Math.round(avg))+'☆'.repeat(5-Math.round(avg));countEl.textContent=items.length}
-function docsToItems(docs){return docs.map(d=>({id:d.name?.split('/').pop()||crypto.randomUUID(),data:()=>{const f=d.fields||{};return {name:f.name?.stringValue||'',message:f.message?.stringValue||'',rating:Number(f.rating?.integerValue??f.rating?.doubleValue??0),createdAt:f.createdAt?.timestampValue?{toDate:()=>new Date(f.createdAt.timestampValue)}:null}}}))}
-async function restListReviews(){const url=`https://firestore.googleapis.com/v1/projects/${firebaseConfig.projectId}/databases/(default)/documents/reviews?key=${encodeURIComponent(firebaseConfig.apiKey)}`;const r=await fetch(url,{cache:'no-store'});if(!r.ok){let x='';try{x=await r.text()}catch(_){}throw new Error(`REST ${r.status}: ${x.slice(0,250)}`)}const j=await r.json();renderReviews(docsToItems(j.documents||[]));return j.documents||[]}
-async function restAddReview(data){const url=`https://firestore.googleapis.com/v1/projects/${firebaseConfig.projectId}/databases/(default)/documents/reviews?key=${encodeURIComponent(firebaseConfig.apiKey)}`;const body={fields:{name:{stringValue:data.name},rating:{integerValue:String(data.rating)},message:{stringValue:data.message},createdAt:{timestampValue:new Date().toISOString()}}};const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body),cache:'no-store'});if(!r.ok){let x='';try{x=await r.text()}catch(_){}throw new Error(`REST ${r.status}: ${x.slice(0,400)}`)}return r.json()}
-async function loadReviews(){try{await restListReviews();statusEl.textContent='Reseñas sincronizadas con Firebase. ✓'}catch(e){console.error(e);statusEl.textContent=`Firebase no responde: ${e.message}`}}
-loadReviews();
-form.addEventListener('submit',async e=>{e.preventDefault();const button=form.querySelector('button[type="submit"]');button.disabled=true;const name=document.getElementById('reviewName').value.trim(),rating=Number(document.getElementById('reviewRating').value),message=document.getElementById('reviewMessage').value.trim();if(name.length<2||name.length>40||message.length<5||message.length>500||rating<1||rating>5){statusEl.textContent='Revisa los datos: nombre 2–40, reseña 5–500 y puntuación 1–5.';button.disabled=false;return}statusEl.textContent='Guardando en Firebase…';try{await restAddReview({name,rating,message});form.reset();document.getElementById('reviewRating').value='5';await restListReviews();statusEl.textContent='¡Reseña guardada en Firebase! ⭐';}catch(err){console.error('Firebase write error:',err);statusEl.textContent=`NO se pudo guardar: ${err.message}`;}finally{button.disabled=false}});
+function renderReviews(snapshot){
+  const items=snapshot.docs.slice().sort((a,b)=>{
+    const ta=a.data().createdAt?.toMillis?.()||a.data().createdAt?.seconds*1000||0;
+    const tb=b.data().createdAt?.toMillis?.()||b.data().createdAt?.seconds*1000||0;
+    return tb-ta;
+  });
+  let total=0;
+  listEl.innerHTML='';
+  if(!items.length) listEl.innerHTML='<div class="empty-review">Aún no hay reseñas. ¡Sé la primera persona en dejar una! ⭐</div>';
+  items.forEach(s=>{
+    const r=s.data();
+    const rating=Math.max(1,Math.min(5,Number(r.rating)||0));
+    total+=rating;
+    const date=r.createdAt?.toDate?.()||null;
+    const card=document.createElement('article');
+    card.className='review-card';
+    card.innerHTML=`<div class="review-top"><strong>${escapeHtml(r.name||'Anónimo')}</strong><span>${'★'.repeat(rating)}${'☆'.repeat(5-rating)}</span></div><p>${escapeHtml(r.message||'')}</p><small>${date?date.toLocaleDateString('es-CO'):''}</small>`;
+    listEl.appendChild(card);
+  });
+  const avg=items.length?total/items.length:0;
+  avgEl.textContent=items.length?avg.toFixed(1):'—';
+  starsEl.textContent='★'.repeat(Math.round(avg))+'☆'.repeat(5-Math.round(avg));
+  countEl.textContent=items.length;
+}
+
+const reviewsRef=collection(db,'reviews');
+
+// Lectura en tiempo real desde Cloud Firestore mediante el SDK oficial.
+onSnapshot(reviewsRef,
+  snapshot=>{
+    renderReviews(snapshot);
+    statusEl.textContent='Reseñas sincronizadas con Firebase. ✓';
+  },
+  error=>{
+    console.error('Firestore read error:',error);
+    statusEl.textContent=`No se pudieron cargar las reseñas: ${error.code||error.message}`;
+  }
+);
+
+form.addEventListener('submit',async e=>{
+  e.preventDefault();
+  const button=form.querySelector('button[type="submit"]');
+  button.disabled=true;
+  const name=document.getElementById('reviewName').value.trim();
+  const rating=Number(document.getElementById('reviewRating').value);
+  const message=document.getElementById('reviewMessage').value.trim();
+
+  if(name.length<2||name.length>40||message.length<5||message.length>500||rating<1||rating>5){
+    statusEl.textContent='Revisa los datos: nombre 2–40, reseña 5–500 y puntuación 1–5.';
+    button.disabled=false;
+    return;
+  }
+
+  statusEl.textContent='Guardando en Firebase…';
+  try{
+    // addDoc() confirma la escritura contra el backend de Firestore antes de resolver.
+    const docRef=await addDoc(reviewsRef,{
+      name,
+      rating,
+      message,
+      createdAt:serverTimestamp()
+    });
+    console.log('Reseña guardada en Firestore:',docRef.id);
+    form.reset();
+    document.getElementById('reviewRating').value='5';
+    statusEl.textContent='¡Reseña guardada en Firebase! ⭐';
+  }catch(err){
+    console.error('Firestore write error:',err);
+    statusEl.textContent=`NO se pudo guardar: ${err.code||err.message}`;
+  }finally{
+    button.disabled=false;
+  }
+});
 </script>
 </body>
 </html>
