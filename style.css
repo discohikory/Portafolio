@@ -35,7 +35,14 @@ header{height:74px;max-width:1120px;margin:auto;padding:0 24px;display:flex;alig
 .profile-orb{height:210px;display:grid;place-items:center;position:relative;background:radial-gradient(circle,rgba(139,92,246,0.2),transparent 65%);overflow:hidden;border-radius:15px;margin-bottom:15px;}.pixel{position:relative;width:120px;height:170px;display:grid;place-items:center;z-index:1}.head{width:100px;height:100px;background:linear-gradient(135deg,#d6c4ae 0 35%,#252338 35%);border:8px solid #080b15;border-radius:8px}.body{position:absolute;width:120px;height:70px;background:#303a78;bottom:0;border:8px solid #080b15;border-radius:8px 8px 0 0}
 .hero-card small{color:var(--muted);letter-spacing:2px;font-size:9px}.hero-card h2{font:700 20px 'Space Grotesk';margin:4px 0}.status{margin-top:18px;padding-top:15px;border-top:1px solid var(--line);font-size:10px;color:var(--muted)}.status i{display:inline-block;width:7px;height:7px;background:var(--good);border-radius:50%;margin-right:6px;box-shadow:0 0 10px #9ee6b5}
 
-.fun-panel{border-radius:15px;overflow:hidden;margin:40px 0;}.fun-head{height:38px;padding:0 14px;display:flex;align-items:center;gap:12px;background:rgba(0,0,0,0.4);border-bottom:1px solid rgba(255,255,255,0.05)}.terminal-dot{width:10px;height:10px;border-radius:50%}.red{background:#ff5f56}.yellow{background:#ffbd2e}.green{background:#27c93f}.fun-body{padding:20px;font-family:monospace;font-size:14px;}
+/* Terminal / Easter Egg Estilos */
+.fun-panel{border-radius:15px;overflow:hidden;margin:40px 0;}
+.fun-head{height:38px;padding:0 14px;display:flex;align-items:center;gap:12px;background:rgba(0,0,0,0.4);border-bottom:1px solid rgba(255,255,255,0.05)}
+.terminal-dot{width:10px;height:10px;border-radius:50%}.red{background:#ff5f56}.yellow{background:#ffbd2e}.green{background:#27c93f}
+.fun-body{padding:20px;font-family:monospace;font-size:14px;}
+.terminal-actions { display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap; }
+.term-btn { background: rgba(139,92,246,0.15); border: 1px solid var(--line); color: var(--a2); padding: 6px 14px; border-radius: 6px; cursor: pointer; font-family: monospace; transition: 0.2s; }
+.term-btn:hover { background: var(--a); color: #fff; transform: translateY(-2px); }
 
 .section{padding:80px 0}.title{display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--line);margin-bottom:30px;padding-bottom:10px;}.title span{color:var(--a2);font-size:12px;font-weight:800}.title h2{font:700 32px 'Space Grotesk';margin:0}
 .box{padding:25px;border-radius:15px;color:#bdc6db}.box p{margin:0 0 15px}
@@ -86,7 +93,7 @@ footer{text-align:center;padding:30px;color:var(--muted);font-size:12px;border-t
 .reveal{opacity:0;transform:translateY(30px);transition:all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);}.reveal.visible{opacity:1;transform:translateY(0);}
 
 @media(max-width:850px){
-  .hero, .timeline, .qualities, .review-layout{grid-template-columns:1fr;}
+  .hero, .timeline, .qualities, .review-layout{grid-template-columns:1f;}
   .stats{grid-template-columns:1fr;}
   .hero{padding:40px 0;text-align:center;gap:30px;}
   .buttons{justify-content:center;}

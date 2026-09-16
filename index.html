@@ -31,10 +31,20 @@
   </div>
 </section>
 
+<!-- EASTER EGG / TERMINAL INTERACTIVA RESTAURADA Y FUNCIONAL -->
 <section class="fun-panel reveal glass" id="panel-interactivo">
   <div class="fun-head"><div><span class="terminal-dot red"></span><span class="terminal-dot yellow"></span><span class="terminal-dot green"></span></div><small>staff@discohikorybrs:~</small></div>
-  <div class="fun-body"><div class="terminal-line"><span class="prompt">$</span> <span id="terminalText">explore --portfolio</span><span class="cursor">▌</span></div><p id="terminalResponse">Bienvenido. Explora mi trayectoria, proyectos y experiencia.</p>
-  <div class="terminal-actions"><button data-cmd="about">about</button><button data-cmd="skills">skills</button><button data-cmd="timeline">timeline</button><button data-cmd="contact">contact</button></div></div>
+  <div class="fun-body">
+    <div class="terminal-line"><span class="prompt">$</span> <span id="terminalText">explore --portfolio</span><span class="cursor">▌</span></div>
+    <p id="terminalResponse">Bienvenido. Haz clic en los botones de abajo para ejecutar comandos interactivos.</p>
+    <div class="terminal-actions">
+      <button class="term-btn" data-cmd="about">about</button>
+      <button class="term-btn" data-cmd="skills">skills</button>
+      <button class="term-btn" data-cmd="timeline">timeline</button>
+      <button class="term-btn" data-cmd="contact">contact</button>
+      <button class="term-btn" data-cmd="clear">clear</button>
+    </div>
+  </div>
 </section>
 
 <section id="sobre-mi" class="section reveal">
@@ -78,25 +88,31 @@
 
 <section id="proyectos" class="section reveal">
   <div class="title"><span>05</span><h2>Proyectos y evidencia</h2></div>
-  <div class="evidence-note glass"><b>📁 Sobre mi evidencia</b><p>Actualmente conservo capturas de <strong>VoidCraft</strong> y <strong>QuarkCraft</strong>. (Nota: Para que se vean, pon tus imágenes .jpg en la misma carpeta del código).</p></div>
+  <div class="evidence-note glass"><b>📁 Sobre mi evidencia</b><p>Capturas reales de <strong>VoidCraft</strong> y <strong>QuarkCraft</strong> integradas directamente en el portafolio.</p></div>
   <div class="project-grid">
     <article class="project-card featured-project glass">
       <div class="project-images three gallery" data-gallery="voidcraft" tabindex="0">
-        <img src="voidcraft-1.jpg" alt="Captura de VoidCraft" loading="lazy"><img src="voidcraft-2.jpg" alt="Captura de VoidCraft" loading="lazy"><img src="voidcraft-3.jpg" alt="Captura de VoidCraft" loading="lazy"><span class="gallery-hint">⌕ Ver galería</span>
+        <img src="voidcraft-1.jpg" alt="Captura de VoidCraft 1" loading="lazy">
+        <img src="voidcraft-2.jpg" alt="Captura de VoidCraft 2" loading="lazy">
+        <img src="voidcraft-3.jpg" alt="Captura de VoidCraft 3" loading="lazy">
+        <span class="gallery-hint">⌕ Ver galería</span>
       </div>
-      <div class="project-body"><small>01 · MINECRAFT</small><h3>VoidCraft</h3><p>Fui <b>Founder + Lead Developer</b>.</p></div>
+      <div class="project-body"><small>01 · MINECRAFT</small><h3>VoidCraft</h3><p>Fui <b>Founder + Lead Developer</b> en este servidor anárquico.</p></div>
     </article>
     <article class="project-card glass">
       <div class="project-images three gallery" data-gallery="quarkcraft" tabindex="0">
-        <img src="quarkcraft-1.jpg" alt="Captura de QuarkCraft" loading="lazy"><img src="quarkcraft-2.jpg" alt="Captura de QuarkCraft" loading="lazy"><img src="quarkcraft-3.jpg" alt="Captura de QuarkCraft" loading="lazy"><span class="gallery-hint">⌕ Ver galería</span>
+        <img src="quarkcraft-1.png" alt="Captura de QuarkCraft 1" loading="lazy">
+        <img src="quarkcraft-2.jpg" alt="Captura de QuarkCraft 2" loading="lazy">
+        <img src="quarkcraft-3.jpg" alt="Captura de QuarkCraft 3" loading="lazy">
+        <span class="gallery-hint">⌕ Ver galería</span>
       </div>
-      <div class="project-body"><small>02 · MINECRAFT</small><h3>QuarkCraft</h3><p>Participé como <b>Helper</b>. Las capturas muestran mi rango y actividad.</p></div>
+      <div class="project-body"><small>02 · MINECRAFT</small><h3>QuarkCraft</h3><p>Participé como <b>Helper</b> con actividad y rango verificado.</p></div>
     </article>
   </div>
 </section>
 
 <section id="resenas" class="section reveal">
-  <div class="title"><span>08</span><h2>Reseñas (Con Autenticación)</h2></div>
+  <div class="title"><span>08</span><h2>Reseñas</h2></div>
   <div class="reviews-head">
     <div class="review-score"><strong id="reviewAverage">—</strong><span id="reviewStars" class="stars">☆☆☆☆☆</span><small><span id="reviewCount">0</span> reseñas</small></div>
     <div><p>¿Has trabajado conmigo? Inicia sesión con Google para dejar una reseña.</p></div>
@@ -106,7 +122,7 @@
     <!-- Panel de Autenticación -->
     <div id="authPanel" class="box auth-panel glass">
       <h3>Acceso requerido</h3>
-      <p>Para evitar spam y mantener la calidad del portafolio, debes iniciar sesión para comentar.</p>
+      <p>Para evitar spam y mantener la calidad del portafolio, debes iniciar sesión con Google para comentar.</p>
       <button id="loginBtn" class="btn primary login-btn">
         <svg viewBox="0 0 24 24" width="18" height="18" xmlns="http://www.w3.org/2000/svg"><path fill="#fff" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#fff" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#fff" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#fff" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
         Iniciar sesión con Google
@@ -168,6 +184,31 @@ const observer = new IntersectionObserver(es => es.forEach(e => { if(e.isInterse
 document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 window.addEventListener('scroll', () => { document.querySelector('.scroll-progress').style.transform = `scaleX(${scrollY / (document.documentElement.scrollHeight - innerHeight)})`; });
 
+// -- EASTER EGG / TERMINAL INTERACTIVA RESTAURADA Y FUNCIONAL --
+const termResponses = {
+  about: "Daniel Esteban Vera Fernandez (Discohikorybrs) — Staff & Developer con más de 4 años de experiencia en Minecraft y Discord.",
+  skills: "Habilidades: Moderación avanzada, liderazgo de equipos, gestión de servidores, desarrollo en Minecraft y soporte técnico.",
+  timeline: "Trayectoria destacada: LatamMC (2021) → Proyectos de Desarrollo (2022-24) → VoidCraft / MineSnake (2025) → SkyLith Network (2026).",
+  contact: "Discord oficial: @discohikoryepb (ID: 1472738833018917028). ¡Escríbeme para colaborar!",
+  clear: "Terminal limpia. Selecciona otro comando para explorar."
+};
+
+document.querySelectorAll('.term-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const cmd = btn.getAttribute('data-cmd');
+    const textEl = document.getElementById('terminalText');
+    const respEl = document.getElementById('terminalResponse');
+    if (cmd === 'clear') {
+      textEl.textContent = 'explore --portfolio';
+      respEl.textContent = termResponses.clear;
+    } else {
+      textEl.textContent = cmd + ' --execute';
+      respEl.textContent = termResponses[cmd] || "Comando ejecutado con éxito.";
+    }
+  });
+});
+
+// -- LÓGICA DE AUTENTICACIÓN GOOGLE --
 const authPanel = document.getElementById('authPanel');
 const form = document.getElementById('reviewForm');
 const loginBtn = document.getElementById('loginBtn');
@@ -199,6 +240,7 @@ logoutBtn.addEventListener('click', () => {
   signOut(auth);
 });
 
+// -- LÓGICA DE RESEÑAS --
 const listEl = document.getElementById('reviewsList');
 const avgEl = document.getElementById('reviewAverage');
 const starsEl = document.getElementById('reviewStars');
