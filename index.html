@@ -8,7 +8,7 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="bg"></div><div class="particles" aria-hidden="true"></div><div class="scroll-progress" aria-hidden="true"></div>
+<div class="bg"></div><div class="bg-glow"></div><div class="particles" aria-hidden="true"></div><div class="scroll-progress" aria-hidden="true"></div>
 <header>
   <a class="brand" href="#inicio">◆ Discohikorybrs</a>
   <nav><a href="#sobre-mi">Perfil</a><a href="#virtudes">Cualidades</a><a href="#experiencia">Trayectoria</a><a href="#proyectos">Proyectos</a><a href="#preguntas">Preguntas</a><a href="#resenas">Reseñas</a><a href="#contacto">Contacto</a></nav>
@@ -23,159 +23,131 @@
     <div class="buttons"><a class="btn primary magnetic" href="#proyectos">Ver mi experiencia</a><a class="btn magnetic" href="https://discord.com/users/1472738833018917028" target="_blank" rel="noopener">Contactarme ↗</a></div>
     <div class="quick"><span>✦ Colombia</span><span>✦ 4+ años de experiencia</span><span>✦ Staff & Developer</span></div>
   </div>
-  <div class="hero-card tilt">
-    <div class="profile-orb"><div class="pixel"><div class="head"></div><div class="body"></div></div></div>
+  <div class="hero-card tilt glass">
+    <div class="profile-orb pulsing"><div class="pixel"><div class="head"></div><div class="body"></div></div></div>
     <small>IDENTIDAD PROFESIONAL</small><h2>Discohikorybrs</h2><p>Staff · Developer · Minecraft</p>
     <div class="status"><i></i> Actualmente activo · En busca de nuevos proyectos</div>
     <div class="mini-command">/contact <span>→</span> Discord</div>
   </div>
 </section>
 
-<section class="fun-panel reveal" id="panel-interactivo">
-  <div class="fun-head"><div><span class="terminal-dot"></span><span class="terminal-dot"></span><span class="terminal-dot"></span></div><small>staff@discohikorybrs:~</small></div>
+<section class="fun-panel reveal glass" id="panel-interactivo">
+  <div class="fun-head"><div><span class="terminal-dot red"></span><span class="terminal-dot yellow"></span><span class="terminal-dot green"></span></div><small>staff@discohikorybrs:~</small></div>
   <div class="fun-body"><div class="terminal-line"><span class="prompt">$</span> <span id="terminalText">explore --portfolio</span><span class="cursor">▌</span></div><p id="terminalResponse">Bienvenido. Explora mi trayectoria, proyectos y experiencia.</p>
   <div class="terminal-actions"><button data-cmd="about">about</button><button data-cmd="skills">skills</button><button data-cmd="timeline">timeline</button><button data-cmd="contact">contact</button></div></div>
 </section>
 
 <section id="sobre-mi" class="section reveal">
   <div class="title"><span>01</span><h2>Sobre mí</h2></div>
-  <div class="box about-box">
+  <div class="box about-box glass">
     <p>Soy <strong>Daniel Esteban Vera Fernandez</strong>, aunque dentro de las comunidades de Minecraft y Discord utilizo <strong>Discohikorybrs</strong> como mi alias profesional.</p>
     <p>Mi experiencia comenzó en <strong>2021</strong>, cuando entré a <strong>LatamMC</strong> como Soporte. Durante las primeras semanas fui ganando experiencia dentro del equipo y ascendí rápidamente a <strong>Moderador</strong>.</p>
-    <p>Después de otras semanas de trabajo, el dueño principal del proyecto falleció debido a cáncer. El segundo dueño necesitaba una mano derecha para continuar con la gestión del servidor y, después de llegar a distintos acuerdos, asumí el cargo de <strong>CEO</strong>. Esta etapa me permitió aprender de primera mano sobre liderazgo, organización y coordinación de equipos.</p>
-    <p>Entre <strong>2022 y 2024</strong> continué adquiriendo experiencia como <strong>Developer</strong>, trabajando en servidores pequeños y proyectos poco reconocidos. Aunque esa etapa tuvo menos exposición pública, me permitió seguir desarrollando mis conocimientos y entender mejor el funcionamiento interno de los proyectos.</p>
+    <p>Después de otras semanas de trabajo, el dueño principal del proyecto falleció debido a cáncer. El segundo dueño necesitaba una mano derecha para continuar con la gestión del servidor y, después de llegar a distintos acuerdos, asumí el cargo de <strong>CEO</strong>.</p>
+    <p>Entre <strong>2022 y 2024</strong> continué adquiriendo experiencia como <strong>Developer</strong>, trabajando en servidores pequeños y proyectos poco reconocidos.</p>
     <p>En <strong>2025</strong> retomé activamente este ámbito con nuevos proyectos como <strong>SpaceMain SMP, [ZX] Studios y TurtleNetwork</strong>. Posteriormente participé en <strong>VoidCraft / MineSnake</strong> y <strong>QuarkCraft</strong>. Actualmente estoy <strong>activo y en busca de nuevos proyectos</strong>.</p>
   </div>
 </section>
 
 <section class="stats reveal">
-  <div class="stat-card"><b data-count="4">4+</b><small>AÑOS DE EXPERIENCIA</small></div>
-  <div class="stat-card"><b data-count="7">7</b><small>PROYECTOS / ETAPAS DESTACADAS</small></div>
-  <div class="stat-card"><b>2026</b><small>ACTIVO EN STAFF</small></div>
+  <div class="stat-card glass"><b data-count="4">4+</b><small>AÑOS DE EXPERIENCIA</small></div>
+  <div class="stat-card glass"><b data-count="7">7</b><small>PROYECTOS / ETAPAS DESTACADAS</small></div>
+  <div class="stat-card glass"><b>2026</b><small>ACTIVO EN STAFF</small></div>
 </section>
 
 <section id="virtudes" class="section reveal">
   <div class="title"><span>02</span><h2>Virtudes y cualidades</h2></div>
   <div class="qualities">
-    <div class="quality-card"><span class="q-icon">✓</span><div><b>Responsable</b><span>Cumplo con las tareas y responsabilidades asignadas, procurando mantener un buen desempeño.</span></div></div>
-    <div class="quality-card"><span class="q-icon">◆</span><div><b>Comprometido</b><span>Me involucro con los objetivos del proyecto y busco aportar de forma constante al equipo.</span></div></div>
-    <div class="quality-card"><span class="q-icon">⚡</span><div><b>Eficaz</b><span>Busco soluciones prácticas y organizadas ante problemas o situaciones que requieren atención.</span></div></div>
-    <div class="quality-card"><span class="q-icon">◉</span><div><b>Atento</b><span>Presto atención a las necesidades de usuarios y compañeros para responder adecuadamente.</span></div></div>
-    <div class="quality-card"><span class="q-icon">∞</span><div><b>Trabajo en equipo</b><span>Me adapto a diferentes equipos y procuro mantener una comunicación clara con el Staff.</span></div></div>
-    <div class="quality-card"><span class="q-icon">↗</span><div><b>Adaptabilidad</b><span>He desempeñado distintos cargos y puedo adaptarme a las necesidades de cada proyecto.</span></div></div>
-    <div class="quality-card"><span class="q-icon">◌</span><div><b>Comunicación</b><span>Considero importante mantener una comunicación directa, respetuosa y clara.</span></div></div>
-    <div class="quality-card"><span class="q-icon">+</span><div><b>Aprendizaje constante</b><span>Busco seguir adquiriendo conocimientos y mejorar mis habilidades técnicas y administrativas.</span></div></div>
-  </div>
-</section>
-
-<section class="section reveal" id="logros">
-  <div class="title"><span>03</span><h2>Logros desbloqueados</h2></div>
-  <div class="achievements">
-    <article class="achievement"><div class="achievement-icon">◆</div><div><b>Primer paso</b><span>Comencé mi trayectoria en 2021 como Soporte en LatamMC.</span></div><em>2021</em></article>
-    <article class="achievement"><div class="achievement-icon">↑</div><div><b>Ascenso</b><span>Pasé de Soporte a Moderador tras mis primeras semanas de trabajo.</span></div><em>LATAMMC</em></article>
-    <article class="achievement"><div class="achievement-icon">★</div><div><b>Liderazgo</b><span>Asumí el cargo de CEO y responsabilidades de gestión.</span></div><em>CEO</em></article>
-    <article class="achievement"><div class="achievement-icon">⌘</div><div><b>Developer</b><span>Continué adquiriendo experiencia técnica en proyectos pequeños.</span></div><em>2022–2024</em></article>
-    <article class="achievement"><div class="achievement-icon">⚔</div><div><b>Founder</b><span>Participé como Founder + Lead Developer en VoidCraft / MineSnake.</span></div><em>2025–2026</em></article>
-    <article class="achievement locked" id="secretAchievement"><div class="achievement-icon">?</div><div><b>???</b><span>Hay un pequeño secreto escondido en esta página.</span><small class="secret-hint">A veces, la respuesta está en los controles.</small></div><em>BLOQUEADO</em></article>
+    <div class="quality-card glass"><span class="q-icon">✓</span><div><b>Responsable</b><span>Cumplo con las tareas y responsabilidades asignadas, procurando mantener un buen desempeño.</span></div></div>
+    <div class="quality-card glass"><span class="q-icon">◆</span><div><b>Comprometido</b><span>Me involucro con los objetivos del proyecto y busco aportar de forma constante al equipo.</span></div></div>
+    <div class="quality-card glass"><span class="q-icon">⚡</span><div><b>Eficaz</b><span>Busco soluciones prácticas y organizadas ante problemas o situaciones que requieren atención.</span></div></div>
+    <div class="quality-card glass"><span class="q-icon">◉</span><div><b>Atento</b><span>Presto atención a las necesidades de usuarios y compañeros para responder adecuadamente.</span></div></div>
+    <div class="quality-card glass"><span class="q-icon">∞</span><div><b>Trabajo en equipo</b><span>Me adapto a diferentes equipos y procuro mantener una comunicación clara con el Staff.</span></div></div>
+    <div class="quality-card glass"><span class="q-icon">↗</span><div><b>Adaptabilidad</b><span>He desempeñado distintos cargos y puedo adaptarme a las necesidades de cada proyecto.</span></div></div>
   </div>
 </section>
 
 <section id="experiencia" class="section reveal">
   <div class="title"><span>04</span><h2>Mi trayectoria</h2></div>
   <div class="timeline">
-    <article class="timeline-item"><i></i><div><strong>2021 · LatamMC</strong><em>Soporte → Moderador → CEO</em><p>Comencé como <b>Soporte</b>. Tras varias semanas de trabajo ascendí rápidamente a <b>Moderador</b>. Posteriormente, tras el fallecimiento del dueño principal y la necesidad de apoyo del segundo dueño, llegué a un acuerdo para asumir el cargo de <b>CEO</b>.</p><div class="mini-tags"><span>Soporte</span><span>Moderación</span><span>CEO</span><span>Liderazgo</span></div></div></article>
-    <article class="timeline-item"><i></i><div><strong>2022–2024 · Desarrollo</strong><em>Developer</em><p>Durante estos años adquirí experiencia como <b>Developer</b> trabajando en servidores pequeños y proyectos poco reconocidos. Fue una etapa centrada en seguir aprendiendo y fortalecer mi experiencia técnica.</p><div class="mini-tags"><span>Development</span><span>Minecraft</span><span>Experiencia técnica</span></div></div></article>
-    <article class="timeline-item"><i></i><div><strong>2025 · Regreso</strong><em>Nuevos proyectos</em><p>Volví renovado y con más experiencia, participando en <b>SpaceMain SMP</b>, <b>[ZX] Studios</b> y <b>TurtleNetwork</b>, retomando progresivamente mi actividad dentro de comunidades y proyectos.</p><div class="mini-tags"><span>SpaceMain SMP</span><span>[ZX] Studios</span><span>TurtleNetwork</span></div></div></article>
-    <article class="timeline-item"><i></i><div><strong>2025–2026 · VoidCraft / MineSnake</strong><em>Founder + Lead Developer</em><p>Participé como <b>Founder + Lead Developer</b>, combinando dirección, desarrollo y organización del proyecto. Actualmente el servidor aparece con el nombre <b>MineSnake</b>.</p><div class="project-links"><a class="btn primary magnetic" href="https://discord.gg/ckpgWKSmZt" target="_blank" rel="noopener">Discord</a><a class="btn magnetic" href="https://www.tiktok.com/@voidcraft.server" target="_blank" rel="noopener">TikTok</a></div></div></article>
-    <article class="timeline-item"><i></i><div><strong>2025–2026 · QuarkCraft</strong><em>Helper</em><p>Participé como <b>Helper</b>, apoyando a la comunidad y formando parte del Staff durante mi etapa en el proyecto.</p><div class="project-links"><a class="btn magnetic" href="https://discord.gg/ZTTX3NqxtB" target="_blank" rel="noopener">Discord</a></div></div></article>
-    <article class="timeline-item current"><i></i><div><strong>2026 · SkyLith Network</strong><em>Actualmente</em><p>Actualmente trabajo como <b>Moderador</b>, apoyando a la comunidad, atendiendo situaciones y colaborando con el equipo de Staff.</p><div class="project-links"><a class="btn primary magnetic" href="https://discord.gg/skylith" target="_blank" rel="noopener">Discord de SkyLith</a></div></div></article>
+    <article class="timeline-item glass"><i></i><div><strong>2021 · LatamMC</strong><em>CEO</em><p>Comencé como <b>Soporte</b>, ascendí a <b>Moderador</b> y asumí el cargo de <b>CEO</b>.</p></div></article>
+    <article class="timeline-item glass"><i></i><div><strong>2022–2024 · Desarrollo</strong><em>Developer</em><p>Experiencia técnica como <b>Developer</b> en servidores y proyectos.</p></div></article>
+    <article class="timeline-item glass"><i></i><div><strong>2025–2026 · VoidCraft / MineSnake</strong><em>Founder + Developer</em><p>Participé como <b>Founder + Lead Developer</b>.</p><div class="project-links"><a class="btn primary magnetic mini" href="https://discord.gg/ckpgWKSmZt" target="_blank">Discord</a></div></div></article>
+    <article class="timeline-item current glass"><i></i><div><strong>2026 · SkyLith Network</strong><em>Actualmente</em><p>Actualmente trabajo como <b>Moderador</b> apoyando a la comunidad.</p><div class="project-links"><a class="btn primary magnetic mini" href="https://discord.gg/skylith" target="_blank">Discord</a></div></div></article>
   </div>
 </section>
 
 <section id="proyectos" class="section reveal">
   <div class="title"><span>05</span><h2>Proyectos y evidencia</h2></div>
-  <div class="evidence-note"><b>📁 Sobre mi evidencia</b><p>Actualmente conservo capturas de <strong>VoidCraft / MineSnake</strong> y <strong>QuarkCraft</strong>. De otros proyectos no dispongo de capturas o archivos de respaldo debido a un cambio de dispositivo que hizo que perdiera parte de mi material anterior. Por eso separo claramente mi <strong>experiencia declarada</strong> de la <strong>evidencia que todavía conservo</strong>.</p></div>
+  <div class="evidence-note glass"><b>📁 Sobre mi evidencia</b><p>Actualmente conservo capturas de <strong>VoidCraft</strong> y <strong>QuarkCraft</strong>. (Nota: Para que se vean, pon tus imágenes .jpg en la misma carpeta del código).</p></div>
   <div class="project-grid">
-    <article class="project-card featured-project">
-      <div class="project-images three gallery" data-gallery="voidcraft" tabindex="0" aria-label="Abrir galería de VoidCraft">
+    <article class="project-card featured-project glass">
+      <div class="project-images three gallery" data-gallery="voidcraft" tabindex="0">
         <img src="voidcraft-1.jpg" alt="Captura de VoidCraft" loading="lazy"><img src="voidcraft-2.jpg" alt="Captura de VoidCraft" loading="lazy"><img src="voidcraft-3.jpg" alt="Captura de VoidCraft" loading="lazy"><span class="gallery-hint">⌕ Ver galería</span>
       </div>
-      <div class="project-body"><small>01 · MINECRAFT</small><h3>VoidCraft <span>→ MineSnake</span></h3><p>Fui <b>Founder + Lead Developer</b> durante mi participación en este proyecto. Actualmente el servidor aparece con el nombre MineSnake.</p><div class="project-links"><a class="btn primary magnetic" href="https://discord.gg/ckpgWKSmZt" target="_blank" rel="noopener">Discord</a><a class="btn magnetic" href="https://www.tiktok.com/@voidcraft.server" target="_blank" rel="noopener">TikTok</a></div></div>
+      <div class="project-body"><small>01 · MINECRAFT</small><h3>VoidCraft</h3><p>Fui <b>Founder + Lead Developer</b>.</p></div>
     </article>
-    <article class="project-card">
-      <div class="project-images three gallery" data-gallery="quarkcraft" tabindex="0" aria-label="Abrir galería de QuarkCraft">
-        <img src="quarkcraft-1.jpg" alt="Captura de QuarkCraft mostrando rango Helper" loading="lazy"><img src="quarkcraft-2.jpg" alt="Captura de QuarkCraft con jugadores y rangos" loading="lazy"><img src="quarkcraft-3.jpg" alt="Captura de QuarkCraft con jugadores y rangos" loading="lazy"><span class="gallery-hint">⌕ Ver galería</span>
+    <article class="project-card glass">
+      <div class="project-images three gallery" data-gallery="quarkcraft" tabindex="0">
+        <img src="quarkcraft-1.jpg" alt="Captura de QuarkCraft" loading="lazy"><img src="quarkcraft-2.jpg" alt="Captura de QuarkCraft" loading="lazy"><img src="quarkcraft-3.jpg" alt="Captura de QuarkCraft" loading="lazy"><span class="gallery-hint">⌕ Ver galería</span>
       </div>
-      <div class="project-body"><small>02 · MINECRAFT</small><h3>QuarkCraft</h3><p>Participé como <b>Helper</b>. Las capturas muestran mi rango, mi actividad y diferentes momentos de mi experiencia dentro de la comunidad.</p><small class="evidence yes">✓ Tengo evidencia disponible</small><div class="project-links"><a class="btn magnetic" href="https://discord.gg/ZTTX3NqxtB" target="_blank" rel="noopener">Discord</a></div></div>
+      <div class="project-body"><small>02 · MINECRAFT</small><h3>QuarkCraft</h3><p>Participé como <b>Helper</b>. Las capturas muestran mi rango y actividad.</p></div>
     </article>
-    <article class="project-card project-card-simple"><div class="project-body"><small>03 · MINECRAFT</small><h3>SkyLith Network <span>→ Actual</span></h3><p>Actualmente trabajo como <b>Moderador</b>. Mi función está enfocada en apoyar a la comunidad, atender situaciones y colaborar con el equipo de Staff.</p><div class="project-links"><a class="btn primary magnetic" href="https://discord.gg/skylith" target="_blank" rel="noopener">Discord de SkyLith</a></div></div></article>
-    <div class="project-mini-grid">
-      <article class="mini-project"><span>2025</span><h3>SpaceMain SMP</h3><p>Participé durante mi regreso al ámbito del Staff y desarrollo.</p><small>Sin evidencia disponible actualmente</small></article>
-      <article class="mini-project"><span>2025</span><h3>[ZX] Studios</h3><p>Proyecto en el que participé durante mi nueva etapa.</p><small>Sin evidencia disponible actualmente</small></article>
-      <article class="mini-project"><span>2025</span><h3>TurtleNetwork</h3><p>Otro proyecto en el que participé durante mi regreso.</p><small>Sin evidencia disponible actualmente</small></article>
-    </div>
-  </div>
-</section>
-
-<section class="split section reveal">
-  <div><div class="title"><span>06</span><h2>Lo que puedo aportar</h2></div><div class="box"><p><b>Moderación:</b> puedo aportar experiencia atendiendo usuarios, situaciones y necesidades de una comunidad.</p><p><b>Organización:</b> tengo experiencia trabajando dentro de equipos de Staff y asumiendo responsabilidades diferentes.</p><p><b>Desarrollo:</b> mi trayectoria también incluye experiencia como Developer en proyectos de Minecraft.</p><p><b>Liderazgo:</b> he llegado a desempeñar cargos de responsabilidad como CEO y Founder.</p></div></div>
-  <div><div class="title"><span>07</span><h2>Cargos desempeñados</h2></div><div class="roles"><span>Founder</span><span>CEO</span><span>Lead Developer</span><span>Developer</span><span>Moderador</span><span>Helper</span><span>Soporte</span></div></div>
-</section>
-
-<section class="section reveal"><div class="title"><span>08</span><h2>Comunidades</h2></div><div class="community-grid">
-<a class="community-card" href="https://discord.gg/2b2tbe-oficial-855548789178630154" target="_blank" rel="noopener"><small>DISCORD</small><h3>FarmBlitz</h3><p>Comunidad de la que conservo el enlace de Discord.</p><span>Entrar al servidor ↗</span></a>
-<a class="community-card" href="https://discord.gg/ZTTX3NqxtB" target="_blank" rel="noopener"><small>DISCORD</small><h3>QuarkCraft</h3><p>Comunidad en la que participé como Helper.</p><span>Entrar al servidor ↗</span></a>
-<a class="community-card" href="https://discord.gg/skylith" target="_blank" rel="noopener"><small>DISCORD</small><h3>SkyLith Network</h3><p>Comunidad en la que actualmente trabajo como Moderador.</p><span>Entrar al servidor ↗</span></a>
-</div></section>
-
-<section class="section note reveal"><div class="title"><span>09</span><h2>Mi enfoque</h2></div><p>Busco seguir creciendo dentro de comunidades de Minecraft y Discord, combinando mi experiencia como Staff con mi experiencia como Developer. Me interesa formar parte de equipos donde pueda aportar organización, atención a la comunidad, liderazgo y soluciones prácticas.</p></section>
-
-
-<section id="preguntas" class="section reveal">
-  <div class="title"><span>07</span><h2>¿Qué quieres saber sobre mí?</h2></div>
-  <div class="question-grid">
-    <button class="question-card" data-question="who"><span>01</span><b>¿Quién soy?</b><small>Mi trayectoria y perfil profesional</small></button>
-    <button class="question-card" data-question="pay"><span>02</span><b>¿Cobro?</b><small>Cómo planteo la colaboración</small></button>
-    <button class="question-card" data-question="reliable"><span>03</span><b>¿Soy fiable?</b><small>Compromiso y comunicación</small></button>
   </div>
 </section>
 
 <section id="resenas" class="section reveal">
-  <div class="title"><span>08</span><h2>Reseñas</h2></div>
+  <div class="title"><span>08</span><h2>Reseñas (Con Autenticación)</h2></div>
   <div class="reviews-head">
-    <div class="review-score"><strong id="reviewAverage">—</strong><span id="reviewStars">☆☆☆☆☆</span><small><span id="reviewCount">0</span> reseñas</small></div>
-    <div><p>¿Has trabajado conmigo? Déjame una breve reseña sobre tu experiencia.</p></div>
+    <div class="review-score"><strong id="reviewAverage">—</strong><span id="reviewStars" class="stars">☆☆☆☆☆</span><small><span id="reviewCount">0</span> reseñas</small></div>
+    <div><p>¿Has trabajado conmigo? Inicia sesión con Google para dejar una reseña.</p></div>
   </div>
+  
   <div class="review-layout">
-    <form id="reviewForm" class="box review-form">
-      <label>Nombre o alias<input id="reviewName" maxlength="40" required placeholder="Tu nombre / alias"></label>
+    <!-- Panel de Autenticación -->
+    <div id="authPanel" class="box auth-panel glass">
+      <h3>Acceso requerido</h3>
+      <p>Para evitar spam y mantener la calidad del portafolio, debes iniciar sesión para comentar.</p>
+      <button id="loginBtn" class="btn primary login-btn">
+        <svg viewBox="0 0 24 24" width="18" height="18" xmlns="http://www.w3.org/2000/svg"><path fill="#fff" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#fff" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#fff" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#fff" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        Iniciar sesión con Google
+      </button>
+    </div>
+
+    <!-- Formulario de Reseñas (Oculto hasta hacer login) -->
+    <form id="reviewForm" class="box review-form glass" style="display: none;">
+      <div class="user-info-bar">
+        <span>Sesión iniciada como: <b id="loggedInUser">Usuario</b></span>
+        <button type="button" id="logoutBtn" class="logout-link">Cerrar sesión</button>
+      </div>
+      <input type="hidden" id="reviewName">
+      
       <label>Puntuación
-        <select id="reviewRating" required><option value="5">★★★★★ — 5</option><option value="4">★★★★☆ — 4</option><option value="3">★★★☆☆ — 3</option><option value="2">★★☆☆☆ — 2</option><option value="1">★☆☆☆☆ — 1</option></select>
+        <select id="reviewRating" required>
+          <option value="5">★★★★★ — 5 Estrellas</option>
+          <option value="4">★★★★☆ — 4 Estrellas</option>
+          <option value="3">★★★☆☆ — 3 Estrellas</option>
+          <option value="2">★★☆☆☆ — 2 Estrellas</option>
+          <option value="1">★☆☆☆☆ — 1 Estrella</option>
+        </select>
       </label>
-      <label>Reseña<textarea id="reviewMessage" maxlength="500" minlength="5" required placeholder="Cuéntame brevemente cómo fue trabajar conmigo..."></textarea></label>
+      <label>Tu Reseña<textarea id="reviewMessage" maxlength="500" minlength="5" required placeholder="Cuéntame brevemente cómo fue trabajar conmigo..."></textarea></label>
       <button class="btn primary" type="submit">Publicar reseña ↗</button>
       <small id="reviewStatus" class="review-status">Las reseñas se sincronizan mediante Firebase.</small>
     </form>
-    <div id="reviewsList" class="reviews-list"><div class="empty-review">Cargando reseñas…</div></div>
+    
+    <div id="reviewsList" class="reviews-list"><div class="empty-review glass">Cargando reseñas de la base de datos…</div></div>
   </div>
 </section>
 
-<section class="privacy-note reveal"><b>🔒 Privacidad</b><span>Esta página es pública. Por seguridad, no publico dirección, ubicación exacta ni otros datos personales sensibles. Solo muestro una referencia general a Colombia.</span></section>
-
-<section id="contacto" class="contact reveal"><p class="eyebrow">¿TRABAJAMOS JUNTOS?</p><h2>Hablemos sobre tu proyecto.</h2><p>Si quieres hablar conmigo sobre una oportunidad de Staff, moderación, desarrollo o un proyecto de Minecraft, puedes contactarme directamente por Discord.</p><div class="contact-row"><div><small>DISCORD</small><strong>@discohikoryepb</strong><span class="contact-id">ID: 1472738833018917028</span><span class="contact-id">✉ discohikory@gmail.com</span></div><a class="btn primary contact-btn magnetic" href="https://discord.com/users/1472738833018917028" target="_blank" rel="noopener">Contactarme ↗</a></div></section>
+<section id="contacto" class="contact reveal glass"><p class="eyebrow">¿TRABAJAMOS JUNTOS?</p><h2>Hablemos sobre tu proyecto.</h2><p>Contactarme directamente por Discord.</p><div class="contact-row"><div><small>DISCORD</small><strong>@discohikoryepb</strong><span class="contact-id">ID: 1472738833018917028</span></div><a class="btn primary contact-btn magnetic" href="https://discord.com/users/1472738833018917028" target="_blank">Contactarme ↗</a></div></section>
 </main>
 <section class="final-quote reveal"><p>“El verdadero progreso no se mide por el cargo que alcanzas, sino por la huella que dejas en el camino.”</p><strong>— Discohikorybrs</strong></section>
-<footer>© 2026 Daniel Esteban Vera Fernandez · <strong>Discohikorybrs</strong> · Minecraft & Discord Staff Portfolio <span class="footer-secret">v18.0 · ¿Todavía sigues explorando? ↑</span></footer>
+<footer>© 2026 Daniel Esteban Vera Fernandez · <strong>Discohikorybrs</strong></footer>
 
-
-<div class="question-modal" id="questionModal" aria-hidden="true"><div class="question-dialog"><button class="question-close" id="questionClose">×</button><span id="questionNumber" class="eyebrow">01</span><h2 id="questionTitle"></h2><p id="questionText"></p></div></div>
-<div class="toast" id="toast" role="status" aria-live="polite"></div>
-<div class="secret-overlay" id="secretOverlay" aria-hidden="true"><div class="secret-scene"><div class="secret-scan">ACCESS GRANTED</div><div class="secret-loading"><span id="secretLoadingText">DISCOHIKORYBRS.EXE</span><b id="secretProgress">0%</b></div><div class="secret-message" id="secretMessage"><div class="secret-cube">✦</div><h2>Zona secreta desbloqueada</h2><p>Gracias por explorar mi portafolio hasta el último rincón.</p><strong>— Daniel / Discohikorybrs</strong><button id="closeSecret" class="btn primary">Continuar explorando</button></div></div></div>
-<div class="lightbox" id="lightbox" aria-hidden="true"><button class="lightbox-close" aria-label="Cerrar">×</button><button class="lightbox-prev" aria-label="Anterior">‹</button><figure><img id="lightbox-img" src="" alt=""><figcaption id="lightbox-caption"></figcaption></figure><button class="lightbox-next" aria-label="Siguiente">›</button></div>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
-import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
+import { getFirestore, collection, addDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAy0gIgD7QPwJcpVDFCLtuHQjm4U0rsNVc",
@@ -187,73 +159,78 @@ const firebaseConfig = {
   measurementId: "G-YM9EES0G4C"
 };
 
-const firebaseApp = initializeApp(firebaseConfig);
-const db = getFirestore(firebaseApp);
-const auth = getAuth(firebaseApp);
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+const provider = new GoogleAuthProvider();
 
-signInAnonymously(auth).catch((error) => {
-  console.error("Error de autenticación anónima:", error);
+const observer = new IntersectionObserver(es => es.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); }), {threshold: 0.1});
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+window.addEventListener('scroll', () => { document.querySelector('.scroll-progress').style.transform = `scaleX(${scrollY / (document.documentElement.scrollHeight - innerHeight)})`; });
+
+const authPanel = document.getElementById('authPanel');
+const form = document.getElementById('reviewForm');
+const loginBtn = document.getElementById('loginBtn');
+const logoutBtn = document.getElementById('logoutBtn');
+const reviewName = document.getElementById('reviewName');
+const loggedInUser = document.getElementById('loggedInUser');
+
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    authPanel.style.display = 'none';
+    form.style.display = 'flex';
+    reviewName.value = user.displayName || "Usuario Anonimo";
+    loggedInUser.textContent = user.displayName || "Usuario Anonimo";
+  } else {
+    authPanel.style.display = 'flex';
+    form.style.display = 'none';
+    reviewName.value = "";
+  }
 });
 
-const reduceMotion=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-if(!reduceMotion&&'IntersectionObserver'in window){const observer=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');observer.unobserve(e.target)}}),{threshold:.12});document.querySelectorAll('.reveal').forEach(el=>observer.observe(el))}else document.querySelectorAll('.reveal').forEach(el=>el.classList.add('visible'));
-const progress=document.querySelector('.scroll-progress');window.addEventListener('scroll',()=>{const max=document.documentElement.scrollHeight-innerHeight;progress.style.transform=`scaleX(${max?scrollY/max:0})`},{passive:true});
-const words=['Staff','Moderador','Developer','Administrador'];const typeEl=document.getElementById('terminalText');
-const heroType=document.querySelector('.lead');
-const counters=document.querySelectorAll('[data-count]');if(!reduceMotion&&'IntersectionObserver'in window){const co=new IntersectionObserver(es=>es.forEach(e=>{if(!e.isIntersecting)return;const el=e.target,t=Number(el.dataset.count);let n=0;const step=Math.max(1,Math.ceil(t/20));const tick=()=>{n=Math.min(t,n+step);el.textContent=n+(t===4?'+':'');if(n<t)requestAnimationFrame(tick)};tick();co.unobserve(el)}),{threshold:.8});counters.forEach(c=>co.observe(c))}
-if(!reduceMotion&&matchMedia('(pointer:fine)').matches){document.querySelectorAll('.tilt').forEach(card=>{card.addEventListener('mousemove',e=>{const r=card.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;card.style.transform=`perspective(900px) rotateY(${x*7}deg) rotateX(${-y*7}deg) translateY(-4px)`});card.addEventListener('mouseleave',()=>card.style.transform='')});document.querySelectorAll('.magnetic').forEach(btn=>{btn.addEventListener('mousemove',e=>{const r=btn.getBoundingClientRect();btn.style.transform=`translate(${(e.clientX-r.left-r.width/2)*.10}px, ${(e.clientY-r.top-r.height/2)*.10}px)`});btn.addEventListener('mouseleave',()=>btn.style.transform='')})}
-const galleries=[...document.querySelectorAll('.gallery')],lightbox=document.getElementById('lightbox'),lbImg=document.getElementById('lightbox-img'),lbCap=document.getElementById('lightbox-caption');let currentImages=[],currentIndex=0;function openGallery(g){currentImages=[...g.querySelectorAll('img')];currentIndex=0;showImage();lightbox.classList.add('open');lightbox.setAttribute('aria-hidden','false');document.body.classList.add('modal-open')}function showImage(){const img=currentImages[currentIndex];lbImg.src=img.src;lbImg.alt=img.alt;lbCap.textContent=`${currentIndex+1} / ${currentImages.length} · ${img.alt}`}function closeGallery(){lightbox.classList.remove('open');lightbox.setAttribute('aria-hidden','true');document.body.classList.remove('modal-open');lbImg.src=''}galleries.forEach(g=>{g.addEventListener('click',()=>openGallery(g));g.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openGallery(g)}})});document.querySelector('.lightbox-close').onclick=closeGallery;document.querySelector('.lightbox-prev').onclick=()=>{currentIndex=(currentIndex-1+currentImages.length)%currentImages.length;showImage()};document.querySelector('.lightbox-next').onclick=()=>{currentIndex=(currentIndex+1)%currentImages.length;showImage()};lightbox.addEventListener('click',e=>{if(e.target===lightbox)closeGallery()});document.addEventListener('keydown',e=>{if(!lightbox.classList.contains('open'))return;if(e.key==='Escape')closeGallery();if(e.key==='ArrowLeft')document.querySelector('.lightbox-prev').click();if(e.key==='ArrowRight')document.querySelector('.lightbox-next').click()});
-const terminalResponse=document.getElementById('terminalResponse'),cmdText=document.getElementById('terminalText');const responses={about:'Daniel Esteban Vera Fernandez · alias Discohikorybrs · Staff & Developer · Minecraft / Discord.',skills:'Moderación · Soporte · Organización · Liderazgo · Desarrollo · Trabajo en equipo.',timeline:'2021 LatamMC → 2022–2024 Developer → 2025 nuevos proyectos → 2025–2026 VoidCraft/QuarkCraft → 2026 SkyLith.',contact:'Abriendo mi perfil de Discord…'};document.querySelectorAll('.terminal-actions button').forEach(b=>b.addEventListener('click',()=>{const cmd=b.dataset.cmd;cmdText.textContent=cmd;terminalResponse.textContent=responses[cmd];if(cmd==='contact')setTimeout(()=>window.open('https://discord.com/users/1472738833018917028','_blank','noopener'),350)}));
-// Easter egg: Konami Code ↑ ↑ ↓ ↓ ← → ← → B A
-const secretSequence=['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];let secretKeys=[],secretUnlocked=false;
-function playSecretSound(){try{const C=window.AudioContext||window.webkitAudioContext;if(!C)return;const ctx=new C(),now=ctx.currentTime;[523.25,659.25,783.99,1046.5].forEach((freq,i)=>{const o=ctx.createOscillator(),g=ctx.createGain();o.type='square';o.frequency.value=freq;o.connect(g);g.connect(ctx.destination);g.gain.setValueAtTime(0,now+i*.09);g.gain.linearRampToValueAtTime(.045,now+i*.09+.015);g.gain.exponentialRampToValueAtTime(.0001,now+i*.09+.14);o.start(now+i*.09);o.stop(now+i*.09+.15)});setTimeout(()=>ctx.close(),700)}catch(_){}}
-function unlockSecret(){if(secretUnlocked)return;secretUnlocked=true;document.body.classList.add('secret-mode');const a=document.getElementById('secretAchievement');a.classList.remove('locked');a.querySelector('b').textContent='Secret Finder';a.querySelector('span').textContent='Has encontrado un secreto escondido en el portafolio.';a.querySelector('em').textContent='DESBLOQUEADO';const toast=document.getElementById('toast');toast.innerHTML='🏆 <strong>Achievement Unlocked!</strong><span>Secret Finder</span><button id="secretSound" type="button">🔊 Reproducir sonido</button>';toast.classList.add('show');document.getElementById('secretSound').addEventListener('click',playSecretSound);setTimeout(()=>toast.classList.remove('show'),7000);const overlay=document.getElementById('secretOverlay');overlay.classList.add('open');overlay.setAttribute('aria-hidden','false');let progress=0;const prog=document.getElementById('secretProgress');const loadText=document.getElementById('secretLoadingText');const timer=setInterval(()=>{progress+=10;prog.textContent=progress+'%';if(progress>=100){clearInterval(timer);loadText.textContent='SECRET AREA';setTimeout(()=>document.getElementById('secretMessage').classList.add('show'),300)}},80)}
-let exploredSections=0, galleryOpened=false, reachedEnd=false;const explored=new Set();document.querySelectorAll('section[id]').forEach(sec=>{if('IntersectionObserver'in window){new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting&&!explored.has(sec.id)){explored.add(sec.id);exploredSections++;if(exploredSections===3){document.querySelector('.secret-hint').textContent='A veces, la respuesta está en los controles. ↑ ↑ ↓ ↓ ...';}}}),{threshold:.35}).observe(sec)}});galleries.forEach(g=>g.addEventListener('click',()=>{galleryOpened=true;if(exploredSections>=3)document.querySelector('.secret-hint').textContent='A veces, la respuesta está en los controles. ↑ ↑ ↓ ↓ ...';}));window.addEventListener('scroll',()=>{if(innerHeight+scrollY>=document.documentElement.scrollHeight-40&&!reachedEnd){reachedEnd=true;document.querySelector('.footer-secret').textContent='v18.0 · ¿Todavía sigues explorando? ↑ ↑ ↓ ↓ ...';}});document.addEventListener('keydown',e=>{const key=e.key.length===1?e.key.toLowerCase():e.key;secretKeys.push(key);if(secretKeys.length>secretSequence.length)secretKeys.shift();if(secretKeys.length===secretSequence.length&&secretKeys.every((k,i)=>k===secretSequence[i])){unlockSecret();secretKeys=[]}});document.getElementById('closeSecret').addEventListener('click',()=>{const o=document.getElementById('secretOverlay');o.classList.remove('open');o.setAttribute('aria-hidden','true');document.body.classList.remove('secret-mode')});
-if(!reduceMotion){const holder=document.querySelector('.particles');for(let i=0;i<26;i++){const p=document.createElement('i');p.style.left=Math.random()*100+'%';p.style.top=Math.random()*100+'%';p.style.animationDelay=Math.random()*8+'s';p.style.animationDuration=7+Math.random()*8+'s';holder.appendChild(p)}}
+loginBtn.addEventListener('click', () => {
+  signInWithPopup(auth, provider).catch((error) => {
+    console.error("Error al iniciar sesión: ", error);
+    alert("Hubo un error al iniciar sesión. Asegúrate de habilitar Google Auth en Firebase.");
+  });
+});
 
-const questionData={
- who:{n:'01',t:'¿Quién soy?',x:'Soy Daniel Esteban Vera Fernandez, conocido profesionalmente como Discohikorybrs. Mi trayectoria comenzó en 2021 en LatamMC como Soporte y, tras semanas de trabajo, ascendí a Moderador y posteriormente a CEO. Entre 2022 y 2024 seguí adquiriendo experiencia como Developer en servidores pequeños y proyectos poco reconocidos. En 2025 retomé activamente este ámbito con nuevos proyectos y experiencias dentro de comunidades de Minecraft.'},
- pay:{n:'02',t:'¿Cobro?',x:'Generalmente no cobro por participar como Staff: mi principal objetivo es adquirir experiencia, aportar al proyecto y seguir creciendo profesionalmente. Si se trata de un proyecto grande o de un trabajo de desarrollo específico, las condiciones pueden hablarse aparte antes de comenzar.'},
- reliable:{n:'03',t:'¿Soy fiable?',x:'Cuando acepto una responsabilidad procuro cumplirla y mantener una comunicación clara con el equipo. Si surge algún problema que me impida cumplir algo, prefiero comunicarlo a tiempo y buscar una solución en lugar de desaparecer.'}
-};
-const qm=document.getElementById('questionModal');
-function openQuestion(key){const d=questionData[key];document.getElementById('questionNumber').textContent=d.n;document.getElementById('questionTitle').textContent=d.t;document.getElementById('questionText').textContent=d.x;qm.classList.add('open');qm.setAttribute('aria-hidden','false');document.body.classList.add('modal-open')}
-document.querySelectorAll('.question-card').forEach(b=>b.addEventListener('click',()=>openQuestion(b.dataset.question)));
-document.getElementById('questionClose').onclick=()=>{qm.classList.remove('open');qm.setAttribute('aria-hidden','true');document.body.classList.remove('modal-open')};qm.addEventListener('click',e=>{if(e.target===qm)document.getElementById('questionClose').click()});
+logoutBtn.addEventListener('click', () => {
+  signOut(auth);
+});
 
-const form=document.getElementById('reviewForm'), statusEl=document.getElementById('reviewStatus'), listEl=document.getElementById('reviewsList'), avgEl=document.getElementById('reviewAverage'), starsEl=document.getElementById('reviewStars'), countEl=document.getElementById('reviewCount');
+const listEl = document.getElementById('reviewsList');
+const avgEl = document.getElementById('reviewAverage');
+const starsEl = document.getElementById('reviewStars');
+const countEl = document.getElementById('reviewCount');
+const statusEl = document.getElementById('reviewStatus');
 
-function escapeHtml(v){
-  const d = document.createElement('div');
-  d.textContent = v;
-  return d.innerHTML;
-}
+function escapeHtml(v){ const d = document.createElement('div'); d.textContent = v; return d.innerHTML; }
 
 function renderReviews(docs){
   const arr = [...docs].sort((a,b) => {
-    const timeA = a.data().createdAt ? a.data().createdAt.toMillis() : Date.now();
-    const timeB = b.data().createdAt ? b.data().createdAt.toMillis() : Date.now();
-    return timeB - timeA; 
+    const tA = a.data().createdAt ? a.data().createdAt.toMillis() : Date.now();
+    const tB = b.data().createdAt ? b.data().createdAt.toMillis() : Date.now();
+    return tB - tA; 
   });
   
   let total = 0;
   listEl.innerHTML = '';
-  
-  if(!arr.length){
-    listEl.innerHTML='<div class="empty-review">Aún no hay reseñas. ¡Sé la primera persona en dejar una! ⭐</div>';
+  if(!arr.length) {
+    listEl.innerHTML='<div class="empty-review glass">Aún no hay reseñas. ¡Sé el primero! ⭐</div>';
+    return;
   }
   
   arr.forEach(s => {
     const r = s.data();
     total += Number(r.rating) || 0;
     const date = r.createdAt ? r.createdAt.toDate() : new Date();
-    
     const card = document.createElement('article');
-    card.className = 'review-card';
+    card.className = 'review-card glass';
     card.innerHTML = `
       <div class="review-top">
         <strong>${escapeHtml(r.name)}</strong>
-        <span>${'★'.repeat(Number(r.rating))}${'☆'.repeat(5-Number(r.rating))}</span>
+        <span class="stars-color">${'★'.repeat(Number(r.rating))}${'☆'.repeat(5-Number(r.rating))}</span>
       </div>
       <p>${escapeHtml(r.message)}</p>
       <small>${date.toLocaleDateString('es-CO')}</small>
@@ -261,67 +238,57 @@ function renderReviews(docs){
     listEl.appendChild(card);
   });
   
-  const avg = arr.length ? (total/arr.length) : 0;
-  avgEl.textContent = arr.length ? avg.toFixed(1) : '—';
+  const avg = total / arr.length;
+  avgEl.textContent = avg.toFixed(1);
   starsEl.textContent = '★'.repeat(Math.round(avg)) + '☆'.repeat(5-Math.round(avg));
   countEl.textContent = arr.length;
 }
 
+const reviewsRef = collection(db,'reviews');
 let isSubmitting = false;
 
-const reviewsRef = collection(db,'reviews');
 onSnapshot(reviewsRef, s => {
   renderReviews(s.docs);
-  if (!isSubmitting) {
-    statusEl.textContent = 'Reseñas sincronizadas en tiempo real ✓';
-  }
+  if(!isSubmitting) statusEl.textContent = 'Sincronizado ✓';
 }, e => {
-  console.error('Firestore read error:', e);
-  statusEl.textContent = `Error de conexión: ${e.code || e.message}`;
+  console.error(e);
+  statusEl.textContent = `Error: ${e.message}`;
 });
 
 form.addEventListener('submit', async e => {
   e.preventDefault();
-  const btn = form.querySelector('button[type=submit]');
+  if(!auth.currentUser) return;
   
-  const name = document.getElementById('reviewName').value.trim();
+  const btn = form.querySelector('button[type=submit]');
+  const name = reviewName.value;
   const rating = Number(document.getElementById('reviewRating').value);
   const message = document.getElementById('reviewMessage').value.trim();
   
-  if(name.length < 2 || name.length > 40 || message.length < 5 || message.length > 500 || rating < 1 || rating > 5){
-    statusEl.textContent = 'Revisa los datos: nombre 2–40, reseña 5–500 y puntuación 1–5.';
-    return;
-  }
-
   isSubmitting = true;
   btn.disabled = true;
   statusEl.textContent = 'Publicando...';
   
   try {
     await addDoc(reviewsRef, {
-      name,
-      rating,
-      message,
+      name, rating, message,
       createdAt: serverTimestamp(),
-      userId: auth.currentUser ? auth.currentUser.uid : "anonimo"
+      userId: auth.currentUser.uid
     });
     
-    form.reset();
+    document.getElementById('reviewMessage').value = '';
     document.getElementById('reviewRating').value = '5';
-    statusEl.style.color = 'var(--good)';
-    statusEl.textContent = '¡Reseña publicada correctamente! ⭐';
+    statusEl.style.color = '#9ee6b5';
+    statusEl.textContent = '¡Reseña publicada! ⭐';
     
     setTimeout(() => {
       btn.disabled = false;
       isSubmitting = false;
       statusEl.style.color = '';
-      statusEl.textContent = 'Reseñas sincronizadas en tiempo real ✓';
-    }, 4000);
-    
+      statusEl.textContent = 'Sincronizado ✓';
+    }, 3000);
   } catch(err) {
-    console.error('Firestore write error:', err);
     statusEl.style.color = '#ff6b6b';
-    statusEl.textContent = `No se pudo publicar. Revisa tus reglas de Firebase.`;
+    statusEl.textContent = 'Error. Revisa las reglas de seguridad.';
     btn.disabled = false;
     isSubmitting = false;
   }
