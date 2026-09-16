@@ -127,7 +127,7 @@
   </div>
 </section>
 
-<!-- MINIJUEGO ESTILO DINOSAURIO DE GOOGLE (TEMÁTICA MINECRAFT) -->
+<!-- MINIJUEGO MEJORADO (STEVE RUNNER) -->
 <section id="minijuego" class="section reveal">
   <div class="title"><span>05</span><h2 class="gradient-title">Minijuego: ¡Steve Runner!</h2></div>
   <div class="box game-box glass">
@@ -204,12 +204,17 @@
   </div>
 </section>
 
+<!-- SECCIÓN DE CONTACTO CORREGIDA Y SEPARADA -->
 <section id="contacto" class="contact reveal glass">
   <p class="eyebrow">¿TRABAJAMOS JUNTOS?</p>
   <h2 class="gradient-title">Hablemos sobre tu proyecto.</h2>
-  <p>Contactarme directamente por Discord.</p>
-  <div class="contact-row">
-    <div><small>DISCORD</small><strong>@discohikoryepb</strong><span class="contact-id">ID: 1472738833018917028</span></div>
+  <p>Contáctame directamente por Discord.</p>
+  <div class="contact-card-info">
+    <span class="contact-label">DISCORD</span>
+    <strong class="contact-user">@discohikoryepb</strong>
+    <span class="contact-id">ID: 1472738833018917028</span>
+  </div>
+  <div class="contact-btn-wrapper">
     <a class="btn primary contact-btn magnetic" href="https://discord.com/users/1472738833018917028" target="_blank">Contactarme ↗</a>
   </div>
 </section>
@@ -284,7 +289,7 @@ document.querySelectorAll('.term-btn').forEach(btn => {
   });
 });
 
-// MINIJUEGO ESTILO DINOSAURIO DE GOOGLE (MC RUNNER)
+// MINIJUEGO MEJORADO (STEVE RUNNER CON GRÁFICOS MEJORADOS)
 const canvas = document.getElementById('mcRunnerCanvas');
 const ctx = canvas.getContext('2d');
 const gameScoreEl = document.getElementById('gameScore');
@@ -296,18 +301,18 @@ let score = 0;
 let highScore = 0;
 
 let steve = {
-  x: 50,
-  y: 130,
-  width: 30,
+  x: 60,
+  y: 125,
+  width: 28,
   height: 45,
   dy: 0,
-  jumpPower: -10,
-  gravity: 0.5,
+  jumpPower: -10.5,
+  gravity: 0.55,
   grounded: true
 };
 
 let obstacles = [];
-let gameSpeed = 4;
+let gameSpeed = 5;
 let frameCount = 0;
 
 function jump() {
@@ -335,7 +340,7 @@ function startGame() {
   gameRunning = true;
   score = 0;
   obstacles = [];
-  gameSpeed = 4;
+  gameSpeed = 5;
   frameCount = 0;
   gameOverlay.style.display = 'none';
   loop();
@@ -356,35 +361,58 @@ function loop() {
   
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   
-  // Suelo estilo Minecraft
-  ctx.fillStyle = '#3b2f2f';
-  ctx.fillRect(0, 175, canvas.width, 25);
-  ctx.fillStyle = '#5c4033';
-  ctx.fillRect(0, 175, canvas.width, 4);
+  // Fondo de cielo estilo pixel art
+  ctx.fillStyle = '#0f172a';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // Nubes de fondo decorativas
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.08)';
+  ctx.fillRect(100 - (frameCount * 0.5) % 700, 30, 60, 18);
+  ctx.fillRect(350 - (frameCount * 0.5) % 700, 60, 80, 20);
+
+  // Suelo texturizado Minecraft (Pasto + Tierra)
+  ctx.fillStyle = '#2e1c0c';
+  ctx.fillRect(0, 170, canvas.width, 30);
+  ctx.fillStyle = '#4ade80'; // Pasto superior
+  ctx.fillRect(0, 170, canvas.width, 6);
 
   // Física de Steve
   steve.dy += steve.gravity;
   steve.y += steve.dy;
-  if (steve.y > 130) {
-    steve.y = 130;
+  if (steve.y > 125) {
+    steve.y = 125;
     steve.dy = 0;
     steve.grounded = true;
   }
 
-  // Dibujar a Steve (Estilo pixel art sencillo)
-  ctx.fillStyle = '#3b82f6'; // Camisa
-  ctx.fillRect(steve.x, steve.y + 15, steve.width, 20);
-  ctx.fillStyle = '#d4a373'; // Cabeza
-  ctx.fillRect(steve.x + 5, steve.y, 20, 15);
-  ctx.fillStyle = '#22c55e'; // Pantalón
-  ctx.fillRect(steve.x + 5, steve.y + 35, 20, 10);
+  // Dibujar a Steve detallado (Pixel art canvas)
+  // Cabeza
+  ctx.fillStyle = '#d4a373';
+  ctx.fillRect(steve.x + 4, steve.y, 20, 16);
+  // Pelo / Gorro
+  ctx.fillStyle = '#3d2817';
+  ctx.fillRect(steve.x + 4, steve.y, 20, 5);
+  // Ojos
+  ctx.fillStyle = '#1e1b4b';
+  ctx.fillRect(steve.x + 8, steve.y + 6, 4, 3);
+  ctx.fillRect(steve.x + 16, steve.y + 6, 4, 3);
+  // Camisa (Azul celestito Minecraft)
+  ctx.fillStyle = '#3b82f6';
+  ctx.fillRect(steve.x + 2, steve.y + 16, 24, 18);
+  // Brazos
+  ctx.fillStyle = '#d4a373';
+  ctx.fillRect(steve.x - 2, steve.y + 16, 4, 14);
+  // Pantalón (Azul marino)
+  ctx.fillStyle = '#1e3a8a';
+  ctx.fillRect(steve.x + 5, steve.y + 34, 8, 12);
+  ctx.fillRect(steve.x + 15, steve.y + 34, 8, 12);
 
-  // Generar obstáculos (Cactus / Lava)
-  if (frameCount % 90 === 0) {
+  // Generar obstáculos (Cactus detallados)
+  if (frameCount % 85 === 0) {
     obstacles.push({
       x: canvas.width,
-      y: 135,
-      width: 25,
+      y: 130,
+      width: 24,
       height: 40
     });
   }
@@ -394,18 +422,21 @@ function loop() {
     let obs = obstacles[i];
     obs.x -= gameSpeed;
     
-    // Dibujar Cactus
+    // Dibujar Cactus con textura
     ctx.fillStyle = '#15803d';
     ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
     ctx.fillStyle = '#22c55e';
-    ctx.fillRect(obs.x + 4, obs.y + 5, obs.width - 8, obs.height - 10);
+    ctx.fillRect(obs.x + 3, obs.y + 3, obs.width - 6, obs.height - 6);
+    ctx.fillStyle = '#166534'; // Detalles de espinas/rayas
+    ctx.fillRect(obs.x + 6, obs.y + 8, 3, 24);
+    ctx.fillRect(obs.x + 15, obs.y + 8, 3, 24);
 
-    // Colisión
+    // Colisión precisa
     if (
-      steve.x < obs.x + obs.width &&
-      steve.x + steve.width > obs.x &&
+      steve.x + 4 < obs.x + obs.width - 2 &&
+      steve.x + steve.width - 4 > obs.x + 2 &&
       steve.y < obs.y + obs.height &&
-      steve.y + steve.height > obs.y
+      steve.y + steve.height > obs.y + 4
     ) {
       gameOver();
       return;
@@ -414,8 +445,8 @@ function loop() {
     // Eliminar si sale de pantalla
     if (obs.x + obs.width < 0) {
       obstacles.splice(i, 1);
-      score += 5;
-      gameSpeed += 0.05; // Acelera gradualmente
+      score += 10;
+      gameSpeed += 0.08; // Incrementa dificultad gradualmente
     }
   }
 
@@ -424,13 +455,17 @@ function loop() {
   requestAnimationFrame(loop);
 }
 
-// Dibujar estado inicial estático en canvas
-ctx.fillStyle = '#3b2f2f';
-ctx.fillRect(0, 175, canvas.width, 25);
+// Dibujo inicial estático en canvas
+ctx.fillStyle = '#0f172a';
+ctx.fillRect(0, 0, canvas.width, canvas.height);
+ctx.fillStyle = '#2e1c0c';
+ctx.fillRect(0, 170, canvas.width, 30);
+ctx.fillStyle = '#4ade80';
+ctx.fillRect(0, 170, canvas.width, 6);
 ctx.fillStyle = '#3b82f6';
-ctx.fillRect(50, 145, 30, 20);
+ctx.fillRect(64, 141, 24, 18);
 ctx.fillStyle = '#d4a373';
-ctx.fillRect(55, 130, 20, 15);
+ctx.fillRect(68, 125, 20, 16);
 
 // FAQ Interactivo
 document.querySelectorAll('.faq-question').forEach(q => {
