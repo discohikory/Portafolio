@@ -1,0 +1,6 @@
+Firebase configurado para el proyecto discohikorybrs-portafolio.
+
+Firestore: default / colección reviews.
+La web usa el SDK modular desde gstatic CDN y las reglas publicadas permiten lectura y creación de reseñas con validación de campos.
+
+Si GitHub Pages sirve la web con HTTPS, el módulo de Firebase puede ejecutarse directamente.
