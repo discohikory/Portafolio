@@ -315,8 +315,12 @@ function jump() {
   }
 }
 
+// CORRECCIÓN DE ESPACIOS: Evita que el minijuego intercepte la barra espaciadora al escribir
 window.addEventListener('keydown', e => {
   if (e.code === 'Space') {
+    if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') {
+      return; 
+    }
     e.preventDefault();
     jump();
   }
@@ -453,7 +457,7 @@ document.querySelectorAll('.faq-question').forEach(q => {
 });
 
 // ==========================================
-// INTEGRACIÓN CON SUPABASE
+// INTEGRACIÓN CON SUPABASE (Tabla: 'reviews')
 // ==========================================
 const SUPABASE_URL = 'https://srxkiinmfjfjhbmkacax.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_0tZPMP4nKhsIjHg76oCUdw_0F71lkIB';
@@ -472,12 +476,13 @@ function escapeHtml(v){ const d = document.createElement('div'); d.textContent =
 
 async function cargarResenas() {
   const { data, error } = await _supabase
-    .from('reviews')
+    .from('reviews') // Apuntando a tu tabla 'reviews' con doble 'e'
     .select('*')
     .order('created_at', { ascending: false });
 
   if (error) {
     reviewsList.innerHTML = '<div class="empty-review glass">Error al cargar reseñas de Supabase.</div>';
+    console.error(error);
     return;
   }
 
@@ -513,7 +518,7 @@ reviewForm.addEventListener('submit', async e => {
   const message = document.getElementById('reviewMessage').value.trim();
 
   const { error } = await _supabase
-    .from('reviews')
+    .from('reviews') // Apuntando a tu tabla 'reviews' con doble 'e'
     .insert([{ name, message, rating }]);
 
   if (error) {
