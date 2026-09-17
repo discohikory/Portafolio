@@ -111,16 +111,15 @@
       <div class="project-body"><small>01 · MINECRAFT</small><h3>VoidCraft</h3><p>Fui <b>Founder + Lead Developer</b> en este servidor anárquico.</p></div>
     </article>
     <article class="project-card glass">
-      <div class="project-images three gallery">
+      <div class="project-images gallery">
         <img src="quarkcraft-1_2.jpg" alt="QuarkCraft 1" loading="lazy">
         <img src="quarkcraft-2_2.jpg" alt="QuarkCraft 2" loading="lazy">
-        <img src="voidcraft-3_3.jpg" alt="QuarkCraft 3" loading="lazy">
       </div>
       <div class="project-body"><small>02 · MINECRAFT</small><h3>QuarkCraft</h3><p>Participé como <b>Helper</b> con actividad y rango verificado.</p></div>
     </article>
     <article class="project-card glass">
       <div class="project-images gallery">
-        <img src="Captura de pantalla 2026-09-16 142803.png" alt="SkyLith Network" loading="lazy">
+        <img src="Captura%20de%20pantalla%202026-09-16%20142803.png" alt="SkyLith Network" loading="lazy">
       </div>
       <div class="project-body"><small>03 · MINECRAFT</small><h3>SkyLith Network</h3><p>Desempeñándome actualmente como <b>Moderador</b> de la red.</p></div>
     </article>
@@ -249,14 +248,28 @@
 
 <footer>© 2026 Daniel Esteban Vera Fernandez · <strong>Discohikorybrs</strong></footer>
 
-<!-- SDK DE SUPABASE -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- SDK DE SUPABASE (build UMD que sí expone `supabase` global) -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 
 <script>
 // Revelación al hacer scroll
-const observer = new IntersectionObserver(es => es.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); }), {threshold: 0.1});
-document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-window.addEventListener('scroll', () => { document.querySelector('.scroll-progress').style.transform = `scaleX(${scrollY / (document.documentElement.scrollHeight - innerHeight)})`; });
+const revealObserver = new IntersectionObserver(es => es.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); }), {threshold: 0.1});
+document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+window.addEventListener('scroll', () => { const p = document.querySelector('.scroll-progress'); if (p) p.style.transform = `scaleX(${scrollY / (document.documentElement.scrollHeight - innerHeight)})`; });
+
+// Resaltado de sección activa en el nav
+const navLinks = [...document.querySelectorAll('nav a')];
+const navSections = navLinks.map(a => document.querySelector(a.getAttribute('href'))).filter(Boolean);
+if (navSections.length) {
+  const navObserver = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + entry.target.id));
+      }
+    });
+  }, { rootMargin: '-35% 0px -55% 0px' });
+  navSections.forEach(s => navObserver.observe(s));
+}
 
 // Animación magnética en botones
 document.querySelectorAll('.magnetic').forEach(btn => {
@@ -324,9 +337,10 @@ function jump() {
 
 // Desactivar saltos por espacio al escribir en inputs/textarea
 window.addEventListener('keydown', e => {
-  if (e.code === 'Space') {
-    if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') {
-      return; 
+  if (e.code === 'Space' || e.code === 'Spacebar' || e.key === ' ') {
+    const tag = document.activeElement ? document.activeElement.tagName : 'BODY';
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') {
+      return;
     }
     e.preventDefault();
     jump();
@@ -424,8 +438,13 @@ const SUPABASE_URL = 'https://srxkiinmfjfjhbmkacax.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_0tZPMP4nKhsIjHg760cUdw_0F71lkIB';
 const REDIRECT_URL = 'https://discohikory.github.io/Portafolio/';
 
-const { createClient } = supabase;
-const _supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+let _supabase = null;
+if (typeof supabase === 'undefined' || !supabase.createClient) {
+  console.error('Supabase SDK no cargó. Revisa el CDN.');
+  document.getElementById('reviewsList').innerHTML = '<div class="empty-review glass">No se pudo cargar el SDK de Supabase. Revisa tu conexión.</div>';
+} else {
+  _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+}
 
 const authPanel = document.getElementById('authPanel');
 const reviewForm = document.getElementById('reviewForm');
@@ -446,12 +465,12 @@ const reviewCount = document.getElementById('reviewCount');
 const reviewStatus = document.getElementById('reviewStatus');
 
 // Control de sesión de Supabase
-_supabase.auth.onAuthStateChange((event, session) => {
+function applySession(session) {
   if (session && session.user) {
     authPanel.style.display = 'none';
     reviewForm.style.display = 'flex';
     const user = session.user;
-    const displayName = user.user_metadata?.full_name || user.email.split('@')[0];
+    const displayName = (user.user_metadata && user.user_metadata.full_name) || (user.email ? user.email.split('@')[0] : 'Usuario');
     reviewName.value = displayName;
     loggedInUser.textContent = displayName;
   } else {
@@ -459,10 +478,16 @@ _supabase.auth.onAuthStateChange((event, session) => {
     reviewForm.style.display = 'none';
     reviewName.value = "";
   }
-});
+}
+
+if (_supabase) {
+_supabase.auth.onAuthStateChange((event, session) => applySession(session));
+_supabase.auth.getSession().then(({ data }) => applySession(data.session)).catch(() => {});
+}
 
 // Login con Google usando el redirect limpio
 loginGoogleBtn.addEventListener('click', async () => {
+  if (!_supabase) { authErrorMsg.textContent = "Supabase no disponible."; return; }
   const { error } = await _supabase.auth.signInWithOAuth({
     provider: 'google',
     options: { 
@@ -474,6 +499,7 @@ loginGoogleBtn.addEventListener('click', async () => {
 
 // Login con Correo y Contraseña
 emailLoginBtn.addEventListener('click', async () => {
+  if (!_supabase) { authErrorMsg.textContent = "Supabase no disponible."; return; }
   const email = authEmailInput.value.trim();
   const password = authPasswordInput.value.trim();
   authErrorMsg.textContent = "";
@@ -491,6 +517,7 @@ emailLoginBtn.addEventListener('click', async () => {
 
 // Registro con Correo y Contraseña
 emailRegisterBtn.addEventListener('click', async () => {
+  if (!_supabase) { authErrorMsg.textContent = "Supabase no disponible."; return; }
   const email = authEmailInput.value.trim();
   const password = authPasswordInput.value.trim();
   authErrorMsg.textContent = "";
@@ -522,19 +549,22 @@ emailRegisterBtn.addEventListener('click', async () => {
 
 // Cerrar sesión
 logoutBtn.addEventListener('click', async () => {
+  if (!_supabase) return;
   await _supabase.auth.signOut();
 });
 
 function escapeHtml(v){ const d = document.createElement('div'); d.textContent = v; return d.innerHTML; }
 
 async function cargarResenas() {
+  if (!_supabase) return;
   const { data, error } = await _supabase
     .from('reviews')
     .select('*')
     .order('created_at', { ascending: false });
 
   if (error) {
-    reviewsList.innerHTML = '<div class="empty-review glass">Error al cargar reseñas de Supabase.</div>';
+    reviewsList.innerHTML = '<div class="empty-review glass">Error al cargar reseñas de Supabase. Revisa RLS y la tabla reviews.</div>';
+    console.error(error);
     return;
   }
 
@@ -549,11 +579,12 @@ async function cargarResenas() {
 
   let total = 0;
   data.forEach(r => {
-    total += Number(r.rating) || 0;
+    const rating = Math.min(5, Math.max(1, Number(r.rating) || 0));
+    total += rating;
     const date = r.created_at ? new Date(r.created_at) : new Date();
     const card = document.createElement('article');
     card.className = 'review-card glass';
-    card.innerHTML = `<div class="review-top"><strong>${escapeHtml(r.name)}</strong><span class="stars-color">${'★'.repeat(Number(r.rating))}${'☆'.repeat(5-Number(r.rating))}</span></div><p>${escapeHtml(r.message)}</p><small>${date.toLocaleDateString('es-CO')}</small>`;
+    card.innerHTML = `<div class="review-top"><strong>${escapeHtml(r.name || 'Anónimo')}</strong><span class="stars-color">${'★'.repeat(rating)}${'☆'.repeat(5-rating)}</span></div><p>${escapeHtml(r.message || '')}</p><small>${date.toLocaleDateString('es-CO')}</small>`;
     reviewsList.appendChild(card);
   });
 
@@ -565,9 +596,13 @@ async function cargarResenas() {
 
 reviewForm.addEventListener('submit', async e => {
   e.preventDefault();
-  const name = reviewName.value;
-  const rating = Number(document.getElementById('reviewRating').value);
+  if (!_supabase) { reviewStatus.textContent = 'Supabase no disponible.'; return; }
+  const name = (reviewName.value || 'Anónimo').trim().slice(0, 60);
+  const rating = Math.min(5, Math.max(1, Number(document.getElementById('reviewRating').value) || 5));
   const message = document.getElementById('reviewMessage').value.trim();
+
+  if (message.length < 3) { reviewStatus.textContent = 'Escribe al menos 3 caracteres.'; return; }
+  if (message.length > 500) { reviewStatus.textContent = 'Máximo 500 caracteres.'; return; }
 
   const { error } = await _supabase
     .from('reviews')
