@@ -66,6 +66,8 @@ pre.tpl{white-space:pre-wrap;background:rgba(0,0,0,.35);border:1px solid rgba(25
 .hist-item small{color:var(--muted)}
 .hist-item details{margin-top:6px}
 .hist-item summary{cursor:pointer;color:var(--a2)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:760px){.grid2{grid-template-columns:1fr}}
 .ai-slot{margin-top:10px}.ai-slot:empty{display:none}
 footer{text-align:center;padding:34px 20px;color:var(--muted);font-size:12px;border-top:1px solid rgba(255,255,255,.06);margin-top:30px}
 footer strong{color:#fff}
@@ -120,6 +122,17 @@ footer strong{color:#fff}
     <div id="aiQBox" style="margin-top:12px"></div>
   </div>
 </main>
+<section style="max-width:900px;margin:6px auto 0;padding:0 24px">
+  <div class="card glass">
+    <h2 style="font-family:'Space Grotesk';margin-top:0">🚀 Mis proyectos</h2>
+    <div class="grid2">
+      <div><h3 style="margin:6px 0">Portfolio principal</h3><div class="rowbtns"><a class="btn" href="https://discohikory.github.io/Portafolio/">Abrir portafolio ↗</a></div></div>
+      <div><h3 style="margin:6px 0">Staff Toolkit</h3><div class="rowbtns"><a class="btn" href="https://discohikory.github.io/Staff-Toolkit/">Abrir toolkit ↗</a></div></div>
+      <div><h3 style="margin:6px 0">Wiki de Comandos</h3><div class="rowbtns"><a class="btn" href="https://discohikory.github.io/Wiki-Comandos/">Abrir wiki ↗</a></div></div>
+      <div><h3 style="margin:6px 0">Status en vivo</h3><div class="rowbtns"><a class="btn" href="https://discohikory.github.io/Server-Status/">Abrir monitor ↗</a></div></div>
+    </div>
+  </div>
+</section>
 <footer>© 2026 Daniel Esteban Vera Fernandez · <strong>Discohikorybrs</strong> · Todos los derechos reservados.<br><small>Quiz con fines educativos. Hecho con ⛏️</small><div class="visits">👁 <span id="visitCount">…</span> visitas</div></footer>
 <script>
 const RANKS_Q=[
