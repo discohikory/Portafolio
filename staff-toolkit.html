@@ -170,7 +170,7 @@ footer strong{color:#fff}
       <div>
         <h3 style="margin:6px 0">Staff Toolkit <span class="pill">Estás aquí</span></h3>
         <p class="muted">Herramienta web para Staff de Minecraft.</p>
-        <div class="rowbtns"><a class="btn" href="https://github.com/discohikory/Staff-Toolkit" target="_blank" rel="noopener">Ver código 💻</a></div>
+        <div class="rowbtns"><button type="button" class="btn" id="shareBtn">Compartir 🔗</button></div>
       </div>
     </div>
   </div>
@@ -474,6 +474,7 @@ document.addEventListener('click',e=>{
   if(b=q('[data-areg]')){explainRule(b.dataset.areg,b);return}
   if(b=q('[data-acase]')){hintCase(Number(b.dataset.acase),b);return}
 });
+document.getElementById('shareBtn').addEventListener('click',()=>copyText(window.location.href));
 document.getElementById('aiSancGo').addEventListener('click',()=>{
   const a=ALL_ARTS.find(x=>x.id===document.getElementById('sancRule').value);
   const r=Number(document.getElementById('sancRep').value);
