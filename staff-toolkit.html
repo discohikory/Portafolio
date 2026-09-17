@@ -290,7 +290,7 @@ function paintReports(){
     return `<div class="card glass"><div>${s?`<span class="pill ${RCLS[s]}">${RSTATES[s]}</span>`:'<span class="pill st-Pendiente">Pendiente</span>'} <span class="pill">Historial: ${r.hist}</span></div>
     <h2 class="st" style="margin-top:8px">${esc(r.rep)} <small class="muted">reportado por ${esc(r.by)}</small></h2>
     <p><b>Motivo:</b> ${esc(r.reason)}</p><p><b>Evidencia:</b> ${esc(r.ev)}</p>
-    <div class="rowbtns"><button type="button" class="btn" data-rp="arch|${i}">Archivar</button><button type="button" class="btn" data-rp="pruebas|${i}">Solicitar pruebas</button><button type="button" class="btn danger" data-rp="esc|${i}">Escalar</button><button type="button" class="btn" data-arp="${i}">🔍 Análisis IA</button></div><div class="ai-slot" id="arp-${i}"></div></div>`;
+    <div class="rowbtns"><button type="button" class="btn" data-rp="arch|${i}">Archivar</button><button type="button" class="btn" data-rp="pruebas|${i}">Solicitar pruebas</button><button type="button" class="btn danger" data-rp="esc|${i}">Escalar</button><button type="button" class="btn" data-arp="${i}">🔍 Análisis IA</button></div><div class="act-out" id="ract-${i}" style="margin-top:10px"></div><div class="ai-slot" id="arp-${i}"></div></div>`;
   }).join('');
 }
 paintReports();
@@ -399,13 +399,29 @@ function hintCase(i,btn){
   const c=CASES[i];
   aiInto(document.getElementById('acase-'+i),`Da UNA pista breve (máximo 40 palabras, español neutro, SIN revelar cuál opción es correcta) para este caso de moderación en Minecraft. Situación: ${c.s}. Opciones: ${c.opts.map(o=>o.t).join(' / ')}.`,btn);
 }
+function reportAction(act,idx){
+  const slot=document.getElementById('ract-'+idx);
+  if(!slot)return;
+  const r=REPORTS[Number(idx)];
+  const date=new Date().toLocaleString('es-CO');
+  if(act==='pruebas'){
+    slot.innerHTML=`<pre class="tpl ai-pre"></pre><div class="rowbtns"><button type="button" class="btn" data-acopy="ract-${idx}">Copiar mensaje</button></div>`;
+    slot.querySelector('.ai-pre').textContent=`Hola ${r.by},\n\nEstamos revisando tu reporte contra ${r.rep} por "${r.reason}". Para continuar necesitamos evidencia concreta (capturas, video o testigos con fecha y hora). Por favor respóndenos en este mismo hilo dentro de 48 horas.\n\nAtentamente,\n${STAFF} · Equipo Staff`;
+  }else if(act==='esc'){
+    const pr=(r.hist>0||/hack|fly|doxx|amenaza/i.test(r.reason+' '+r.ev))?'Alta':'Media';
+    slot.innerHTML=`<pre class="tpl ai-pre"></pre><div class="rowbtns"><button type="button" class="btn" data-acopy="ract-${idx}">Copiar resumen</button></div>`;
+    slot.querySelector('.ai-pre').textContent=`REPORTE ESCALADO (${date})\nReportado: ${r.rep} (reportes previos: ${r.hist})\nReportante: ${r.by}\nMotivo: ${r.reason}\nEvidencia: ${r.ev}\nPrioridad sugerida: ${pr}\nDerivado a administración superior para revisión.`;
+  }else{
+    slot.innerHTML=`<small class="muted">Archivado el ${date}. Queda registrado en el historial del acusado.</small>`;
+  }
+}
 document.addEventListener('click',e=>{
   if(!e.target.closest)return;
   const q=s=>e.target.closest(s);
   let b;
   if(b=q('[data-tk]')){const s=store.get('stk_tick',{});s[b.dataset.tk]=Math.min(2,(s[b.dataset.tk]||0)+1);store.set('stk_tick',s);paintTickets();return}
   if(b=q('[data-tkr]')){const s=store.get('stk_tick',{});delete s[b.dataset.tkr];store.set('stk_tick',s);paintTickets();return}
-  if(b=q('[data-rp]')){const parts=b.dataset.rp.split('|');const s=store.get('stk_rep',{});s[parts[1]]=parts[0];store.set('stk_rep',s);paintReports();return}
+  if(b=q('[data-rp]')){const parts=b.dataset.rp.split('|');const s=store.get('stk_rep',{});s[parts[1]]=parts[0];store.set('stk_rep',s);paintReports();reportAction(parts[0],parts[1]);return}
   if(b=q('[data-h]')){const hh=store.get('stk_hist',[]);hh.splice(Number(b.dataset.h),1);store.set('stk_hist',hh);paintHist();return}
   if(b=q('[data-c]')){answerCase(b);return}
   if(b=q('[data-atk]')){suggestTicket(Number(b.dataset.atk),b);return}
