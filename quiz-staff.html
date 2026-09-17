@@ -55,6 +55,10 @@ main{max-width:900px;margin:auto;padding:24px}
 pre.tpl{white-space:pre-wrap;background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:14px;font-size:13px;font-family:inherit}
 .rowbtns{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;justify-content:center}
 .muted{color:var(--muted);font-size:13px}
+.hist-item{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.06);font-size:13px}
+.hist-item small{color:var(--muted)}
+.hist-item details{margin-top:6px}
+.hist-item summary{cursor:pointer;color:var(--a2)}
 .ai-slot{margin-top:10px}.ai-slot:empty{display:none}
 footer{text-align:center;padding:34px 20px;color:var(--muted);font-size:12px;border-top:1px solid rgba(255,255,255,.06);margin-top:30px}
 footer strong{color:#fff}
@@ -71,12 +75,19 @@ footer strong{color:#fff}
   <div class="hero-t">
     <p class="eyebrow">ENTRENAMIENTO · STAFF MINECRAFT</p>
     <h1>Quiz Staff</h1>
-    <p class="lead">20 preguntas de normativa, comandos y criterio. 30 segundos por pregunta, puntos por rapidez y rachas. Récord: <b id="bestLine">0</b> pts.</p>
+    <p class="lead">Banco de 29 preguntas: cada partida saca 12 al azar, así que repetir cambia el examen. Récord: <b id="bestLine">0</b> pts.</p>
   </div>
   <div id="screen-start" class="card glass center">
     <h2 style="font-family:'Space Grotesk';margin-top:0">Elige categoría</h2>
     <div class="chips" id="chips"></div>
     <button class="btn primary" id="startBtn" style="font-size:16px">Empezar quiz ▶</button>
+    <p class="muted">12 preguntas al azar por partida.</p>
+  </div>
+  <div class="card glass" id="histCard">
+    <h2 style="font-family:'Space Grotesk';margin-top:0">📋 Tu registro</h2>
+    <p class="muted">Guardado en este navegador: puntajes, aciertos y temas fallados.</p>
+    <div id="histList"></div>
+    <div class="rowbtns"><button class="btn" id="histClear">Limpiar registro</button></div>
   </div>
   <div id="screen-play" class="card glass" style="display:none">
     <div class="hud"><span>Pregunta <b id="qNum">1/12</b></span><span>Puntos: <b id="qScore">0</b></span><span>Racha: <b id="qStreak">0 🔥</b></span><span class="pill" id="qCat"></span></div>
@@ -125,13 +136,28 @@ const QS=[
  {c:"Comandos",q:"¿Cómo ves el dinero de otro jugador?",o:["/money ver","/bal <jugador>","/eco check","/baltop <jugador>"],a:1,w:"Es /bal <jugador>. El baltop solo muestra el ranking."},
  {c:"Comandos",q:"Un usuario necesita ayuda privada en Discord.",o:["!ticket <asunto>","!report","!help","!canal"],a:0,w:"!ticket <asunto> abre un canal privado de soporte."},
  {c:"Criterio",q:"Te equivocas y muteas 1 día en vez de 1 hora.",o:["Dejarlo, ya está hecho","Corregir, disculparte y registrarlo","Quitarlo sin decir nada","Culpar al reglamento"],a:1,w:"Los errores se corrigen en público cuando toca: corrige, discúlpate y deja constancia."},
- {c:"Criterio",q:"Dos staffs discuten una sanción en el chat público.",o:["Apoyar al de mayor rango ahí mismo","Llevarlo a privado y unificar criterio","Discutirlo en público también","Ignorarlo, no es tu problema"],a:1,w:"Todo problema interno del Staff se resuelve en privado: criterio único y luego se comunica."}
+ {c:"Criterio",q:"Dos staffs discuten una sanción en el chat público.",o:["Apoyar al de mayor rango ahí mismo","Llevarlo a privado y unificar criterio","Discutirlo en público también","Ignorarlo, no es tu problema"],a:1,w:"Todo problema interno del Staff se resuelve en privado: criterio único y luego se comunica."},
+ {c:"Normativa",q:"Publicidad de otro servidor, segunda vez.",o:["Mute 2 horas","Ban 7 días","Mute 1 día","Advertencia"],a:2,w:"Publicidad en segunda vez: mute 1 día (Art. 5.2)."},
+ {c:"Normativa",q:"Off-topic reiterado tras un aviso.",o:["No hacer nada","Mute 15 minutos","Ban 1 día","Mute 2 horas"],a:1,w:"Off-topic reiterado: mute 15 minutos (Art. 3.3)."},
+ {c:"Normativa",q:"Insultos por tercera vez.",o:["Mute 12 horas","Ban 7 días","Mute 3 días","Ban permanente"],a:2,w:"Insultos en tercera vez: mute 3 días (Art. 5.1)."},
+ {c:"Comandos",q:"¿Cómo le quitas el OP a alguien?",o:["/deop <jugador>","/unop <jugador>","/op remove <jugador>","/lp user take op"],a:0,w:"Es /deop <jugador>, lo contrario de /op."},
+ {c:"Comandos",q:"¿Comando para poner de día?",o:["/day","/time set day","/time day","/hora dia"],a:1,w:"Sintaxis completa: /time set day."},
+ {c:"Comandos",q:"¿Cómo ves los strikes de un usuario en Discord?",o:["!info","!userinfo @usuario","/whois","!stats"],a:1,w:"!userinfo muestra info y strikes del usuario."},
+ {c:"Criterio",q:"Reporte anónimo sin pruebas contra un moderador.",o:["Archivarlo por ser anónimo","Ignorarlo por ser contra un mod","Pedir pruebas y tratarlo igual","Creerle al moderador"],a:2,w:"Los reportes se evalúan igual sin importar el rango del acusado."},
+ {c:"Criterio",q:"Un streamer famoso aparece en video con hacks.",o:["Ban directo sin revisar","Sanción más fuerte por dar ejemplo","Mismo proceso y sanción que cualquiera","Avisarle en privado primero"],a:2,w:"La fama no cambia la norma: mismo proceso, misma sanción."}
 ];
 const RANKS=[[1,"Fundador 👑"],[0.8,"Admin ⚡"],[0.6,"Moderador 🛡️"],[0.4,"Helper en pruebas 🛠️"]];
 const esc=v=>{const d=document.createElement('div');d.textContent=v;return d.innerHTML};
 const store={get:(k,f)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):f}catch(e){return f}},set:(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 document.getElementById('bestLine').textContent=store.get('quiz_best',0);
 let pool=[],idx=0,score=0,streak=0,hits=0,fails=[],timer=null,timeLeft=0;
+const RUN_LEN=12;
+function renderHist(){
+  const h=store.get('quiz_hist',[]);
+  document.getElementById('histList').innerHTML=h.length?h.map(x=>`<div class="hist-item"><span><b>${x.score}</b> pts · ${x.hits}/${x.total} · ${esc(x.rank)} <small>(${esc(x.date)})</small>${x.fails&&x.fails.length?`<details><summary>Ver ${x.fails.length} falladas</summary><small>${x.fails.map(f=>esc(f)).join('<br>')}</small></details>`:''}</span></div>`).join(''):'<p class="muted">Aún no juegas ninguna partida.</p>';
+}
+document.getElementById('histClear').addEventListener('click',()=>{if(confirm('¿Limpiar registro?')){store.set('quiz_hist',[]);renderHist()}});
+renderHist();
 const CATS=["Todas","Normativa","Comandos","Criterio"];
 let catSel="Todas";
 const chipsEl=document.getElementById('chips');
@@ -142,7 +168,7 @@ chipsEl.querySelectorAll('[data-qc]').forEach(b=>b.addEventListener('click',()=>
 }));
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));const t=a[i];a[i]=a[j];a[j]=t}return a}
 document.getElementById('startBtn').addEventListener('click',()=>{
-  pool=shuffle(QS.filter(q=>catSel==="Todas"||q.c===catSel).map((q,i)=>i));
+  pool=shuffle(QS.filter(q=>catSel==="Todas"||q.c===catSel).map((q,i)=>i)).slice(0,RUN_LEN);
   if(!pool.length)return;
   idx=0;score=0;streak=0;hits=0;fails=[];
   document.getElementById('screen-start').style.display='none';
@@ -216,6 +242,8 @@ function endQuiz(){
   const best=store.get('quiz_best',0);
   if(score>best){store.set('quiz_best',score);document.getElementById('qBest').textContent='🏆 ¡Nuevo récord! Antes: '+best}
   else document.getElementById('qBest').textContent='Récord: '+best+' pts';
+  const rankEntry={date:new Date().toLocaleString('es-CO'),score,hits,total:pool.length,rank,fails:fails.slice()};
+  const hh=store.get('quiz_hist',[]);hh.unshift(rankEntry);store.set('quiz_hist',hh.slice(0,20));renderHist();
   document.getElementById('bestLine').textContent=store.get('quiz_best',0);
   document.getElementById('qAiOut').innerHTML='';
   window.scrollTo({top:0,behavior:'smooth'});
