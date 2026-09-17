@@ -46,6 +46,7 @@ main{max-width:900px;margin:auto;padding:24px}
 .bar>i{display:block;height:100%;background:linear-gradient(90deg,#8b5cf6,#fbbf24);border-radius:6px;transition:width .3s}
 .timerbar{height:6px;border-radius:4px;background:rgba(255,255,255,.08);overflow:hidden;margin:10px 0}
 .timerbar>i{display:block;height:100%;background:#34d399;width:100%}
+.visits{margin-top:10px;font-size:13px;color:var(--muted)}
 .hud{display:flex;gap:14px;flex-wrap:wrap;justify-content:space-between;font-size:13px;color:var(--muted)}
 .hud b{color:#fff}
 .pill{display:inline-block;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;border:1px solid #fbbf24;color:#fbbf24}
@@ -114,7 +115,7 @@ footer strong{color:#fff}
     <div id="aiQBox" style="margin-top:12px"></div>
   </div>
 </main>
-<footer>© 2026 Daniel Esteban Vera Fernandez · <strong>Discohikorybrs</strong> · Todos los derechos reservados.<br><small>Quiz con fines educativos. Hecho con ⛏️</small></footer>
+<footer>© 2026 Daniel Esteban Vera Fernandez · <strong>Discohikorybrs</strong> · Todos los derechos reservados.<br><small>Quiz con fines educativos. Hecho con ⛏️</small><div class="visits">👁 <span id="visitCount">…</span> visitas</div></footer>
 <script>
 const QS=[
  {c:"Normativa",q:"Un jugador hace spam por primera vez. ¿Sanción correcta?",o:["Mute 2 horas","Advertencia verbal","Ban 1 día","Mute 12 horas"],a:1,w:"El spam en primera vez es falta leve (Art. 3.1): siempre se empieza con advertencia verbal."},
@@ -316,6 +317,20 @@ EXPLICA: <por qué es correcta y por qué no las otras, máximo 60 palabras>`).t
     else renderAIQ();
   }).catch(()=>{box.innerHTML='<p class="muted">La IA no responde ahora. Intenta luego. ⚠️</p>'}).finally(()=>{btn.disabled=false});
 });
+</script>
+<script>
+(function(){
+  var el=document.getElementById('visitCount');
+  if(!el)return;
+  function fmt(n){n=Number(n)||0;return n>=1000?(n/1000).toFixed(1).replace('.',',').replace(',0','')+' mil':String(n)}
+  fetch('https://api.jsonbin.io/v3/b/6aac6a86ffd5d1605313c161/latest',{headers:{'X-Access-Key':'$2a$10$XbVd43wzBhlIfE1632782ePKNz5e/MaX25U3NJ5JRIBKtJt0ILnXC'}})
+  .then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(j){
+    var v=(j.record&&j.record.visits)||{};
+    v.quiz=(v.quiz||0)+1;
+    el.textContent=fmt(v.quiz);
+    fetch('https://api.jsonbin.io/v3/b/6aac6a86ffd5d1605313c161',{method:'PUT',headers:{'Content-Type':'application/json','X-Access-Key':'$2a$10$XbVd43wzBhlIfE1632782ePKNz5e/MaX25U3NJ5JRIBKtJt0ILnXC','X-Bin-Versioning':'false'},body:JSON.stringify({visits:v})}).catch(function(){});
+  }).catch(function(){el.textContent='—'});
+})();
 </script>
 </body>
 </html>
