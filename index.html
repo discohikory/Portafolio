@@ -143,10 +143,13 @@
 <section id="minijuego" class="section reveal">
   <div class="title"><span>05</span><h2 class="gradient-title">Minijuego: ¡Steve Adventure!</h2></div>
   <div class="box game-box glass">
-    <p>¡Atraviesa los biomas de Minecraft superando obstáculos! Presiona <strong>Espacio</strong> o haz <strong>clic</strong> para saltar.</p>
+    <p><strong>Lore:</strong> El portal del servidor se rompió y Steve quedó atrapado entre biomas. Cruza el Desierto, el Bosque, el Nether, el End y llega a la Aldea (500 pts) para reactivar el portal. Atrapa monedas 💰 para la tienda.</p>
+    <p>Presiona <strong>Espacio</strong> o haz <strong>clic</strong> para saltar. Esquiva obstáculos, atrapa monedas.</p>
     <div class="game-hud">
+      <div>Nivel: <span id="gameLevel">1/5</span></div>
       <div>Bioma: <span id="gameBiomed" class="badge-bio">Desierto 🌵</span></div>
-      <div>Puntuación: <span id="gameScore">0</span></div>
+      <div>Puntos: <span id="gameScore">0</span></div>
+      <div>Monedas: <span id="gameCoins">0</span></div>
       <div>Récord: <span id="highScore">0</span></div>
     </div>
     <div class="canvas-container">
@@ -155,6 +158,12 @@
         <span>¡Presiona ESPACIO o Clic para Iniciar Aventura! ⛏️</span>
       </div>
     </div>
+    <div class="game-shop" style="margin-top:14px; display:flex; gap:10px; flex-wrap:wrap; justify-content:center;">
+      <button type="button" class="btn magnetic" id="shopBoots">🥾 Salto alto (15 💰)</button>
+      <button type="button" class="btn magnetic" id="shopShield">🛡️ Escudo x1 (20 💰)</button>
+      <button type="button" class="btn magnetic" id="shopSkin">✨ Skin dorada (30 💰)</button>
+    </div>
+    <small id="shopStatus" style="display:block; margin-top:8px; color:var(--muted);"></small>
   </div>
 </section>
 
@@ -299,33 +308,91 @@ document.querySelectorAll('.term-btn').forEach(btn => {
   });
 });
 
-// MINIJUEGO EVOLUCIONADO (STEVE ADVENTURE)
+// MINIJUEGO: STEVE ADVENTURE (lore + 5 niveles + final + monedas + tienda)
 const canvas = document.getElementById('mcRunnerCanvas');
 const ctx = canvas.getContext('2d');
 const gameScoreEl = document.getElementById('gameScore');
 const highScoreEl = document.getElementById('highScore');
 const gameBiomedEl = document.getElementById('gameBiomed');
+const gameLevelEl = document.getElementById('gameLevel');
+const gameCoinsEl = document.getElementById('gameCoins');
 const gameOverlay = document.getElementById('gameOverlay');
+const shopStatus = document.getElementById('shopStatus');
 
+const WIN_SCORE = 500;
 let gameRunning = false;
+let gameWon = false;
 let score = 0;
-let highScore = 0;
+let coins = Number(localStorage.getItem('sa_coins') || 0);
+let highScore = Number(localStorage.getItem('sa_high') || 0);
+let shop = {};
+try { shop = JSON.parse(localStorage.getItem('sa_shop') || '{}'); } catch (e) { shop = {}; }
+let shieldCharges = 0;
 let currentBiomeIndex = 0;
 
 const biomes = [
-  { name: "Desierto 🌵", skyBg: "#1e1b4b", groundTop: "#4ade80", groundBot: "#2e1c0c", obsColor: "#15803d" },
-  { name: "Overworld (Bosque) 🌲", skyBg: "#0f172a", groundTop: "#22c55e", groundBot: "#1e293b", obsColor: "#065f46" },
-  { name: "Nether 🔥", skyBg: "#450a0a", groundTop: "#ef4444", groundBot: "#262626", obsColor: "#b91c1c" }
+  { name: "Desierto 🌵", level: "1/5", skyBg: "#1e1b4b", groundTop: "#4ade80", groundBot: "#2e1c0c", obsColor: "#15803d", obsTop: "#22c55e" },
+  { name: "Bosque 🌲", level: "2/5", skyBg: "#0f172a", groundTop: "#22c55e", groundBot: "#1e293b", obsColor: "#065f46", obsTop: "#34d399" },
+  { name: "Nether 🔥", level: "3/5", skyBg: "#450a0a", groundTop: "#ef4444", groundBot: "#262626", obsColor: "#b91c1c", obsTop: "#f97316" },
+  { name: "End 🌌", level: "4/5", skyBg: "#17082e", groundTop: "#c4b5fd", groundBot: "#0b0b14", obsColor: "#6d28d9", obsTop: "#e9d5ff" },
+  { name: "Aldea 🏡", level: "5/5", skyBg: "#082f49", groundTop: "#fbbf24", groundBot: "#3f2d0c", obsColor: "#92400e", obsTop: "#fde68a" }
 ];
+
+function saveMeta() {
+  try {
+    localStorage.setItem('sa_coins', String(coins));
+    localStorage.setItem('sa_high', String(highScore));
+    localStorage.setItem('sa_shop', JSON.stringify(shop));
+  } catch (e) {}
+}
+function refreshShopUI() {
+  gameCoinsEl.textContent = coins;
+  highScoreEl.textContent = highScore;
+  const b = document.getElementById('shopBoots');
+  const s = document.getElementById('shopShield');
+  const k = document.getElementById('shopSkin');
+  if (b) b.textContent = shop.boots ? (shop.bootsOn ? '🥾 Salto alto: ON (clic off)' : '🥾 Salto alto: OFF (clic on)') : '🥾 Salto alto (15 💰)';
+  if (k) k.textContent = shop.skin ? (shop.skinOn ? '✨ Skin dorada: ON' : '✨ Skin dorada: OFF') : '✨ Skin dorada (30 💰)';
+  if (s) s.textContent = '🛡️ Escudo x' + shieldCharges + ' (20 💰)';
+}
+document.getElementById('shopBoots').addEventListener('click', () => {
+  if (!shop.boots) {
+    if (coins < 15) { shopStatus.textContent = 'Te faltan monedas para las botas.'; return; }
+    coins -= 15; shop.boots = true; shop.bootsOn = true;
+    shopStatus.textContent = '¡Botas compradas! Salto mejorado.';
+  } else { shop.bootsOn = !shop.bootsOn; shopStatus.textContent = shop.bootsOn ? 'Salto alto activado.' : 'Salto alto desactivado.'; }
+  saveMeta(); refreshShopUI();
+});
+document.getElementById('shopShield').addEventListener('click', () => {
+  if (coins < 20) { shopStatus.textContent = 'Te faltan monedas para el escudo.'; return; }
+  if (shieldCharges >= 3) { shopStatus.textContent = 'Máximo 3 escudos por partida.'; return; }
+  coins -= 20; shieldCharges += 1;
+  shopStatus.textContent = '¡Escudo listo! Te salva de 1 golpe.';
+  saveMeta(); refreshShopUI();
+});
+document.getElementById('shopSkin').addEventListener('click', () => {
+  if (!shop.skin) {
+    if (coins < 30) { shopStatus.textContent = 'Te faltan monedas para la skin.'; return; }
+    coins -= 30; shop.skin = true; shop.skinOn = true;
+    shopStatus.textContent = '¡Skin dorada desbloqueada!';
+  } else { shop.skinOn = !shop.skinOn; shopStatus.textContent = shop.skinOn ? 'Skin dorada puesta.' : 'Skin normal.'; }
+  saveMeta(); refreshShopUI();
+});
 
 let steve = { x: 60, y: 125, width: 28, height: 45, dy: 0, jumpPower: -10.5, gravity: 0.55, grounded: true };
 let obstacles = [];
+let coinsArr = [];
+let particles = [];
 let gameSpeed = 5;
 let frameCount = 0;
 
 function jump() {
   if (!gameRunning) { startGame(); return; }
-  if (steve.grounded) { steve.dy = steve.jumpPower; steve.grounded = false; }
+  if (steve.grounded) {
+    steve.dy = (shop.boots && shop.bootsOn) ? -12.5 : -10.5;
+    steve.grounded = false;
+    for (let i = 0; i < 6; i++) particles.push({ x: steve.x + 14, y: 168, vx: (Math.random() - 0.5) * 2, vy: -Math.random() * 2, life: 20 });
+  }
 }
 
 // Desactivar saltos por espacio al escribir en inputs/textarea
@@ -344,27 +411,47 @@ canvas.addEventListener('click', jump);
 gameOverlay.addEventListener('click', jump);
 
 function startGame() {
-  gameRunning = true; score = 0; obstacles = []; gameSpeed = 5; frameCount = 0; currentBiomeIndex = 0;
+  gameRunning = true; gameWon = false;
+  score = 0; obstacles = []; coinsArr = []; particles = [];
+  gameSpeed = 5; frameCount = 0; currentBiomeIndex = 0;
+  shieldCharges = 0;
   gameOverlay.style.display = 'none';
+  refreshShopUI();
   loop();
 }
 
-function gameOver() {
-  gameRunning = false;
-  if (score > highScore) { highScore = score; highScoreEl.textContent = highScore; }
+function endRun(won) {
+  gameRunning = false; gameWon = won;
+  if (score > highScore) { highScore = score; }
+  saveMeta(); refreshShopUI();
   gameOverlay.style.display = 'grid';
-  gameOverlay.querySelector('span').textContent = `¡Game Over! Puntuación: ${score} - Clic para reiniciar`;
+  gameOverlay.querySelector('span').textContent = won
+    ? `🏆 ¡Portal reactivado! Llegaste a la Aldea con ${score} pts y ${coins} 💰 - Clic para jugar otra vez`
+    : `¡Game Over! Puntuación: ${score} - Clic para reiniciar`;
 }
+
+function gameOver() { endRun(false); }
+function gameWin() { endRun(true); }
 
 function loop() {
   if (!gameRunning) return;
-  currentBiomeIndex = Math.floor(score / 100) % biomes.length;
+  if (score >= WIN_SCORE) { gameWin(); return; }
+  currentBiomeIndex = Math.min(biomes.length - 1, Math.floor(score / 100));
   let activeBiome = biomes[currentBiomeIndex];
   gameBiomedEl.textContent = activeBiome.name;
+  gameLevelEl.textContent = activeBiome.level;
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.fillStyle = activeBiome.skyBg;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // Luna/portal según nivel
+  ctx.fillStyle = currentBiomeIndex === 4 ? '#fde68a' : 'rgba(255,255,255,0.85)';
+  ctx.beginPath(); ctx.arc(520, 35, currentBiomeIndex === 4 ? 16 : 10, 0, Math.PI * 2); ctx.fill();
+  if (currentBiomeIndex === 3) {
+    ctx.strokeStyle = '#a78bfa'; ctx.lineWidth = 3;
+    ctx.strokeRect(500, 20, 40, 30);
+  }
 
   ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
   ctx.fillRect(120 - (frameCount * 0.6) % 700, 25, 50, 15);
@@ -379,33 +466,88 @@ function loop() {
   steve.y += steve.dy;
   if (steve.y > 125) { steve.y = 125; steve.dy = 0; steve.grounded = true; }
 
+  // Steve animado: corre con piernas alternas, salta recogido
+  const runPhase = steve.grounded ? Math.floor(frameCount / 6) % 2 : 0;
+  const shirt = (shop.skin && shop.skinOn) ? '#fbbf24' : '#3b82f6';
+  const pants = (shop.skin && shop.skinOn) ? '#92400e' : '#1e3a8a';
+  if (shieldCharges > 0) {
+    ctx.strokeStyle = 'rgba(125,211,252,0.9)'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(steve.x + 14, steve.y + 22, 26, 0, Math.PI * 2); ctx.stroke();
+  }
   ctx.fillStyle = '#d4a373'; ctx.fillRect(steve.x + 4, steve.y, 20, 16);
   ctx.fillStyle = '#3d2817'; ctx.fillRect(steve.x + 4, steve.y, 20, 5);
   ctx.fillStyle = '#1e1b4b'; ctx.fillRect(steve.x + 8, steve.y + 6, 4, 3); ctx.fillRect(steve.x + 16, steve.y + 6, 4, 3);
-  ctx.fillStyle = '#3b82f6'; ctx.fillRect(steve.x + 2, steve.y + 16, 24, 18);
+  ctx.fillStyle = shirt; ctx.fillRect(steve.x + 2, steve.y + 16, 24, 18);
   ctx.fillStyle = '#d4a373'; ctx.fillRect(steve.x - 2, steve.y + 16, 4, 14);
-  ctx.fillStyle = '#1e3a8a'; ctx.fillRect(steve.x + 5, steve.y + 34, 8, 12); ctx.fillRect(steve.x + 15, steve.y + 34, 8, 12);
+  ctx.fillStyle = pants;
+  if (steve.grounded) {
+    if (runPhase === 0) { ctx.fillRect(steve.x + 5, steve.y + 34, 8, 12); ctx.fillRect(steve.x + 15, steve.y + 34, 8, 12); }
+    else { ctx.fillRect(steve.x + 3, steve.y + 34, 8, 12); ctx.fillRect(steve.x + 17, steve.y + 34, 8, 12); }
+  } else { ctx.fillRect(steve.x + 5, steve.y + 32, 8, 10); ctx.fillRect(steve.x + 15, steve.y + 32, 8, 10); }
+
+  // Partículas
+  for (let i = particles.length - 1; i >= 0; i--) {
+    const p = particles[i];
+    p.x += p.vx; p.y += p.vy; p.vy += 0.15; p.life--;
+    ctx.fillStyle = 'rgba(255,255,255,0.5)';
+    ctx.fillRect(p.x, p.y, 3, 3);
+    if (p.life <= 0) particles.splice(i, 1);
+  }
+  if (steve.grounded && frameCount % 8 === 0) particles.push({ x: steve.x + 4, y: 168, vx: -1.5, vy: -0.5, life: 12 });
 
   if (frameCount % Math.max(50, 85 - Math.floor(score / 50)) === 0) {
     obstacles.push({ x: canvas.width, y: 130, width: 24, height: 40 });
+  }
+  if (frameCount % 110 === 0) {
+    coinsArr.push({ x: canvas.width, y: 90 + Math.random() * 40, r: 8, taken: false });
   }
 
   for (let i = obstacles.length - 1; i >= 0; i--) {
     let obs = obstacles[i];
     obs.x -= gameSpeed;
     ctx.fillStyle = activeBiome.obsColor; ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
+    ctx.fillStyle = activeBiome.obsTop; ctx.fillRect(obs.x, obs.y, obs.width, 8);
 
     if (steve.x + 4 < obs.x + obs.width - 2 && steve.x + steve.width - 4 > obs.x + 2 && steve.y < obs.y + obs.height && steve.y + steve.height > obs.y + 4) {
+      if (shieldCharges > 0) {
+        shieldCharges -= 1;
+        obstacles.splice(i, 1);
+        shopStatus.textContent = '¡Escudo usado! Te quedan x' + shieldCharges + '.';
+        refreshShopUI();
+        continue;
+      }
       gameOver(); return;
     }
 
     if (obs.x + obs.width < 0) { obstacles.splice(i, 1); score += 10; gameSpeed += 0.1; }
   }
 
+  // Monedas
+  for (let i = coinsArr.length - 1; i >= 0; i--) {
+    const c = coinsArr[i];
+    c.x -= gameSpeed;
+    const bob = Math.sin((frameCount + i * 20) / 10) * 2;
+    ctx.fillStyle = '#fbbf24';
+    ctx.beginPath(); ctx.arc(c.x, c.y + bob, c.r, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#92400e';
+    ctx.fillRect(c.x - 2, c.y + bob - 4, 4, 8);
+    const cx = steve.x + 14, cy = steve.y + 22;
+    if (Math.hypot(cx - c.x, cy - (c.y + bob)) < 24) {
+      coinsArr.splice(i, 1);
+      coins += 1; score += 25;
+      for (let k = 0; k < 8; k++) particles.push({ x: c.x, y: c.y, vx: (Math.random() - 0.5) * 3, vy: -Math.random() * 3, life: 18 });
+      saveMeta(); refreshShopUI();
+      continue;
+    }
+    if (c.x < -20) coinsArr.splice(i, 1);
+  }
+
   gameScoreEl.textContent = score;
   frameCount++;
   requestAnimationFrame(loop);
 }
+
+refreshShopUI();
 
 // Dibujo estático inicial
 ctx.fillStyle = '#1e1b4b'; ctx.fillRect(0, 0, canvas.width, canvas.height);
