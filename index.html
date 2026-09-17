@@ -169,19 +169,42 @@
   </div>
 </section>
 
-<!-- SECCIÓN DE RESEÑAS CON SUPABASE -->
+<!-- SECCIÓN DE RESEÑAS CON AUTENTICACIÓN DE SUPABASE -->
 <section id="resenas" class="section reveal">
   <div class="title"><span>07</span><h2 class="gradient-title">Reseñas</h2></div>
   <div class="reviews-head">
     <div class="review-score"><strong id="reviewAverage">—</strong><span id="reviewStars" class="stars">☆☆☆☆☆</span><small><span id="reviewCount">0</span> reseñas globales</small></div>
-    <div><p>¿Has trabajado conmigo? Deja tu opinión directamente aquí abajo.</p></div>
+    <div><p>Inicia sesión con Google o correo para dejar tu opinión sincronizada.</p></div>
   </div>
   
   <div class="review-layout">
-    <form id="reviewForm" class="box review-form glass" style="width: 100%;">
-      <label>Tu Nombre / Alias
-        <input type="text" id="reviewName" required placeholder="Ej. TuNombre o Nick">
-      </label>
+    <!-- Panel de Autenticación -->
+    <div id="authPanel" class="box auth-panel glass">
+      <h3>Acceso a Reseñas</h3>
+      <p>Elige tu método preferido para identificarte y comentar:</p>
+      
+      <button id="loginGoogleBtn" class="btn primary login-btn magnetic" style="width:100%; justify-content:center; margin-bottom:12px;">Continuar con Google</button>
+      
+      <div class="auth-divider"><span>O usa correo electrónico</span></div>
+
+      <div class="email-auth-form">
+        <input type="email" id="authEmail" placeholder="Tu correo electrónico" required>
+        <input type="password" id="authPassword" placeholder="Contraseña (mín. 6 caracteres)" required>
+        <div class="auth-buttons-grid" style="display: flex; gap: 10px; margin-top: 10px;">
+          <button type="button" id="emailLoginBtn" class="btn magnetic" style="flex:1;">Iniciar Sesión</button>
+          <button type="button" id="emailRegisterBtn" class="btn primary magnetic" style="flex:1;">Registrarse</button>
+        </div>
+        <small id="authErrorMsg" class="auth-error" style="color: #ef4444; display:block; margin-top:8px;"></small>
+      </div>
+    </div>
+
+    <!-- Formulario de Reseñas (Oculto hasta iniciar sesión) -->
+    <form id="reviewForm" class="box review-form glass" style="display: none;">
+      <div class="user-info-bar" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+        <span>Conectado como: <b id="loggedInUser">Usuario</b></span>
+        <button type="button" id="logoutBtn" class="logout-link" style="background: none; border: none; color: #ef4444; cursor: pointer; text-decoration: underline;">Cerrar sesión</button>
+      </div>
+      <input type="hidden" id="reviewName">
       <label>Puntuación
         <select id="reviewRating" required>
           <option value="5">★★★★★ — 5 Estrellas</option>
@@ -195,7 +218,7 @@
         <textarea id="reviewMessage" maxlength="500" minlength="3" required placeholder="Cuéntame brevemente cómo fue trabajar conmigo..."></textarea>
       </label>
       <button class="btn primary magnetic" type="submit">Publicar reseña ↗</button>
-      <small id="reviewStatus" class="review-status">Sincronizado globalmente con Supabase.</small>
+      <small id="reviewStatus" class="review-status">Sincronizado globalmente con Supabase Auth.</small>
     </form>
     
     <div id="reviewsList" class="reviews-list"><div class="empty-review glass">Cargando reseñas de la base de datos…</div></div>
@@ -270,7 +293,7 @@ document.querySelectorAll('.term-btn').forEach(btn => {
   });
 });
 
-// MINIJUEGO EVOLUCIONADO (STEVE ADVENTURE CON BIOMAS Y NIVELES)
+// MINIJUEGO EVOLUCIONADO (STEVE ADVENTURE)
 const canvas = document.getElementById('mcRunnerCanvas');
 const ctx = canvas.getContext('2d');
 const gameScoreEl = document.getElementById('gameScore');
@@ -289,33 +312,17 @@ const biomes = [
   { name: "Nether 🔥", skyBg: "#450a0a", groundTop: "#ef4444", groundBot: "#262626", obsColor: "#b91c1c" }
 ];
 
-let steve = {
-  x: 60,
-  y: 125,
-  width: 28,
-  height: 45,
-  dy: 0,
-  jumpPower: -10.5,
-  gravity: 0.55,
-  grounded: true
-};
-
+let steve = { x: 60, y: 125, width: 28, height: 45, dy: 0, jumpPower: -10.5, gravity: 0.55, grounded: true };
 let obstacles = [];
 let gameSpeed = 5;
 let frameCount = 0;
 
 function jump() {
-  if (!gameRunning) {
-    startGame();
-    return;
-  }
-  if (steve.grounded) {
-    steve.dy = steve.jumpPower;
-    steve.grounded = false;
-  }
+  if (!gameRunning) { startGame(); return; }
+  if (steve.grounded) { steve.dy = steve.jumpPower; steve.grounded = false; }
 }
 
-// CORRECCIÓN DE ESPACIOS: Evita que el minijuego intercepte la barra espaciadora al escribir
+// Espacios permitidos en inputs/textareas
 window.addEventListener('keydown', e => {
   if (e.code === 'Space') {
     if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') {
@@ -330,35 +337,25 @@ canvas.addEventListener('click', jump);
 gameOverlay.addEventListener('click', jump);
 
 function startGame() {
-  gameRunning = true;
-  score = 0;
-  obstacles = [];
-  gameSpeed = 5;
-  frameCount = 0;
-  currentBiomeIndex = 0;
+  gameRunning = true; score = 0; obstacles = []; gameSpeed = 5; frameCount = 0; currentBiomeIndex = 0;
   gameOverlay.style.display = 'none';
   loop();
 }
 
 function gameOver() {
   gameRunning = false;
-  if (score > highScore) {
-    highScore = score;
-    highScoreEl.textContent = highScore;
-  }
+  if (score > highScore) { highScore = score; highScoreEl.textContent = highScore; }
   gameOverlay.style.display = 'grid';
   gameOverlay.querySelector('span').textContent = `¡Game Over! Puntuación: ${score} - Clic para reiniciar`;
 }
 
 function loop() {
   if (!gameRunning) return;
-  
   currentBiomeIndex = Math.floor(score / 100) % biomes.length;
   let activeBiome = biomes[currentBiomeIndex];
   gameBiomedEl.textContent = activeBiome.name;
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  
   ctx.fillStyle = activeBiome.skyBg;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -373,60 +370,29 @@ function loop() {
 
   steve.dy += steve.gravity;
   steve.y += steve.dy;
-  if (steve.y > 125) {
-    steve.y = 125;
-    steve.dy = 0;
-    steve.grounded = true;
-  }
+  if (steve.y > 125) { steve.y = 125; steve.dy = 0; steve.grounded = true; }
 
-  ctx.fillStyle = '#d4a373';
-  ctx.fillRect(steve.x + 4, steve.y, 20, 16);
-  ctx.fillStyle = '#3d2817';
-  ctx.fillRect(steve.x + 4, steve.y, 20, 5);
-  ctx.fillStyle = '#1e1b4b';
-  ctx.fillRect(steve.x + 8, steve.y + 6, 4, 3);
-  ctx.fillRect(steve.x + 16, steve.y + 6, 4, 3);
-  ctx.fillStyle = '#3b82f6';
-  ctx.fillRect(steve.x + 2, steve.y + 16, 24, 18);
-  ctx.fillStyle = '#d4a373';
-  ctx.fillRect(steve.x - 2, steve.y + 16, 4, 14);
-  ctx.fillStyle = '#1e3a8a';
-  ctx.fillRect(steve.x + 5, steve.y + 34, 8, 12);
-  ctx.fillRect(steve.x + 15, steve.y + 34, 8, 12);
+  ctx.fillStyle = '#d4a373'; ctx.fillRect(steve.x + 4, steve.y, 20, 16);
+  ctx.fillStyle = '#3d2817'; ctx.fillRect(steve.x + 4, steve.y, 20, 5);
+  ctx.fillStyle = '#1e1b4b'; ctx.fillRect(steve.x + 8, steve.y + 6, 4, 3); ctx.fillRect(steve.x + 16, steve.y + 6, 4, 3);
+  ctx.fillStyle = '#3b82f6'; ctx.fillRect(steve.x + 2, steve.y + 16, 24, 18);
+  ctx.fillStyle = '#d4a373'; ctx.fillRect(steve.x - 2, steve.y + 16, 4, 14);
+  ctx.fillStyle = '#1e3a8a'; ctx.fillRect(steve.x + 5, steve.y + 34, 8, 12); ctx.fillRect(steve.x + 15, steve.y + 34, 8, 12);
 
   if (frameCount % Math.max(50, 85 - Math.floor(score / 50)) === 0) {
-    obstacles.push({
-      x: canvas.width,
-      y: 130,
-      width: 24,
-      height: 40
-    });
+    obstacles.push({ x: canvas.width, y: 130, width: 24, height: 40 });
   }
 
   for (let i = obstacles.length - 1; i >= 0; i--) {
     let obs = obstacles[i];
     obs.x -= gameSpeed;
-    
-    ctx.fillStyle = activeBiome.obsColor;
-    ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
-    ctx.fillStyle = 'rgba(255,255,255,0.15)';
-    ctx.fillRect(obs.x + 3, obs.y + 3, obs.width - 6, obs.height - 6);
+    ctx.fillStyle = activeBiome.obsColor; ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
 
-    if (
-      steve.x + 4 < obs.x + obs.width - 2 &&
-      steve.x + steve.width - 4 > obs.x + 2 &&
-      steve.y < obs.y + obs.height &&
-      steve.y + steve.height > obs.y + 4
-    ) {
-      gameOver();
-      return;
+    if (steve.x + 4 < obs.x + obs.width - 2 && steve.x + steve.width - 4 > obs.x + 2 && steve.y < obs.y + obs.height && steve.y + steve.height > obs.y + 4) {
+      gameOver(); return;
     }
 
-    if (obs.x + obs.width < 0) {
-      obstacles.splice(i, 1);
-      score += 10;
-      gameSpeed += 0.1;
-    }
+    if (obs.x + obs.width < 0) { obstacles.splice(i, 1); score += 10; gameSpeed += 0.1; }
   }
 
   gameScoreEl.textContent = score;
@@ -434,19 +400,14 @@ function loop() {
   requestAnimationFrame(loop);
 }
 
-// Dibujo inicial estático en canvas
-ctx.fillStyle = '#1e1b4b';
-ctx.fillRect(0, 0, canvas.width, canvas.height);
-ctx.fillStyle = '#2e1c0c';
-ctx.fillRect(0, 170, canvas.width, 30);
-ctx.fillStyle = '#4ade80';
-ctx.fillRect(0, 170, canvas.width, 6);
-ctx.fillStyle = '#3b82f6';
-ctx.fillRect(64, 141, 24, 18);
-ctx.fillStyle = '#d4a373';
-ctx.fillRect(68, 125, 20, 16);
+// Dibujo estático inicial
+ctx.fillStyle = '#1e1b4b'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+ctx.fillStyle = '#2e1c0c'; ctx.fillRect(0, 170, canvas.width, 30);
+ctx.fillStyle = '#4ade80'; ctx.fillRect(0, 170, canvas.width, 6);
+ctx.fillStyle = '#3b82f6'; ctx.fillRect(64, 141, 24, 18);
+ctx.fillStyle = '#d4a373'; ctx.fillRect(68, 125, 20, 16);
 
-// FAQ Interactivo
+// FAQ
 document.querySelectorAll('.faq-question').forEach(q => {
   q.addEventListener('click', () => {
     const item = q.parentElement;
@@ -457,7 +418,7 @@ document.querySelectorAll('.faq-question').forEach(q => {
 });
 
 // ==========================================
-// INTEGRACIÓN CON SUPABASE (Tabla: 'reviews')
+// SUPABASE AUTH & REVIEWS
 // ==========================================
 const SUPABASE_URL = 'https://srxkiinmfjfjhbmkacax.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_0tZPMP4nKhsIjHg76oCUdw_0F71lkIB';
@@ -465,24 +426,93 @@ const SUPABASE_ANON_KEY = 'sb_publishable_0tZPMP4nKhsIjHg76oCUdw_0F71lkIB';
 const { createClient } = supabase;
 const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+const authPanel = document.getElementById('authPanel');
 const reviewForm = document.getElementById('reviewForm');
+const loginGoogleBtn = document.getElementById('loginGoogleBtn');
+const emailLoginBtn = document.getElementById('emailLoginBtn');
+const emailRegisterBtn = document.getElementById('emailRegisterBtn');
+const logoutBtn = document.getElementById('logoutBtn');
+const reviewName = document.getElementById('reviewName');
+const loggedInUser = document.getElementById('loggedInUser');
+const authEmailInput = document.getElementById('authEmail');
+const authPasswordInput = document.getElementById('authPassword');
+const authErrorMsg = document.getElementById('authErrorMsg');
+
 const reviewsList = document.getElementById('reviewsList');
 const reviewAverage = document.getElementById('reviewAverage');
 const reviewStars = document.getElementById('reviewStars');
 const reviewCount = document.getElementById('reviewCount');
 const reviewStatus = document.getElementById('reviewStatus');
 
+// Control de estado de autenticación de Supabase
+_supabase.auth.onAuthStateChange((event, session) => {
+  if (session && session.user) {
+    authPanel.style.display = 'none';
+    reviewForm.style.display = 'flex';
+    const user = session.user;
+    const displayName = user.user_metadata?.full_name || user.email.split('@')[0];
+    reviewName.value = displayName;
+    loggedInUser.textContent = displayName;
+  } else {
+    authPanel.style.display = 'flex';
+    reviewForm.style.display = 'none';
+    reviewName.value = "";
+  }
+});
+
+// Login con Google
+loginGoogleBtn.addEventListener('click', async () => {
+  const { error } = await _supabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: { redirectTo: window.location.href }
+  });
+  if (error) authErrorMsg.textContent = "Error al iniciar con Google: " + error.message;
+});
+
+// Login con Correo
+emailLoginBtn.addEventListener('click', async () => {
+  const email = authEmailInput.value.trim();
+  const password = authPasswordInput.value.trim();
+  if (!email || !password) { authErrorMsg.textContent = "Completa correo y contraseña."; return; }
+  
+  const { error } = await _supabase.auth.signInWithPassword({ email, password });
+  if (error) authErrorMsg.textContent = "Correo o contraseña incorrectos.";
+});
+
+// Registro con Correo
+emailRegisterBtn.addEventListener('click', async () => {
+  const email = authEmailInput.value.trim();
+  const password = authPasswordInput.value.trim();
+  if (!email || !password) { authErrorMsg.textContent = "Completa correo y contraseña."; return; }
+  if (password.length < 6) { authErrorMsg.textContent = "La contraseña debe tener al menos 6 caracteres."; return; }
+
+  const { error } = await _supabase.auth.signUp({ 
+    email, 
+    password,
+    options: { data: { full_name: email.split('@')[0] } }
+  });
+  if (error) {
+    authErrorMsg.textContent = error.message;
+  } else {
+    alert('¡Registro exitoso! Revisa tu correo o inicia sesión directamente.');
+  }
+});
+
+// Cerrar sesión
+logoutBtn.addEventListener('click', async () => {
+  await _supabase.auth.signOut();
+});
+
 function escapeHtml(v){ const d = document.createElement('div'); d.textContent = v; return d.innerHTML; }
 
 async function cargarResenas() {
   const { data, error } = await _supabase
-    .from('reviews') // Apuntando a tu tabla 'reviews' con doble 'e'
+    .from('reviews')
     .select('*')
     .order('created_at', { ascending: false });
 
   if (error) {
     reviewsList.innerHTML = '<div class="empty-review glass">Error al cargar reseñas de Supabase.</div>';
-    console.error(error);
     return;
   }
 
@@ -513,12 +543,12 @@ async function cargarResenas() {
 
 reviewForm.addEventListener('submit', async e => {
   e.preventDefault();
-  const name = document.getElementById('reviewName').value.trim();
+  const name = reviewName.value;
   const rating = Number(document.getElementById('reviewRating').value);
   const message = document.getElementById('reviewMessage').value.trim();
 
   const { error } = await _supabase
-    .from('reviews') // Apuntando a tu tabla 'reviews' con doble 'e'
+    .from('reviews')
     .insert([{ name, message, rating }]);
 
   if (error) {
@@ -527,7 +557,6 @@ reviewForm.addEventListener('submit', async e => {
   } else {
     reviewStatus.textContent = '¡Reseña publicada con éxito! ⭐';
     document.getElementById('reviewMessage').value = '';
-    document.getElementById('reviewName').value = '';
     cargarResenas();
   }
 });
