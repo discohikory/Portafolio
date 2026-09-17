@@ -52,6 +52,7 @@ textarea{min-height:110px;resize:vertical}
 .rowbtns{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
 .ai-slot{margin-top:10px}
 .ai-slot:empty{display:none}
+.visits{margin-top:10px;font-size:13px;color:var(--muted)}
 /* ===== Decoración visual ===== */
 .bg-grid{position:fixed;inset:0;z-index:-2;opacity:.14;background-image:linear-gradient(#293354 1px,transparent 1px),linear-gradient(90deg,#293354 1px,transparent 1px);background-size:44px 44px}
 .glow{position:fixed;border-radius:50%;filter:blur(90px);z-index:-1;pointer-events:none;opacity:.55}
@@ -206,7 +207,7 @@ footer strong{color:#fff}
     </div>
   </div>
 </section>
-<footer>© 2026 Daniel Esteban Vera Fernandez · <strong>Discohikorybrs</strong> · Todos los derechos reservados.<br><small>Staff Toolkit es una herramienta demostrativa con normativa ficticia. Hecho con ⛏️</small></footer>
+<footer>© 2026 Daniel Esteban Vera Fernandez · <strong>Discohikorybrs</strong> · Todos los derechos reservados.<br><small>Staff Toolkit es una herramienta demostrativa con normativa ficticia. Hecho con ⛏️</small><div class="visits">👁 <span id="visitCount">…</span> visitas</div></footer>
 
 <script>
 // ============ DATOS (normativa ficticia) ============
@@ -555,6 +556,20 @@ document.addEventListener('mousemove',e=>{
     s.style.animationDelay=(-Math.random()*14)+'s';
     w.appendChild(s);
   }
+})();
+</script>
+<script>
+(function(){
+  var el=document.getElementById('visitCount');
+  if(!el)return;
+  function fmt(n){n=Number(n)||0;return n>=1000?(n/1000).toFixed(1).replace('.',',').replace(',0','')+' mil':String(n)}
+  fetch('https://api.jsonbin.io/v3/b/6aac6a86ffd5d1605313c161/latest',{headers:{'X-Access-Key':'$2a$10$XbVd43wzBhlIfE1632782ePKNz5e/MaX25U3NJ5JRIBKtJt0ILnXC'}})
+  .then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(j){
+    var v=(j.record&&j.record.visits)||{};
+    v.toolkit=(v.toolkit||0)+1;
+    el.textContent=fmt(v.toolkit);
+    fetch('https://api.jsonbin.io/v3/b/6aac6a86ffd5d1605313c161',{method:'PUT',headers:{'Content-Type':'application/json','X-Access-Key':'$2a$10$XbVd43wzBhlIfE1632782ePKNz5e/MaX25U3NJ5JRIBKtJt0ILnXC','X-Bin-Versioning':'false'},body:JSON.stringify({visits:v})}).catch(function(){});
+  }).catch(function(){el.textContent='—'});
 })();
 </script>
 </body>
