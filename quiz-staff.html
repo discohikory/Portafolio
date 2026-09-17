@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Quiz Staff: trivia para entrenar criterio de moderación en servidores Minecraft.">
+<title>Quiz Staff — Discohikorybrs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&family=Press+Start+2P&display=swap" rel="stylesheet">
+<script src="https://js.puter.com/v2/"></script>
+<style>
+:root{--bg:#04060d;--panel:rgba(15,20,35,.55);--line:rgba(139,92,246,.2);--text:#f5f7ff;--muted:#9da8c5;--a:#8b5cf6;--a2:#b39aff}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,sans-serif;line-height:1.6}
+.bg-grid{position:fixed;inset:0;z-index:-2;opacity:.14;background-image:linear-gradient(#293354 1px,transparent 1px),linear-gradient(90deg,#293354 1px,transparent 1px);background-size:44px 44px}
+.glow{position:fixed;border-radius:50%;filter:blur(90px);z-index:-1;pointer-events:none;opacity:.55}
+.glow.g1{width:420px;height:420px;top:-120px;right:-100px;background:rgba(251,191,36,.12);animation:drift 15s ease-in-out infinite alternate}
+.glow.g2{width:380px;height:380px;bottom:-120px;left:-80px;background:rgba(139,92,246,.22);animation:drift 19s ease-in-out infinite alternate-reverse}
+@keyframes drift{to{transform:translate(-40px,50px)}}
+header{max-width:900px;margin:auto;padding:20px 24px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:50;background:rgba(4,6,13,.8);backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,255,255,.06)}
+.brand{font:700 16px 'Space Grotesk';color:#fff;text-decoration:none}
+.back{color:var(--a2);text-decoration:none;font-size:13px;border:1px solid var(--line);padding:8px 14px;border-radius:8px}
+.back:hover{border-color:var(--a)}
+main{max-width:900px;margin:auto;padding:24px}
+.hero-t{text-align:center;padding:26px 0 6px}
+.hero-t h1{font:700 clamp(28px,4.5vw,44px) 'Space Grotesk';margin:10px 0;background:linear-gradient(90deg,#fff 25%,#fcd34d);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 24px rgba(251,191,36,.3))}
+.eyebrow{color:var(--a2);font-size:10px;font-family:'Press Start 2P',monospace;letter-spacing:2px}
+.lead{color:var(--muted);max-width:640px;margin:0 auto}
+.glass{background:var(--panel);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.08);border-radius:15px;box-shadow:0 8px 32px rgba(0,0,0,.3)}
+.card{padding:24px;margin:18px 0}
+.chips{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:18px 0}
+.chip{padding:8px 16px;border:1px solid var(--line);border-radius:20px;background:rgba(255,255,255,.03);color:var(--muted);font-size:12px;font-weight:700;cursor:pointer}
+.chip.active,.chip:hover{color:#fff;border-color:#fbbf24;box-shadow:0 4px 16px rgba(251,191,36,.2)}
+.btn{padding:12px 24px;border:1px solid var(--line);border-radius:10px;font-size:14px;font-weight:700;color:#fff;background:rgba(255,255,255,.04);cursor:pointer}
+.btn:hover{border-color:#fbbf24}
+.primary{background:linear-gradient(#9d6bff,#6d28d9);border:2px solid #141414;box-shadow:inset 2px 2px 0 rgba(255,255,255,.4),inset -2px -3px 0 rgba(0,0,0,.4);border-radius:4px}
+.primary:hover{filter:brightness(1.12)}
+.btn:disabled{opacity:.5;cursor:default}
+.center{text-align:center}
+.opt{display:block;width:100%;text-align:left;margin:10px 0;padding:14px 16px;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.03);color:var(--text);cursor:pointer;font-size:15px;transition:all .2s}
+.opt:hover:not(:disabled){border-color:#fbbf24;transform:translateX(4px)}
+.opt.ok{border-color:#34d399;background:rgba(52,211,153,.1)}
+.opt.bad{border-color:#f87171;background:rgba(248,113,113,.1)}
+.opt:disabled{cursor:default}
+.bar{height:10px;border-radius:6px;background:rgba(255,255,255,.08);overflow:hidden;margin:12px 0}
+.bar>i{display:block;height:100%;background:linear-gradient(90deg,#8b5cf6,#fbbf24);border-radius:6px;transition:width .3s}
+.timerbar{height:6px;border-radius:4px;background:rgba(255,255,255,.08);overflow:hidden;margin:10px 0}
+.timerbar>i{display:block;height:100%;background:#34d399;width:100%}
+.hud{display:flex;gap:14px;flex-wrap:wrap;justify-content:space-between;font-size:13px;color:var(--muted)}
+.hud b{color:#fff}
+.pill{display:inline-block;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;border:1px solid #fbbf24;color:#fbbf24}
+.why{font-size:14px;color:var(--muted);margin:10px 0}
+.best{border-left:4px solid #34d399;padding:12px 16px;font-size:13px;margin-top:10px}
+.rank{font:700 clamp(30px,5vw,48px) 'Space Grotesk';background:linear-gradient(90deg,#fbbf24,#f59e0b);-webkit-background-clip:text;background-clip:text;color:transparent;margin:6px 0}
+pre.tpl{white-space:pre-wrap;background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:14px;font-size:13px;font-family:inherit}
+.rowbtns{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;justify-content:center}
+.muted{color:var(--muted);font-size:13px}
+.ai-slot{margin-top:10px}.ai-slot:empty{display:none}
+footer{text-align:center;padding:34px 20px;color:var(--muted);font-size:12px;border-top:1px solid rgba(255,255,255,.06);margin-top:30px}
+footer strong{color:#fff}
+@media (prefers-reduced-motion:reduce){.glow{animation:none !important}}
+</style>
+</head>
+<body>
+<div class="bg-grid" aria-hidden="true"></div><div class="glow g1" aria-hidden="true"></div><div class="glow g2" aria-hidden="true"></div>
+<header>
+  <a class="back" href="https://discohikory.github.io/Portafolio/">← Portafolio</a>
+  <a class="brand" href="#">❓ Quiz Staff</a>
+</header>
+<main>
+  <div class="hero-t">
+    <p class="eyebrow">ENTRENAMIENTO · STAFF MINECRAFT</p>
+    <h1>Quiz Staff</h1>
+    <p class="lead">20 preguntas de normativa, comandos y criterio. 30 segundos por pregunta, puntos por rapidez y rachas. Récord: <b id="bestLine">0</b> pts.</p>
+  </div>
+  <div id="screen-start" class="card glass center">
+    <h2 style="font-family:'Space Grotesk';margin-top:0">Elige categoría</h2>
+    <div class="chips" id="chips"></div>
+    <button class="btn primary" id="startBtn" style="font-size:16px">Empezar quiz ▶</button>
+  </div>
+  <div id="screen-play" class="card glass" style="display:none">
+    <div class="hud"><span>Pregunta <b id="qNum">1/12</b></span><span>Puntos: <b id="qScore">0</b></span><span>Racha: <b id="qStreak">0 🔥</b></span><span class="pill" id="qCat"></span></div>
+    <div class="bar"><i id="qProg"></i></div>
+    <div class="timerbar"><i id="qTime"></i></div>
+    <h2 id="qText" style="font-family:'Space Grotesk'"></h2>
+    <div id="qOpts"></div>
+    <div id="qFb"></div>
+    <div class="rowbtns"><button class="btn primary" id="qNext" style="display:none">Siguiente →</button></div>
+  </div>
+  <div id="screen-end" class="card glass center" style="display:none">
+    <p class="eyebrow">RESULTADO FINAL</p>
+    <div class="rank" id="qRank"></div>
+    <p style="font-size:20px"><b id="qFinal">0</b> puntos · <b id="qHits">0/12</b> aciertos</p>
+    <p class="muted" id="qBest"></p>
+    <div class="rowbtns"><button class="btn primary" id="qRetry">Jugar otra vez ↻</button><button class="btn" id="qAi">🤖 Analiza mi desempeño</button></div>
+    <div class="ai-slot" id="qAiOut"></div>
+  </div>
+  <div class="card glass">
+    <h2 style="font-family:'Space Grotesk';margin-top:0">🤖 Caso generado por IA</h2>
+    <p class="muted">La IA inventa una pregunta nueva cada vez. Elígela y responde sin límite de tiempo.</p>
+    <div class="chips" id="aiQChips"></div>
+    <div class="rowbtns" style="justify-content:center"><button class="btn primary" id="aiQGo">Generar pregunta ✨</button></div>
+    <div id="aiQBox" style="margin-top:12px"></div>
+  </div>
+</main>
+<footer>© 2026 Daniel Esteban Vera Fernandez · <strong>Discohikorybrs</strong> · Todos los derechos reservados.<br><small>Quiz con fines educativos. Hecho con ⛏️</small></footer>
+<script>
+const QS=[
+ {c:"Normativa",q:"Un jugador hace spam por primera vez. ¿Sanción correcta?",o:["Mute 2 horas","Advertencia verbal","Ban 1 día","Mute 12 horas"],a:1,w:"El spam en primera vez es falta leve (Art. 3.1): siempre se empieza con advertencia verbal."},
+ {c:"Normativa",q:"Video claro de KillAura, primera vez. ¿Qué aplicas?",o:["Ban 30 días","Mute 3 días","Ban 7 días","Advertencia"],a:2,w:"Hacks en primera vez: ban 7 días (Art. 7.1). La evidencia en video lo justifica."},
+ {c:"Normativa",q:"Publican datos personales de un jugador (doxxing).",o:["Mute 1 hora","Ban 7 días","Ban permanente directo","Advertencia + borrar mensaje"],a:2,w:"El doxxing es falta grave (Art. 7.4): ban permanente sin escalas."},
+ {c:"Normativa",q:"TP-trap por primera vez con devolución pendiente.",o:["Ban 1 día + devolución","Solo advertencia","Ban 15 días","Mute 1 hora"],a:0,w:"TP-trap primera vez: ban 1 día y devolver lo perdido (Art. 5.3)."},
+ {c:"Normativa",q:"Un muteado entra con otra cuenta. ¿Qué haces?",o:["Lo muteas también 30 min","Ban permanente por evasión","Lo ignoras","Le das otra oportunidad"],a:1,w:"Evadir sanción con multicuenta es ban permanente (Art. 7.5)."},
+ {c:"Comandos",q:"¿Comando para dar rango mod a un jugador en LuckPerms?",o:["/lp user Alex op","/lp user Alex parent set mod","/lp group mod add Alex","/pex user Alex group set mod"],a:1,w:"La sintaxis LuckPerms es: /lp user <nick> parent set <grupo>."},
+ {c:"Comandos",q:"¿Qué permiso necesita un mod para mutear?",o:["essentials.mute","essentials.*","minecraft.command.op","mod.mutear"],a:0,w:"El nodo exacto es essentials.mute. Dar essentials.* a un mod es peligroso."},
+ {c:"Comandos",q:"Sintaxis correcta de un tempban de 7 días:",o:["/ban Hacks_7 7d","/tempban Hacks_7 7d KillAura","/tempban 7d Hacks_7","/ban temporal Hacks_7"],a:1,w:"Orden Essentials: /tempban <jugador> <tiempo> [motivo]."},
+ {c:"Criterio",q:"Acusan de hacks pero no hay evidencia suficiente.",o:["Banear por precaución","Pedir pruebas y vigilar en invisible","Ignorar el reporte","Mutear al acusado 1 hora"],a:1,w:"Sin evidencia no se sanciona: se pide pruebas y se observa."},
+ {c:"Criterio",q:"Tu amigo publicita otro servidor en el general.",o:["Perdonarlo por amistad","Sancionarlo igual y hablarle en privado","Que lo sancione otro staff","Borrar el mensaje sin más"],a:1,w:"La normativa aplica a todos por igual; en privado cuidas la relación."},
+ {c:"Criterio",q:"Insulto en caliente + disculpa inmediata.",o:["Ban permanente","Mute leve + mediación","No hacer nada","Ban 30 días"],a:1,w:"Proporcionalidad: sanción leve, mediación y constancia en historial."},
+ {c:"Criterio",q:"Griefing de 200 bloques con logs claros.",o:["Pedir más pruebas","Sancionar + rollback","Solo advertir","Esperar a que la víctima insista"],a:1,w:"Con evidencia sólida se actúa: sanción tipificada + reparación."},
+ {c:"Normativa",q:"Flood por segunda vez en el chat.",o:["Aviso verbal","Mute 30 minutos","Mute 2 horas","Ban 1 día"],a:1,w:"Flood en segunda vez: mute 30 minutos (Art. 3.1). La escala sube con la reincidencia."},
+ {c:"Normativa",q:"Insulto discriminatorio, primera vez.",o:["Mute 12 horas","Ban 14 días","Ban permanente","Mute 3 días"],a:1,w:"Discriminación en primera vez: ban 14 días (Art. 7.2)."},
+ {c:"Normativa",q:"Griefing menor y el jugador ofrece reparar el daño.",o:["Ban 1 día igual","Advertencia + reparación","Mute 2 horas","No hacer nada"],a:1,w:"Griefing menor primera vez con reparación: advertencia + reparar (Art. 5.4)."},
+ {c:"Comandos",q:"¿Comando correcto para dar 64 diamantes a Alex?",o:["/give Alex diamond 64","/give Alex minecraft:diamond 64","/give minecraft:diamond Alex 64","/item Alex diamond 64"],a:1,w:"Sintaxis: /give <jugador> <item> [cantidad], con el ID completo del item."},
+ {c:"Comandos",q:"¿Cómo ves el dinero de otro jugador?",o:["/money ver","/bal <jugador>","/eco check","/baltop <jugador>"],a:1,w:"Es /bal <jugador>. El baltop solo muestra el ranking."},
+ {c:"Comandos",q:"Un usuario necesita ayuda privada en Discord.",o:["!ticket <asunto>","!report","!help","!canal"],a:0,w:"!ticket <asunto> abre un canal privado de soporte."},
+ {c:"Criterio",q:"Te equivocas y muteas 1 día en vez de 1 hora.",o:["Dejarlo, ya está hecho","Corregir, disculparte y registrarlo","Quitarlo sin decir nada","Culpar al reglamento"],a:1,w:"Los errores se corrigen en público cuando toca: corrige, discúlpate y deja constancia."},
+ {c:"Criterio",q:"Dos staffs discuten una sanción en el chat público.",o:["Apoyar al de mayor rango ahí mismo","Llevarlo a privado y unificar criterio","Discutirlo en público también","Ignorarlo, no es tu problema"],a:2,w:"Los desacuerdos del Staff jamás van en público: privado, criterio único y luego se comunica."}
+];
+const RANKS=[[1,"Fundador 👑"],[0.8,"Admin ⚡"],[0.6,"Moderador 🛡️"],[0.4,"Helper en pruebas 🛠️"]];
+const esc=v=>{const d=document.createElement('div');d.textContent=v;return d.innerHTML};
+const store={get:(k,f)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):f}catch(e){return f}},set:(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+document.getElementById('bestLine').textContent=store.get('quiz_best',0);
+let pool=[],idx=0,score=0,streak=0,hits=0,fails=[],timer=null,timeLeft=0;
+const CATS=["Todas","Normativa","Comandos","Criterio"];
+let catSel="Todas";
+const chipsEl=document.getElementById('chips');
+chipsEl.innerHTML=CATS.map(c=>`<button class="chip${c===catSel?" active":""}" data-qc="${c}">${c}</button>`).join('');
+chipsEl.querySelectorAll('[data-qc]').forEach(b=>b.addEventListener('click',()=>{
+  catSel=b.dataset.qc;
+  chipsEl.querySelectorAll('.chip').forEach(x=>x.classList.toggle('active',x===b));
+}));
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));const t=a[i];a[i]=a[j];a[j]=t}return a}
+document.getElementById('startBtn').addEventListener('click',()=>{
+  pool=shuffle(QS.filter(q=>catSel==="Todas"||q.c===catSel).map((q,i)=>i));
+  if(!pool.length)return;
+  idx=0;score=0;streak=0;hits=0;fails=[];
+  document.getElementById('screen-start').style.display='none';
+  document.getElementById('screen-end').style.display='none';
+  document.getElementById('screen-play').style.display='block';
+  window.scrollTo({top:0,behavior:'smooth'});
+  showQ();
+});
+function showQ(){
+  const q=QS[pool[idx]];
+  clearInterval(timer);timeLeft=30;
+  document.getElementById('qNum').textContent=(idx+1)+'/'+pool.length;
+  document.getElementById('qScore').textContent=score;
+  document.getElementById('qStreak').textContent=streak+' 🔥';
+  document.getElementById('qCat').textContent=q.c;
+  document.getElementById('qProg').style.width=((idx)/pool.length*100)+'%';
+  document.getElementById('qText').textContent=q.q;
+  document.getElementById('qFb').innerHTML='';
+  document.getElementById('qNext').style.display='none';
+  const box=document.getElementById('qOpts');
+  box.innerHTML=q.o.map((o,j)=>`<button class="opt" data-qo="${j}">${esc(o)}</button>`).join('');
+  const bar=document.getElementById('qTime');
+  bar.style.width='100%';bar.style.background='#34d399';
+  timer=setInterval(()=>{
+    timeLeft--;
+    bar.style.width=(timeLeft/30*100)+'%';
+    if(timeLeft<=10)bar.style.background='#f87171';
+    if(timeLeft<=0)answer(-1);
+  },1000);
+}
+document.getElementById('qOpts').addEventListener('click',e=>{
+  const b=e.target.closest?e.target.closest('[data-qo]'):null;
+  if(!b||b.disabled)return;
+  answer(Number(b.dataset.qo));
+});
+function answer(j){
+  clearInterval(timer);
+  const q=QS[pool[idx]];
+  document.querySelectorAll('#qOpts .opt').forEach((o,k)=>{o.disabled=true;if(k===q.a)o.classList.add('ok')});
+  if(j===q.a){
+    hits++;streak++;
+    const pts=100+timeLeft*2+Math.min(streak,5)*10;
+    score+=pts;
+    document.getElementById('qFb').innerHTML=`<p class="why">✅ ¡Correcto! +${pts} pts</p><p class="why">${esc(q.w)}</p>`;
+  }else{
+    streak=0;
+    if(j>=0)document.querySelector(`#qOpts [data-qo="${j}"]`).classList.add('bad');
+    fails.push(q.q);
+    document.getElementById('qFb').innerHTML=`<p class="why">${j<0?'⏰ ¡Tiempo agotado!':'❌ Incorrecto.'} ${esc(q.w)}</p>`;
+  }
+  document.getElementById('qScore').textContent=score;
+  document.getElementById('qStreak').textContent=streak+' 🔥';
+  document.getElementById('qProg').style.width=((idx+1)/pool.length*100)+'%';
+  document.getElementById('qNext').style.display='inline-block';
+}
+document.getElementById('qNext').addEventListener('click',()=>{
+  idx++;
+  if(idx>=pool.length)endQuiz();
+  else{showQ();window.scrollTo({top:0,behavior:'smooth'})}
+});
+function endQuiz(){
+  document.getElementById('screen-play').style.display='none';
+  const end=document.getElementById('screen-end');
+  end.style.display='block';
+  const pct=pool.length?hits/pool.length:0;
+  let rank="Postulante 🌱";
+  for(const r of RANKS){if(pct>=r[0]){rank=r[1];break}}
+  document.getElementById('qRank').textContent=rank;
+  document.getElementById('qFinal').textContent=score;
+  document.getElementById('qHits').textContent=hits+'/'+pool.length;
+  const best=store.get('quiz_best',0);
+  if(score>best){store.set('quiz_best',score);document.getElementById('qBest').textContent='🏆 ¡Nuevo récord! Antes: '+best}
+  else document.getElementById('qBest').textContent='Récord: '+best+' pts';
+  document.getElementById('bestLine').textContent=store.get('quiz_best',0);
+  document.getElementById('qAiOut').innerHTML='';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+document.getElementById('qRetry').addEventListener('click',()=>{
+  document.getElementById('screen-end').style.display='none';
+  document.getElementById('screen-start').style.display='block';
+});
+function aiExtract(r){if(!r)return"";if(typeof r==="string")return r;const m=r.message&&r.message.content;if(typeof m==="string")return m;if(Array.isArray(m))return m.map(p=>typeof p==="string"?p:(p.text||"")).join("");return r.text||r.output||""}
+async function aiChat(prompt){
+  try{if(window.puter&&puter.ai&&puter.ai.chat){const t=aiExtract(await puter.ai.chat(prompt));if(t&&t.trim())return{text:t.trim(),via:"Puter.js"}}}catch(e){console.warn(e)}
+  const res=await fetch("https://text.pollinations.ai/"+encodeURIComponent(prompt));
+  if(!res.ok)throw new Error("HTTP "+res.status);
+  const t=(await res.text()).trim();if(!t)throw new Error("vacío");
+  return{text:t,via:"Pollinations"};
+}
+document.getElementById('qAi').addEventListener('click',()=>{
+  const slot=document.getElementById('qAiOut'),btn=document.getElementById('qAi');
+  const bad=fails.length?`Falló en: ${fails.join(' | ')}.`:'No falló ninguna. Pide un reto mayor.';
+  slot.innerHTML='<small class="muted">Generando con IA… ⏳</small>';btn.disabled=true;
+  aiChat(`Eres un mentor de Staff de Minecraft. Un aspirante sacó ${hits}/${pool.length} (${score} pts) en un quiz de moderación. ${bad} Dale un consejo breve y motivador (máximo 90 palabras, español neutro): qué reforzar y 1 tip práctico.`).then(r=>{
+    slot.innerHTML=`<pre class="tpl ai-pre"></pre><small class="muted">Vía ${r.via} 🤖</small>`;
+    slot.querySelector('.ai-pre').textContent=r.text;
+  }).catch(()=>{slot.innerHTML='<small class="muted">La IA no responde ahora. Intenta luego. ⚠️</small>'}).finally(()=>{btn.disabled=false});
+});
+let aiQCat="Aleatoria";
+const aiQChipsEl=document.getElementById('aiQChips');
+aiQChipsEl.innerHTML=["Aleatoria","Normativa","Comandos","Criterio"].map(c=>`<button class="chip${c===aiQCat?" active":""}" data-aiqc="${c}">${c}</button>`).join('');
+aiQChipsEl.querySelectorAll('[data-aiqc]').forEach(b=>b.addEventListener('click',()=>{
+  aiQCat=b.dataset.aiqc;
+  aiQChipsEl.querySelectorAll('.chip').forEach(x=>x.classList.toggle('active',x===b));
+}));
+let aiQ=null;
+function parseAIQ(t){
+  const lines=t.split('\n').map(s=>s.trim()).filter(Boolean);
+  const g=re=>{const l=lines.find(x=>re.test(x));return l?l.replace(re,'').trim():''};
+  const q=g(/^PREGUNTA\s*:/i),a=g(/^A\)/),b=g(/^B\)/),c=g(/^C\)/);
+  const cm=(g(/^CORRECTA\s*:/i).toUpperCase().match(/[ABC]/)||[])[0];
+  const ex=g(/^EXPLICA\s*:/i);
+  if(!q||!a||!b||!c||!cm||!ex)return null;
+  return{q,opts:[a,b,c],a:'ABC'.indexOf(cm),w:ex};
+}
+function renderAIQ(){
+  const box=document.getElementById('aiQBox');
+  box.innerHTML=`<h3 style="font-family:'Space Grotesk'">${esc(aiQ.q)}</h3><div>${aiQ.opts.map((o,j)=>`<button class="opt" data-aiqo="${j}">${esc(o)}</button>`).join('')}</div><div id="aiQFb"></div><div class="rowbtns"><button class="btn" id="aiQMore" style="display:none">Otra pregunta ↻</button></div>`;
+  box.querySelectorAll('[data-aiqo]').forEach(btn=>btn.addEventListener('click',()=>{
+    box.querySelectorAll('[data-aiqo]').forEach((o,k)=>{o.disabled=true;if(k===aiQ.a)o.classList.add('ok')});
+    if(Number(btn.dataset.aiqo)===aiQ.a){
+      document.getElementById('aiQFb').innerHTML=`<p class="why">✅ ¡Correcto! ${esc(aiQ.w)}</p>`;
+    }else{
+      btn.classList.add('bad');
+      document.getElementById('aiQFb').innerHTML=`<p class="why">❌ Incorrecto. ${esc(aiQ.w)}</p>`;
+    }
+    document.getElementById('aiQMore').style.display='inline-block';
+  }));
+  document.getElementById('aiQMore').addEventListener('click',()=>document.getElementById('aiQGo').click());
+}
+document.getElementById('aiQGo').addEventListener('click',()=>{
+  const box=document.getElementById('aiQBox'),btn=document.getElementById('aiQGo');
+  box.innerHTML='<p class="muted">Generando pregunta… ⏳</p>';btn.disabled=true;
+  aiChat(`Crea UNA pregunta tipo quiz para entrenar Staff de servidor Minecraft, categoría ${aiQCat} (español neutro). Responde EXACTAMENTE con este formato, sin texto extra:
+PREGUNTA: <situación concreta + pregunta>
+A) <opción>
+B) <opción>
+C) <opción>
+CORRECTA: <solo la letra A, B o C>
+EXPLICA: <por qué es correcta y por qué no las otras, máximo 60 palabras>`).then(r=>{
+    aiQ=parseAIQ(r.text);
+    if(!aiQ){box.innerHTML='<p class="muted">Salió mal formada. Pulsa generar de nuevo. ⚠️</p>'}
+    else renderAIQ();
+  }).catch(()=>{box.innerHTML='<p class="muted">La IA no responde ahora. Intenta luego. ⚠️</p>'}).finally(()=>{btn.disabled=false});
+});
+</script>
+</body>
+</html>
