@@ -38,6 +38,7 @@ input,select{font-family:inherit;color:#fff;background:rgba(0,0,0,.3);border:1px
 .cmd{font-family:monospace;font-size:15px;color:#67e8f9;background:rgba(34,211,238,.08);border:1px solid rgba(34,211,238,.25);border-radius:8px;padding:8px 12px;margin:6px 0;overflow-x:auto;white-space:nowrap}
 .perm{font-family:monospace;font-size:12px;color:var(--a2)}
 .rowbtns{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.visits{margin-top:10px;font-size:13px;color:var(--muted)}
 .btn{padding:10px 18px;border:1px solid var(--line);border-radius:10px;font-size:13px;font-weight:700;color:#fff;background:rgba(255,255,255,.04);cursor:pointer}
 .btn:hover{border-color:#22d3ee}
 .muted{color:var(--muted);font-size:13px}
@@ -106,7 +107,7 @@ footer strong{color:#fff}
     </div>
   </div>
 </section>
-<footer>© 2026 Daniel Esteban Vera Fernandez · <strong>Discohikorybrs</strong> · Todos los derechos reservados.<br><small>Wiki con fines educativos. Hecho con ⛏️</small></footer>
+<footer>© 2026 Daniel Esteban Vera Fernandez · <strong>Discohikorybrs</strong> · Todos los derechos reservados.<br><small>Wiki con fines educativos. Hecho con ⛏️</small><div class="visits">👁 <span id="visitCount">…</span> visitas</div></footer>
 <script>
 const CMDS=[
  {c:"Vanilla · OP",n:"/gamemode",u:"/gamemode <modo> [jugador]",d:"Cambia el modo de juego (survival, creative, adventure, spectator).",p:"minecraft.command.gamemode",e:"/gamemode creative Steve"},
@@ -285,6 +286,20 @@ function aiInto(slot,prompt,btn){
   }).catch(()=>{slot.innerHTML='<small class="muted">La IA no responde ahora. Intenta luego. ⚠️</small>'}).finally(()=>{if(btn)btn.disabled=false});
 }
 lpRenderEditor();lpRefresh();
+</script>
+<script>
+(function(){
+  var el=document.getElementById('visitCount');
+  if(!el)return;
+  function fmt(n){n=Number(n)||0;return n>=1000?(n/1000).toFixed(1).replace('.',',').replace(',0','')+' mil':String(n)}
+  fetch('https://api.jsonbin.io/v3/b/6aac6a86ffd5d1605313c161/latest',{headers:{'X-Access-Key':'$2a$10$XbVd43wzBhlIfE1632782ePKNz5e/MaX25U3NJ5JRIBKtJt0ILnXC'}})
+  .then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(j){
+    var v=(j.record&&j.record.visits)||{};
+    v.wiki=(v.wiki||0)+1;
+    el.textContent=fmt(v.wiki);
+    fetch('https://api.jsonbin.io/v3/b/6aac6a86ffd5d1605313c161',{method:'PUT',headers:{'Content-Type':'application/json','X-Access-Key':'$2a$10$XbVd43wzBhlIfE1632782ePKNz5e/MaX25U3NJ5JRIBKtJt0ILnXC','X-Bin-Versioning':'false'},body:JSON.stringify({visits:v})}).catch(function(){});
+  }).catch(function(){el.textContent='—'});
+})();
 </script>
 </body>
 </html>
