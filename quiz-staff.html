@@ -82,11 +82,11 @@ footer strong{color:#fff}
   <div class="hero-t">
     <p class="eyebrow">ENTRENAMIENTO · STAFF MINECRAFT</p>
     <h1>Quiz Staff</h1>
-    <p class="lead">10 rangos con 25 preguntas cada uno: completa un rango con 60% para desbloquear el siguiente. Récord: <b id="bestLine">0</b> pts.</p>
+    <p class="lead">10 rangos con 25 preguntas cada uno: elige libremente, domínalos con 60% y úsalo como prueba para aplicar a Staff. Récord: <b id="bestLine">0</b> pts.</p>
   </div>
   <div id="screen-start" class="card glass center">
     <h2 style="font-family:'Space Grotesk';margin-top:0">Elige tu rango</h2>
-    <p class="muted">25 preguntas por rango · 60% para ascender · el orden rota en cada intento.</p>
+    <p class="muted">25 preguntas por rango · 60% para dominarlo ✅ · el orden rota en cada intento. Úsalo como prueba para aplicar a Staff.</p>
     <div id="rankGrid"></div>
   </div>
   <div class="card glass" id="histCard">
@@ -412,10 +412,10 @@ function saveProg(){store.set('quiz_prog',prog)}
 function renderRanks(){
   const g=document.getElementById('rankGrid');
   g.innerHTML=RANKS_Q.map((R,i)=>{
-    const locked=i>=prog.unlocked;
     const best=prog.best[i];
     const plays=prog.plays[i]||0;
-    return `<button class="rankbtn${locked?' locked':''}" data-rank="${i}" ${locked?'disabled':''}><span class="rk-icon">${locked?'🔒':R.icon}</span><b>${R.r}</b><small>${locked?'Supera el anterior':(best!=null?('Récord: '+best+' pts · '+plays+' intentos'):'25 preguntas · sin jugar')}</small></button>`;
+    const done=prog.passed&&prog.passed[i];
+    return `<button class="rankbtn" data-rank="${i}"><span class="rk-icon">${R.icon}</span><b>${R.r}${done?' ✅':''}</b><small>${best!=null?('Récord: '+best+' pts · '+plays+' intentos'):'25 preguntas · sin jugar'}</small></button>`;
   }).join('');
   const allB=Object.values(prog.best);
   document.getElementById('bestLine').textContent=allB.length?Math.max.apply(null,allB):0;
@@ -501,7 +501,7 @@ function endQuiz(){
   document.getElementById('qFinal').textContent=score;
   document.getElementById('qHits').textContent=hits+'/'+pool.length;
   prog.plays[curRank]=(prog.plays[curRank]||0)+1;
-  if(passed&&curRank+1<RANKS_Q.length)prog.unlocked=Math.max(prog.unlocked,curRank+2);
+  if(passed){prog.passed=prog.passed||{};prog.passed[curRank]=true}
   if(prog.best[curRank]==null||score>prog.best[curRank])prog.best[curRank]=score;
   saveProg();renderRanks();
   const best=prog.best[curRank];
