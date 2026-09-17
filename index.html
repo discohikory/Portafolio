@@ -165,7 +165,7 @@
   </div>
   <div class="hero-card tilt glass">
     <div class="profile-orb pulsing"><div class="gojo-card">
-      <div class="head-box"><canvas id="skinHead" width="8" height="8" title="Discohikorybrs"></canvas><span class="flag-badge" title="Colombia 🇨🇴"><i></i><i></i><i></i></span></div>
+      <div class="head-box"><div class="bust-avatar" title="Discohikorybrs"></div></div>
       <small class="gojo-nick">NICK</small>
       <strong class="gojo-name">Discohikorybrs</strong>
       <span class="gojo-roles">Minecraft / Discord</span>
@@ -519,24 +519,6 @@ document.querySelectorAll('.mob').forEach(m => {
   if (!w || !d) return;
   w.addEventListener('mouseenter', () => { d.style.opacity = '1'; });
   w.addEventListener('mouseleave', () => { d.style.opacity = '0'; });
-})();
-
-// Cara real desde la skin Gojo (gojo-skin.png): base + capa overlay
-(function () {
-  const c = document.getElementById('skinHead');
-  if (!c) return;
-  const x = c.getContext('2d');
-  x.imageSmoothingEnabled = false;
-  const img = new Image();
-  img.onload = () => {
-    try {
-      x.clearRect(0, 0, 8, 8);
-      x.drawImage(img, 8, 8, 8, 8, 0, 0, 8, 8);
-      x.drawImage(img, 40, 8, 8, 8, 0, 0, 8, 8);
-    } catch (e) {}
-  };
-  img.onerror = () => { c.style.display = 'none'; };
-  img.src = 'gojo-skin.png';
 })();
 
 // Terminal Interactiva
