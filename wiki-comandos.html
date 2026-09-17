@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Wiki de comandos Minecraft y Discord: buscador, permisos, ejemplos y tutoriales de plugins.">
+<title>Wiki de Comandos — Discohikorybrs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&family=Press+Start+2P&display=swap" rel="stylesheet">
+<script src="https://js.puter.com/v2/"></script>
+<style>
+:root{--bg:#04060d;--panel:rgba(15,20,35,.55);--line:rgba(139,92,246,.2);--text:#f5f7ff;--muted:#9da8c5;--a:#8b5cf6;--a2:#b39aff}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,sans-serif;line-height:1.6}
+.bg-grid{position:fixed;inset:0;z-index:-2;opacity:.14;background-image:linear-gradient(#293354 1px,transparent 1px),linear-gradient(90deg,#293354 1px,transparent 1px);background-size:44px 44px}
+.glow{position:fixed;border-radius:50%;filter:blur(90px);z-index:-1;pointer-events:none;opacity:.55}
+.glow.g1{width:420px;height:420px;top:-120px;left:-100px;background:rgba(34,211,238,.13);animation:drift 16s ease-in-out infinite alternate}
+.glow.g2{width:380px;height:380px;bottom:-120px;right:-80px;background:rgba(139,92,246,.22);animation:drift 20s ease-in-out infinite alternate-reverse}
+@keyframes drift{to{transform:translate(40px,50px)}}
+header{max-width:1120px;margin:auto;padding:20px 24px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:50;background:rgba(4,6,13,.8);backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,255,255,.06)}
+.brand{font:700 16px 'Space Grotesk';color:#fff;text-decoration:none}
+.back{color:var(--a2);text-decoration:none;font-size:13px;border:1px solid var(--line);padding:8px 14px;border-radius:8px}
+.back:hover{border-color:var(--a)}
+main{max-width:1120px;margin:auto;padding:24px}
+.hero-t{text-align:center;padding:30px 0 10px}
+.hero-t h1{font:700 clamp(28px,4.5vw,46px) 'Space Grotesk';margin:10px 0;background:linear-gradient(90deg,#fff 25%,#67e8f9);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 24px rgba(34,211,238,.3))}
+.eyebrow{color:var(--a2);font-size:10px;font-family:'Press Start 2P',monospace;letter-spacing:2px}
+.lead{color:var(--muted);max-width:700px;margin:0 auto}
+.searchbar{display:flex;gap:10px;max-width:640px;margin:24px auto;flex-wrap:wrap;justify-content:center}
+.searchbar input{flex:1;min-width:220px}
+input,select{font-family:inherit;color:#fff;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:12px;outline:none;font-size:14px}
+.chips{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:20px}
+.chip{padding:8px 16px;border:1px solid var(--line);border-radius:20px;background:rgba(255,255,255,.03);color:var(--muted);font-size:12px;font-weight:700;cursor:pointer}
+.chip.active,.chip:hover{color:#fff;border-color:#22d3ee;box-shadow:0 4px 16px rgba(34,211,238,.2)}
+.glass{background:var(--panel);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.08);border-radius:15px;box-shadow:0 8px 32px rgba(0,0,0,.3)}
+.card{padding:20px;margin-bottom:14px;transition:transform .3s ease,border-color .3s ease}
+.card:hover{transform:translateY(-3px);border-color:rgba(34,211,238,.4)}
+.cmd{font-family:monospace;font-size:15px;color:#67e8f9;background:rgba(34,211,238,.08);border:1px solid rgba(34,211,238,.25);border-radius:8px;padding:8px 12px;margin:6px 0;overflow-x:auto;white-space:nowrap}
+.perm{font-family:monospace;font-size:12px;color:var(--a2)}
+.rowbtns{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.btn{padding:10px 18px;border:1px solid var(--line);border-radius:10px;font-size:13px;font-weight:700;color:#fff;background:rgba(255,255,255,.04);cursor:pointer}
+.btn:hover{border-color:#22d3ee}
+.muted{color:var(--muted);font-size:13px}
+h2.st{font:700 20px 'Space Grotesk';margin:0 0 4px}
+.pill{display:inline-block;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;border:1px solid #22d3ee;color:#67e8f9;margin-right:6px}
+.ai-slot{margin-top:10px}.ai-slot:empty{display:none}
+pre.tpl{white-space:pre-wrap;background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:14px;font-size:13px;font-family:inherit}
+.tut-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.tut-grid ol{margin:8px 0;padding-left:20px;font-size:13px;color:var(--muted)}
+.tut-grid ol b{color:#fff}
+footer{text-align:center;padding:34px 20px;color:var(--muted);font-size:12px;border-top:1px solid rgba(255,255,255,.06);margin-top:30px}
+footer strong{color:#fff}
+.projects{max-width:1120px;margin:6px auto 0;padding:0 24px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:760px){.tut-grid,.grid2{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){.glow{animation:none !important}}
+</style>
+</head>
+<body>
+<div class="bg-grid" aria-hidden="true"></div><div class="glow g1" aria-hidden="true"></div><div class="glow g2" aria-hidden="true"></div>
+<header>
+  <a class="back" href="https://discohikory.github.io/Portafolio/">← Portafolio</a>
+  <a class="brand" href="#">📖 Wiki de Comandos</a>
+</header>
+<main>
+  <div class="hero-t">
+    <p class="eyebrow">DOCUMENTACIÓN · MINECRAFT + DISCORD</p>
+    <h1>Wiki de Comandos</h1>
+    <p class="lead">Busca cualquier comando, copia su uso, revisa el permiso necesario y aprende con tutoriales. Todo verificado para Java Edition + EssentialsX.</p>
+  </div>
+  <div class="searchbar">
+    <input id="q" maxlength="60" placeholder="Buscar comando, permiso o palabra… (ej. ban, home, tpa)">
+    <select id="cat"><option value="">Todas las categorías</option></select>
+  </div>
+  <div class="chips" id="chips"></div>
+  <div id="list"></div>
+  <div class="card glass" style="margin-top:22px">
+    <h2 class="st">🏗️ Constructor de rangos LuckPerms</h2>
+    <p class="muted">Define rangos con herencia y prefijos y genera el script completo para pegar en consola. Se guarda en tu navegador.</p>
+    <div class="rowbtns"><button type="button" class="btn" id="lpAdd">+ Agregar rango</button><button type="button" class="btn" id="lpReset">Restablecer ejemplo</button></div>
+    <div id="lpChain" class="muted" style="margin:12px 0"></div>
+    <div id="lpWarn"></div>
+    <div id="lpEditor" class="tut-grid"></div>
+    <h2 class="st" style="margin-top:16px">📜 Script generado</h2>
+    <pre class="tpl" id="lpOut"></pre>
+    <div class="rowbtns"><button type="button" class="btn primary" id="lpCopy">Copiar script 📋</button><button type="button" class="btn" id="lpDl">Descargar .txt</button><button type="button" class="btn" id="lpAi">🔍 Revisar con IA</button></div>
+    <div class="ai-slot" id="lpAiOut"></div>
+  </div>
+  <div class="card glass" style="margin-top:22px">
+    <h2 class="st">🎓 Tutoriales rápidos</h2>
+    <div class="tut-grid">
+      <div><b>LuckPerms en 3 pasos</b><ol><li>Instala <b>LuckPerms</b> y reinicia.</li><li>Crea grupos: <b>/lp creategroup mod</b>.</li><li>Da permisos: <b>/lp group mod permission set essentials.kick true</b>.</li><li>Asigna el grupo: <b>/lp user &lt;nick&gt; parent set mod</b>.</li></ol></div>
+      <div><b>EssentialsX esencial</b><ol><li>Configura <b>spawn</b> con <b>/setspawn</b>.</li><li>Activa <b>homes</b> y <b>tpa</b> en config.yml.</li><li>Define <b>kits</b> iniciales para nuevos.</li><li>Revisa <b>motd.txt</b> para el mensaje de entrada.</li></ol></div>
+      <div><b>Tu primer bot de Discord</b><ol><li>Crea la app en <b>discord.com/developers</b>.</li><li>Activa los <b>Privileged Intents</b> necesarios.</li><li>Invítalo con scope <b>bot + applications.commands</b>.</li><li>Empieza con <b>/ping</b> y un comando <b>!warn</b>.</li></ol></div>
+      <div><b>Protege con WorldGuard</b><ol><li>Selecciona con la <b>varita //wand</b>.</li><li>Crea la región: <b>/rg define spawn</b>.</li><li>Bloquea PvP y TNT: <b>/rg flag spawn pvp deny</b>.</li><li>Asigna dueños: <b>/rg addowner spawn &lt;nick&gt;</b>.</li></ol></div>
+    </div>
+  </div>
+</main>
+<section class="projects">
+  <div class="card glass">
+    <h2 class="st">🚀 Mis proyectos</h2>
+    <div class="grid2">
+      <div><h3 style="margin:6px 0">Portfolio principal</h3><p class="muted">Trayectoria, proyectos y minijuego.</p><div class="rowbtns"><a class="btn" href="https://discohikory.github.io/Portafolio/">Abrir portafolio ↗</a></div></div>
+      <div><h3 style="margin:6px 0">Staff Toolkit <span class="pill">Staff</span></h3><p class="muted">Sanciones, tickets y reportes.</p><div class="rowbtns"><a class="btn" href="https://discohikory.github.io/Staff-Toolkit/">Abrir toolkit ↗</a></div></div>
+    </div>
+  </div>
+</section>
+<footer>© 2026 Daniel Esteban Vera Fernandez · <strong>Discohikorybrs</strong> · Todos los derechos reservados.<br><small>Wiki con fines educativos. Hecho con ⛏️</small></footer>
+<script>
+const CMDS=[
+ {c:"Vanilla · OP",n:"/gamemode",u:"/gamemode <modo> [jugador]",d:"Cambia el modo de juego (survival, creative, adventure, spectator).",p:"minecraft.command.gamemode",e:"/gamemode creative Steve"},
+ {c:"Vanilla · OP",n:"/give",u:"/give <jugador> <item> [cantidad]",d:"Entrega items directamente al inventario.",p:"minecraft.command.give",e:"/give Alex minecraft:diamond 64"},
+ {c:"Vanilla · OP",n:"/tp",u:"/tp <origen> <destino>",d:"Teleporta jugadores o coordenadas.",p:"minecraft.command.teleport",e:"/tp Steve Alex"},
+ {c:"Vanilla · OP",n:"/ban",u:"/ban <jugador> [motivo]",d:"Banea a un jugador del servidor.",p:"minecraft.command.ban",e:"/ban Griefer_99 Uso de hacks"},
+ {c:"Vanilla · OP",n:"/pardon",u:"/pardon <jugador>",d:"Levanta el ban de un jugador.",p:"minecraft.command.pardon",e:"/pardon Griefer_99"},
+ {c:"Vanilla · OP",n:"/kick",u:"/kick <jugador> [motivo]",d:"Expulsa a un jugador (puede volver a entrar).",p:"minecraft.command.kick",e:"/kick Spammer_1 Flood en el chat"},
+ {c:"Vanilla · OP",n:"/op",u:"/op <jugador>",d:"Otorga nivel de operador.",p:"minecraft.command.op (nivel 3+)",e:"/op Moderador_Nuevo"},
+ {c:"Vanilla · OP",n:"/whitelist",u:"/whitelist <add|remove|on|off> [jugador]",d:"Gestiona la lista blanca del servidor.",p:"minecraft.command.whitelist",e:"/whitelist add AmigoFiel"},
+ {c:"Vanilla · OP",n:"/difficulty",u:"/difficulty <pacifico|facil|normal|dificil>",d:"Cambia la dificultad.",p:"minecraft.command.difficulty",e:"/difficulty normal"},
+ {c:"Vanilla · OP",n:"/time set",u:"/time set <día|noche|mediodía|medianoche| ticks>",d:"Cambia la hora del mundo.",p:"minecraft.command.time",e:"/time set day"},
+ {c:"Vanilla · OP",n:"/weather",u:"/weather <despejado|lluvia|tormenta> [duración]",d:"Cambia el clima.",p:"minecraft.command.weather",e:"/weather clear 600"},
+ {c:"Vanilla · OP",n:"/effect",u:"/effect give <jugador> <efecto> [segundos] [nivel]",d:"Aplica efectos de poción.",p:"minecraft.command.effect",e:"/effect give Steve speed 60 1"},
+ {c:"Vanilla · OP",n:"/clear",u:"/clear [jugador] [item] [cantidad]",d:"Limpia items del inventario.",p:"minecraft.command.clear",e:"/clear Alex minecraft:cobblestone"},
+ {c:"Vanilla · OP",n:"/enchant",u:"/enchant <jugador> <encantamiento> [nivel]",d:"Encanta el item en mano.",p:"minecraft.command.enchant",e:"/enchant Steve sharpness 5"},
+ {c:"Vanilla · OP",n:"/xp",u:"/xp <add|set|query> <objetivos> <cantidad>",d:"Gestiona niveles de experiencia.",p:"minecraft.command.xp",e:"/xp add Steve 30 levels"},
+ {c:"EssentialsX",n:"/sethome · /home",u:"/sethome [nombre] · /home [nombre]",d:"Guarda y teleporta a tus casas.",p:"essentials.sethome / essentials.home",e:"/sethome base"},
+ {c:"EssentialsX",n:"/tpa",u:"/tpa <jugador> · /tpaccept · /tpdeny",d:"Solicita teleport a otro jugador.",p:"essentials.tpa",e:"/tpa LunaBuilds"},
+ {c:"EssentialsX",n:"/warp",u:"/warp <nombre>",d:"Teleporta a puntos definidos por el Staff.",p:"essentials.warp",e:"/warp spawn"},
+ {c:"EssentialsX",n:"/kit",u:"/kit [nombre]",d:"Reclama kits configurados.",p:"essentials.kits.<nombre>",e:"/kit inicial"},
+ {c:"EssentialsX",n:"/bal · /baltop",u:"/bal [jugador] · /baltop",d:"Consulta dinero y ranking económico.",p:"essentials.bal / essentials.baltop",e:"/bal"},
+ {c:"EssentialsX",n:"/mute · /tempmute",u:"/mute <jugador> [tiempo] [motivo]",d:"Silencia el chat de un jugador.",p:"essentials.mute",e:"/mute Spammer_1 30m Flood"},
+ {c:"EssentialsX",n:"/tempban",u:"/tempban <jugador> <tiempo> [motivo]",d:"Baneo temporal con aviso.",p:"essentials.tempban",e:"/tempban Hacks_7 7d KillAura"},
+ {c:"EssentialsX",n:"/nick",u:"/nick [apodo]",d:"Cambia tu nombre visible.",p:"essentials.nick",e:"/nick ElPro"},
+ {c:"EssentialsX",n:"/fly",u:"/fly [jugador]",d:"Activa o quita el vuelo.",p:"essentials.fly",e:"/fly"},
+ {c:"EssentialsX",n:"/god",u:"/god [jugador]",d:"Modo invencible.",p:"essentials.god",e:"/god Steve"},
+ {c:"EssentialsX",n:"/spawn",u:"/spawn [jugador]",d:"Teleporta al spawn.",p:"essentials.spawn",e:"/spawn"},
+ {c:"Discord · Bot",n:"!warn",u:"!warn <@usuario> <motivo>",d:"Advierte y registra un strike.",p:"Gestionar mensajes / Rol Staff",e:"!warn @Troll_1 Spam"},
+ {c:"Discord · Bot",n:"!mute",u:"!mute <@usuario> [tiempo] [motivo]",d:"Timeout / mute temporal.",p:"Moderar miembros",e:"!mute @Troll_1 10m Insultos"},
+ {c:"Discord · Bot",n:"!kick",u:"!kick <@usuario> [motivo]",d:"Expulsa del servidor (puede volver).",p:"Expulsar miembros",e:"!kick @BotSpam Publicidad"},
+ {c:"Discord · Bot",n:"!ban",u:"!ban <@usuario> [motivo]",d:"Baneo definitivo o temporal.",p:"Banear miembros",e:"!ban @Hacker_1 Cheats"},
+ {c:"Discord · Bot",n:"!ticket",u:"!ticket <asunto>",d:"Abre un canal privado de soporte.",p:"Todos (con cooldown)",e:"!ticket No puedo entrar"},
+ {c:"Discord · Bot",n:"!clear",u:"!clear <cantidad>",d:"Borra mensajes del canal.",p:"Gestionar mensajes",e:"!clear 50"},
+ {c:"Discord · Bot",n:"!slowmode",u:"!slowmode <segundos>",d:"Activa modo lento en el canal.",p:"Gestionar canales",e:"!slowmode 10"},
+ {c:"Discord · Bot",n:"!userinfo",u:"!userinfo [@usuario]",d:"Muestra info y strikes del usuario.",p:"Rol Staff",e:"!userinfo @Troll_1"}
+];
+const esc=v=>{const d=document.createElement('div');d.textContent=v;return d.innerHTML};
+const cats=["","Vanilla · OP","EssentialsX","Discord · Bot"];
+const catSel=document.getElementById('cat'),chips=document.getElementById('chips'),q=document.getElementById('q'),list=document.getElementById('list');
+cats.slice(1).forEach(c=>{const o=document.createElement('option');o.value=o.textContent=c;catSel.appendChild(o)});
+let activeChip="";
+function paintChips(){
+  chips.innerHTML='<button class="chip'+(activeChip===""?" active":"")+'" data-chip="">Todos</button>'+cats.slice(1).map(c=>`<button class="chip${activeChip===c?" active":""}" data-chip="${esc(c)}">${esc(c)}</button>`).join('');
+  chips.querySelectorAll('[data-chip]').forEach(b=>b.addEventListener('click',()=>{activeChip=b.dataset.chip;catSel.value=activeChip;paintChips();paint()}));
+}
+catSel.addEventListener('change',()=>{activeChip=catSel.value;paintChips();paint()});
+q.addEventListener('input',paint);
+function paint(){
+  const term=q.value.trim().toLowerCase();
+  const items=CMDS.map((c,i)=>({...c,i})).filter(c=>
+    (!activeChip||c.c===activeChip)&&
+    (!term||(c.n+" "+c.u+" "+c.d+" "+c.p+" "+c.e).toLowerCase().includes(term)));
+  list.innerHTML=items.length?items.map(c=>`<div class="card glass"><div><span class="pill">${esc(c.c)}</span></div>
+    <h2 class="st" style="margin-top:8px">${esc(c.n)}</h2>
+    <div class="cmd">${esc(c.u)}</div>
+    <p class="muted">${esc(c.d)}</p>
+    <p class="perm">Permiso: ${esc(c.p)}</p>
+    <p class="muted">Ejemplo: <b>${esc(c.e)}</b></p>
+    <div class="rowbtns"><button type="button" class="btn" data-copy="${c.i}">Copiar uso 📋</button><button type="button" class="btn" data-ai="${c.i}">✨ Explicar con IA</button></div>
+    <div class="ai-slot" id="ai-${c.i}"></div></div>`).join('')
+    :'<div class="card glass"><p class="muted">Sin resultados. Prueba con "ban", "home" o "tpa".</p></div>';
+}
+function aiExtract(r){if(!r)return"";if(typeof r==="string")return r;const m=r.message&&r.message.content;if(typeof m==="string")return m;if(Array.isArray(m))return m.map(p=>typeof p==="string"?p:(p.text||"")).join("");return r.text||r.output||""}
+async function aiChat(prompt){
+  try{if(window.puter&&puter.ai&&puter.ai.chat){const t=aiExtract(await puter.ai.chat(prompt));if(t&&t.trim())return{text:t.trim(),via:"Puter.js"}}}catch(e){console.warn(e)}
+  const res=await fetch("https://text.pollinations.ai/"+encodeURIComponent(prompt));
+  if(!res.ok)throw new Error("HTTP "+res.status);
+  const t=(await res.text()).trim();if(!t)throw new Error("vacío");
+  return{text:t,via:"Pollinations"};
+}
+async function copyText(t){try{await navigator.clipboard.writeText(t);alert('¡Copiado! 📋')}catch(e){const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');alert('¡Copiado! 📋')}catch(_){alert('No se pudo copiar.')}ta.remove()}}
+document.addEventListener('click',e=>{
+  if(!e.target.closest)return;
+  const qq=s=>e.target.closest(s);
+  let b;
+  if(b=qq('[data-copy]')){copyText(CMDS[Number(b.dataset.copy)].u);return}
+  if(b=qq('[data-ai]')){
+    const c=CMDS[Number(b.dataset.ai)];
+    const slot=document.getElementById('ai-'+b.dataset.ai);
+    slot.innerHTML='<small class="muted">Generando con IA… ⏳</small>';b.disabled=true;
+    aiChat(`Explica de forma breve y práctica (máximo 90 palabras, español neutro) este comando de Minecraft/Discord: ${c.n}. Uso: ${c.u}. Para qué sirve: ${c.d}. Permiso: ${c.p}. Incluye un ejemplo de cuándo usarlo.`).then(r=>{
+      slot.innerHTML=`<pre class="tpl ai-pre"></pre>`;
+      slot.querySelector('.ai-pre').textContent=r.text+`\n\n— vía ${r.via}`;
+    }).catch(()=>{slot.innerHTML='<small class="muted">La IA no responde ahora. Intenta luego. ⚠️</small>'}).finally(()=>{b.disabled=false});
+    return;
+  }
+});
+paintChips();paint();
+
+// ============ CONSTRUCTOR DE RANGOS ============
+const LP_DEFAULT=[
+ {name:"default",prefix:"&7[Miembro]",parent:"",perms:"essentials.home\nessentials.tpa\nessentials.warp\nessentials.kit.inicial"},
+ {name:"vip",prefix:"&6[VIP]",parent:"default",perms:"essentials.fly\nessentials.nick\nessentials.kit.vip"},
+ {name:"mod",prefix:"&9[MOD]",parent:"vip",perms:"essentials.kick\nessentials.mute\nessentials.tempban"},
+ {name:"admin",prefix:"&c[ADMIN]",parent:"mod",perms:"essentials.ban\nminecraft.command.op"}
+];
+const lpGet=()=>{try{const v=JSON.parse(localStorage.getItem('lp_ranks'));return Array.isArray(v)&&v.length?v:null}catch(e){return null}};
+const lpSet=v=>{try{localStorage.setItem('lp_ranks',JSON.stringify(v))}catch(e){}};
+let lpRanks=lpGet()||JSON.parse(JSON.stringify(LP_DEFAULT));
+const escA=v=>String(v==null?"":v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+function lpRenderEditor(){
+  const names=lpRanks.map(r=>r.name.trim()).filter(Boolean);
+  document.getElementById('lpEditor').innerHTML=lpRanks.map((r,i)=>{
+    const opts=['<option value="">(sin herencia)</option>'].concat(names.filter(n=>n!==r.name.trim()).map(n=>`<option value="${escA(n)}"${r.parent===n?" selected":""}>${esc(n)}</option>`)).join('');
+    return `<div class="card glass" style="margin:0"><label>Nombre<input data-lp="${i}|name" value="${escA(r.name)}" maxlength="24"></label><label>Prefijo (códigos &amp; valen)<input data-lp="${i}|prefix" value="${escA(r.prefix)}" maxlength="30" placeholder="&7[Miembro]"></label><label>Hereda de<select data-lp="${i}|parent">${opts}</select></label><label>Permisos (uno por línea)<textarea data-lp="${i}|perms" rows="4" placeholder="essentials.home">${escA(r.perms)}</textarea></label><div class="rowbtns"><button type="button" class="btn danger" data-lpdel="${i}">Eliminar rango</button></div></div>`;
+  }).join('');
+}
+function lpAnalyze(){
+  const warns=[],names=lpRanks.map(r=>r.name.trim());
+  const seen={};
+  names.forEach(n=>{if(!n)warns.push("Hay un rango sin nombre.");else{seen[n]=(seen[n]||0)+1}});
+  Object.keys(seen).forEach(n=>{if(seen[n]>1)warns.push(`Nombre duplicado: "${n}".`)});
+  lpRanks.forEach(r=>{
+    if(r.parent&&!names.includes(r.parent))warns.push(`"${r.name||"?"} hereda de "${r.parent}", que no existe.`);
+    (r.perms||"").split("\n").forEach(p=>{p=p.trim();if(/(^|\.)\*$/.test(p))warns.push(`"${r.name||"?"} usa comodín "${p}": dalo solo a admins.`)});
+  });
+  const cyc=lpRanks.some(r=>{let p=r.parent,seen2={};while(p){if(p===r.name.trim()||seen2[p])return true;seen2[p]=1;const nx=lpRanks.find(x=>x.name.trim()===p);p=nx?nx.parent:""}return false});
+  if(cyc)warns.push("Hay herencia circular (A hereda de B que hereda de A).");
+  return warns;
+}
+function lpScript(){
+  const L=["# Script LuckPerms — generado por Wiki de Comandos",""];
+  lpRanks.forEach(r=>{
+    const n=r.name.trim()||"rango";
+    L.push(`/lp creategroup ${n}`);
+    (r.perms||"").split("\n").map(s=>s.trim()).filter(Boolean).forEach(p=>L.push(`/lp group ${n} permission set ${p}`));
+    if(r.parent)L.push(`/lp group ${n} parent add ${r.parent}`);
+    if(r.prefix.trim())L.push(`/lp group ${n} meta setprefix "${r.prefix.trim()} "`);
+    L.push("");
+  });
+  L.push("# Asignar un jugador:","# /lp user <nick> parent set <rango>");
+  return L.join("\n");
+}
+function lpRefresh(){
+  const names=lpRanks.map(r=>r.name.trim()).filter(Boolean);
+  document.getElementById('lpChain').innerHTML="<b>Cadena:</b> "+(names.length?names.map(n=>{const r=lpRanks.find(x=>x.name.trim()===n);return esc(n)+(r&&r.parent?` <small>← ${esc(r.parent)}</small>`:"")}).join(" · "):"—");
+  const w=lpAnalyze();
+  document.getElementById('lpWarn').innerHTML=w.map(x=>`<p class="muted" style="color:#fca5a5">⚠️ ${esc(x)}</p>`).join('');
+  document.getElementById('lpOut').textContent=lpScript();
+}
+document.getElementById('lpEditor').addEventListener('input',e=>{
+  const t=e.target.closest?e.target.closest('[data-lp]'):null;
+  if(!t)return;
+  const parts=t.dataset.lp.split('|');
+  lpRanks[Number(parts[0])][parts[1]]=t.value;
+  lpSet(lpRanks);lpRefresh();
+});
+document.getElementById('lpEditor').addEventListener('change',e=>{
+  const t=e.target.closest?e.target.closest('[data-lp]'):null;
+  if(!t||t.tagName!=="SELECT")return;
+  lpRenderEditor();lpRefresh();
+});
+document.addEventListener('click',e=>{
+  if(!e.target.closest)return;
+  const d=e.target.closest('[data-lpdel]');
+  if(d){lpRanks.splice(Number(d.dataset.lpdel),1);if(!lpRanks.length)lpRanks=[{name:"default",prefix:"",parent:"",perms:""}];lpSet(lpRanks);lpRenderEditor();lpRefresh()}
+});
+document.getElementById('lpAdd').addEventListener('click',()=>{lpRanks.push({name:"rango"+(lpRanks.length+1),prefix:"",parent:lpRanks.length?lpRanks[lpRanks.length-1].name.trim():"",perms:""});lpSet(lpRanks);lpRenderEditor();lpRefresh()});
+document.getElementById('lpReset').addEventListener('click',()=>{if(confirm('¿Volver al ejemplo?')){lpRanks=JSON.parse(JSON.stringify(LP_DEFAULT));lpSet(lpRanks);lpRenderEditor();lpRefresh()}});
+document.getElementById('lpCopy').addEventListener('click',()=>copyText(document.getElementById('lpOut').textContent));
+document.getElementById('lpDl').addEventListener('click',()=>{
+  const b=new Blob([document.getElementById('lpOut').textContent],{type:"text/plain"});
+  const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download="luckperms-rangos.txt";a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+});
+document.getElementById('lpAi').addEventListener('click',()=>{
+  aiInto(document.getElementById('lpAiOut'),`Revisa esta configuración de rangos LuckPerms (español neutro, máximo 120 palabras): señala errores de herencia, permisos peligrosos o faltantes comunes, y sugiere 1 mejora concreta. Configuración:\n\n${lpScript()}`,document.getElementById('lpAi'));
+});
+function aiInto(slot,prompt,btn){
+  slot.innerHTML='<small class="muted">Generando con IA… ⏳</small>';
+  if(btn)btn.disabled=true;
+  aiChat(prompt).then(r=>{
+    slot.innerHTML=`<pre class="tpl ai-pre"></pre>`;
+    slot.querySelector('.ai-pre').textContent=r.text+`\n\n— vía ${r.via}`;
+  }).catch(()=>{slot.innerHTML='<small class="muted">La IA no responde ahora. Intenta luego. ⚠️</small>'}).finally(()=>{if(btn)btn.disabled=false});
+}
+lpRenderEditor();lpRefresh();
+</script>
+</body>
+</html>
