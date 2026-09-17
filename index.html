@@ -126,6 +126,7 @@
 .quiz-thumb { background: radial-gradient(circle at 50% 38%, #451a03, #0b0b1c 72%) !important; }
 .quiz-thumb .tk-icon { filter: drop-shadow(0 0 18px rgba(251,191,36,.6)); }
 .quiz-thumb small { color: #fcd34d !important; }
+.visits{margin-top:10px;font-size:13px;color:#9da8c5}
 #skinHead { width: 64px; height: 64px; image-rendering: pixelated; border-radius: 6px; transition: filter .25s ease; }
 #skinHead:hover { filter: drop-shadow(0 0 12px rgba(34,211,238,.8)) brightness(1.12); }
 /* Brillo que sigue el mouse en cada opción */
@@ -411,7 +412,7 @@
   <strong>— Discohikorybrs</strong>
 </section>
 
-<footer>© 2026 Daniel Esteban Vera Fernandez · <strong>Discohikorybrs</strong> · Hecho con ⛏️ y ❤️</footer>
+<footer>© 2026 Daniel Esteban Vera Fernandez · <strong>Discohikorybrs</strong> · Hecho con ⛏️ y ❤️<div class="visits">👁 <span id="visitCount">…</span> visitas</div></footer>
 
 <button id="adminGear" type="button" title="Admin" style="position:fixed;bottom:16px;right:16px;z-index:200;width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:rgba(15,20,35,0.9);color:#fff;cursor:pointer;font-size:18px;">⚙️</button>
 <div id="adminBar" class="glass" style="display:none;position:fixed;bottom:70px;right:16px;z-index:200;padding:12px;border-radius:12px;flex-direction:column;gap:8px;max-width:240px;">
@@ -1147,6 +1148,20 @@ refreshAdmin();
 
 // Cargar reseñas al iniciar
 cargarResenas();
+</script>
+<script>
+(function(){
+  var el=document.getElementById('visitCount');
+  if(!el)return;
+  function fmt(n){n=Number(n)||0;return n>=1000?(n/1000).toFixed(1).replace('.',',').replace(',0','')+' mil':String(n)}
+  fetch('https://api.jsonbin.io/v3/b/6aac6a86ffd5d1605313c161/latest',{headers:{'X-Access-Key':'$2a$10$XbVd43wzBhlIfE1632782ePKNz5e/MaX25U3NJ5JRIBKtJt0ILnXC'}})
+  .then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(j){
+    var v=(j.record&&j.record.visits)||{};
+    v.portafolio=(v.portafolio||0)+1;
+    el.textContent=fmt(v.portafolio);
+    fetch('https://api.jsonbin.io/v3/b/6aac6a86ffd5d1605313c161',{method:'PUT',headers:{'Content-Type':'application/json','X-Access-Key':'$2a$10$XbVd43wzBhlIfE1632782ePKNz5e/MaX25U3NJ5JRIBKtJt0ILnXC','X-Bin-Versioning':'false'},body:JSON.stringify({visits:v})}).catch(function(){});
+  }).catch(function(){el.textContent='—'});
+})();
 </script>
 </body>
 </html>
