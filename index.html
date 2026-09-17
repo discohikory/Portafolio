@@ -322,6 +322,7 @@ function jump() {
   if (steve.grounded) { steve.dy = steve.jumpPower; steve.grounded = false; }
 }
 
+// Desactivar saltos por espacio al escribir en inputs/textarea
 window.addEventListener('keydown', e => {
   if (e.code === 'Space') {
     if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') {
@@ -417,7 +418,7 @@ document.querySelectorAll('.faq-question').forEach(q => {
 });
 
 // ==========================================
-// SUPABASE AUTH & REVIEWS (Configuración exacta)
+// SUPABASE AUTH & REVIEWS (URL corregida y segura)
 // ==========================================
 const SUPABASE_URL = 'https://srxkiinmfjfjhbmkacax.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_0tZPMP4nKhsIjHg760cUdw_0F71lkIB';
