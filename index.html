@@ -492,13 +492,15 @@ function applySession(session) {
 }
 
 if (_supabase) {
-_supabase.auth.onAuthStateChange((event, session) => applySession(session));
-_supabase.auth.getSession().then(({ data }) => applySession(data.session)).catch(() => {});
+  _supabase.auth.onAuthStateChange((event, session) => { if (SUPABASE_OK) applySession(session); });
+  _supabase.auth.getSession().then(({ data }) => { if (SUPABASE_OK && data.session) applySession(data.session); }).catch(() => {});
+  // Chequeo temprano: si el dominio no existe, no intentar OAuth (evita la página DNS_PROBE_FINISHED_NXDOMAIN)
+  fetch(SUPABASE_URL + '/auth/v1/health', { method: 'GET', mode: 'no-cors' }).catch(() => enterLocalMode('health-check falló'));
 }
 
 // Login con Google usando el redirect limpio
 loginGoogleBtn.addEventListener('click', async () => {
-  if (!_supabase) { authErrorMsg.textContent = "Supabase no disponible."; return; }
+  if (!_supabase || !SUPABASE_OK) { authErrorMsg.textContent = "Supabase no configurado. Usa el modo local de abajo."; enterLocalMode('bloqueo oauth'); return; }
   const { error } = await _supabase.auth.signInWithOAuth({
     provider: 'google',
     options: { 
@@ -510,7 +512,7 @@ loginGoogleBtn.addEventListener('click', async () => {
 
 // Login con Correo y Contraseña
 emailLoginBtn.addEventListener('click', async () => {
-  if (!_supabase) { authErrorMsg.textContent = "Supabase no disponible."; return; }
+  if (!_supabase || !SUPABASE_OK) { authErrorMsg.textContent = "Supabase no configurado. Usa el modo local de abajo."; enterLocalMode('bloqueo login'); return; }
   const email = authEmailInput.value.trim();
   const password = authPasswordInput.value.trim();
   authErrorMsg.textContent = "";
@@ -528,7 +530,7 @@ emailLoginBtn.addEventListener('click', async () => {
 
 // Registro con Correo y Contraseña
 emailRegisterBtn.addEventListener('click', async () => {
-  if (!_supabase) { authErrorMsg.textContent = "Supabase no disponible."; return; }
+  if (!_supabase || !SUPABASE_OK) { authErrorMsg.textContent = "Supabase no configurado. Usa el modo local de abajo."; enterLocalMode('bloqueo registro'); return; }
   const email = authEmailInput.value.trim();
   const password = authPasswordInput.value.trim();
   authErrorMsg.textContent = "";
