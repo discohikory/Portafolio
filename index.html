@@ -231,7 +231,7 @@
         <small id="charCount">0/500</small>
       </label>
       <button class="btn primary magnetic" type="submit">Publicar reseña ↗</button>
-      <small id="reviewStatus" class="review-status">Sincronizado globalmente con Supabase Auth.</small>
+      <small id="reviewStatus" class="review-status">Sincronizado globalmente con Appwrite.</small>
     </form>
     
     <div id="reviewsList" class="reviews-list"><div class="empty-review glass">Cargando reseñas de la base de datos…</div></div>
@@ -262,8 +262,8 @@
 
 <footer>© 2026 Daniel Esteban Vera Fernandez · <strong>Discohikorybrs</strong></footer>
 
-<!-- SDK DE SUPABASE (build UMD que sí expone `supabase` global) -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<!-- SDK DE APPWRITE -->
+<script src="https://cdn.jsdelivr.net/npm/appwrite@17.0.0/dist/umd/appwrite.min.js"></script>
 
 <script>
 // Revelación al hacer scroll
@@ -446,14 +446,14 @@ document.querySelectorAll('.faq-question').forEach(q => {
 });
 
 // ==========================================
+// APPWRITE AUTH & REVIEWS
+// Proyecto: Mi primer proyecto (FRA)
+// Si Appwrite falla, la web usa modo local (localStorage).
 // ==========================================
-// SUPABASE AUTH & REVIEWS
-// Si ves "Error al cargar reseñas", tu SUPABASE_URL no resuelve (proyecto pausado,
-// eliminado o ref mal copiado). Ve a supabase.com > tu proyecto > Settings > API
-// y pega aquí la Project URL y la publishable key. Mientras tanto la web usa modo local.
-// ==========================================
-const SUPABASE_URL = 'https://srxkiinmfjfjhbmkacax.supabase.co';
-const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_0tZPMP4nKhsIjHg760cUdw_0F71lkIB';
+const APPWRITE_ENDPOINT = 'https://fra.cloud.appwrite.io/v1';
+const APPWRITE_PROJECT = '6aab57b9002ebd8d40e8';
+const APPWRITE_DB = '6aab5850000209a20617';
+const APPWRITE_TABLE = '6aab58680011b08721c3';
 // Redirect dinámico: funciona en GitHub Pages y en localhost sin cambiar código
 function getRedirectUrl() {
   const path = window.location.pathname.endsWith('/') ? window.location.pathname : window.location.pathname + '/';
@@ -461,19 +461,21 @@ function getRedirectUrl() {
 }
 const REDIRECT_URL = getRedirectUrl();
 
-let _supabase = null;
-let SUPABASE_OK = false;
+let awClient = null, awAccount = null, awDb = null;
+let BACKEND_OK = false;
 try {
-  if (typeof supabase === 'undefined' || !supabase.createClient) {
-    console.error('Supabase SDK no cargó. Revisa el CDN.');
+  if (typeof Appwrite === 'undefined') {
+    console.error('Appwrite SDK no cargó.');
   } else {
-    _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
-    SUPABASE_OK = true;
+    awClient = new Appwrite.Client();
+    awClient.setEndpoint(APPWRITE_ENDPOINT).setProject(APPWRITE_PROJECT);
+    awAccount = new Appwrite.Account(awClient);
+    awDb = new Appwrite.Databases(awClient);
+    BACKEND_OK = true;
   }
 } catch (e) {
-  console.error('Supabase init falló, modo local:', e);
-  _supabase = null;
-  SUPABASE_OK = false;
+  console.error('Appwrite init falló, modo local:', e);
+  BACKEND_OK = false;
 }
 
 const authPanel = document.getElementById('authPanel');
@@ -494,13 +496,12 @@ const reviewStars = document.getElementById('reviewStars');
 const reviewCount = document.getElementById('reviewCount');
 const reviewStatus = document.getElementById('reviewStatus');
 
-// Control de sesión de Supabase
-function applySession(session) {
-  if (session && session.user) {
+// Control de sesión de Appwrite
+function applyUser(user) {
+  if (user) {
     authPanel.style.display = 'none';
     reviewForm.style.display = 'flex';
-    const user = session.user;
-    const displayName = (user.user_metadata && user.user_metadata.full_name) || (user.email ? user.email.split('@')[0] : 'Usuario');
+    const displayName = user.name || (user.email ? user.email.split('@')[0] : 'Usuario');
     reviewName.value = displayName;
     loggedInUser.textContent = displayName;
   } else {
@@ -510,84 +511,85 @@ function applySession(session) {
   }
 }
 
-if (_supabase) {
-  _supabase.auth.onAuthStateChange((event, session) => { if (SUPABASE_OK) applySession(session); });
-  _supabase.auth.getSession().then(({ data }) => { if (SUPABASE_OK && data.session) applySession(data.session); }).catch(() => {});
-  // Chequeo temprano: si el dominio no existe, no intentar OAuth (evita la página DNS_PROBE_FINISHED_NXDOMAIN)
-  fetch(SUPABASE_URL + '/auth/v1/health', { method: 'GET', mode: 'no-cors' }).catch(() => enterLocalMode('health-check falló'));
+async function refreshUser() {
+  if (!awAccount || !BACKEND_OK) return;
+  try {
+    const user = await awAccount.get();
+    applyUser(user);
+  } catch (e) {
+    applyUser(null);
+  }
 }
 
-// Login con Google usando el redirect limpio
-loginGoogleBtn.addEventListener('click', async () => {
-  if (!_supabase || !SUPABASE_OK) { authErrorMsg.textContent = "Supabase no configurado. Usa el modo local de abajo."; enterLocalMode('bloqueo oauth'); return; }
-  const { error } = await _supabase.auth.signInWithOAuth({
-    provider: 'google',
-    options: { 
-      redirectTo: REDIRECT_URL 
-    }
-  });
-  if (error) authErrorMsg.textContent = "Error al iniciar con Google: " + error.message;
+if (awAccount && BACKEND_OK) { refreshUser(); }
+
+// Login con Google (OAuth2 Appwrite)
+loginGoogleBtn.addEventListener('click', () => {
+  if (!awAccount || !BACKEND_OK) { authErrorMsg.textContent = "Backend no configurado. Usa el modo local de abajo."; enterLocalMode('bloqueo oauth'); return; }
+  try {
+    awAccount.createOAuth2Session('google', REDIRECT_URL, REDIRECT_URL + '?oauth=fail');
+  } catch (e) {
+    authErrorMsg.textContent = "Error al iniciar con Google: " + (e.message || e);
+  }
 });
 
-// Login con Correo y Contraseña
+// Login con Correo y Contraseña (Appwrite)
 emailLoginBtn.addEventListener('click', async () => {
-  if (!_supabase || !SUPABASE_OK) { authErrorMsg.textContent = "Supabase no configurado. Usa el modo local de abajo."; enterLocalMode('bloqueo login'); return; }
+  if (!awAccount || !BACKEND_OK) { authErrorMsg.textContent = "Backend no configurado. Usa el modo local de abajo."; enterLocalMode('bloqueo login'); return; }
   const email = authEmailInput.value.trim();
   const password = authPasswordInput.value.trim();
   authErrorMsg.textContent = "";
 
-  if (!email || !password) { 
-    authErrorMsg.textContent = "Completa correo y contraseña."; 
-    return; 
+  if (!email || !password) {
+    authErrorMsg.textContent = "Completa correo y contraseña.";
+    return;
   }
-  
-  const { error } = await _supabase.auth.signInWithPassword({ email, password });
-  if (error) {
+
+  try {
+    await awAccount.createEmailPasswordSession(email, password);
+    await refreshUser();
+  } catch (e) {
     authErrorMsg.textContent = "Correo o contraseña incorrectos.";
   }
 });
 
-// Registro con Correo y Contraseña
+// Registro con Correo y Contraseña (Appwrite)
 emailRegisterBtn.addEventListener('click', async () => {
-  if (!_supabase || !SUPABASE_OK) { authErrorMsg.textContent = "Supabase no configurado. Usa el modo local de abajo."; enterLocalMode('bloqueo registro'); return; }
+  if (!awAccount || !BACKEND_OK) { authErrorMsg.textContent = "Backend no configurado. Usa el modo local de abajo."; enterLocalMode('bloqueo registro'); return; }
   const email = authEmailInput.value.trim();
   const password = authPasswordInput.value.trim();
   authErrorMsg.textContent = "";
 
-  if (!email || !password) { 
-    authErrorMsg.textContent = "Completa correo y contraseña."; 
-    return; 
+  if (!email || !password) {
+    authErrorMsg.textContent = "Completa correo y contraseña.";
+    return;
   }
-  if (password.length < 6) { 
-    authErrorMsg.textContent = "La contraseña debe tener al menos 6 caracteres."; 
-    return; 
+  if (password.length < 6) {
+    authErrorMsg.textContent = "La contraseña debe tener al menos 6 caracteres.";
+    return;
   }
 
-  const { error } = await _supabase.auth.signUp({ 
-    email, 
-    password,
-    options: { 
-      data: { full_name: email.split('@')[0] },
-      emailRedirectTo: REDIRECT_URL
-    }
-  });
-
-  if (error) {
-    authErrorMsg.textContent = error.message;
-  } else {
-    alert('¡Registro exitoso! Ya puedes iniciar sesión.');
+  try {
+    const name = email.split('@')[0];
+    await awAccount.create(Appwrite.ID.unique(), email, password, name);
+    await awAccount.createEmailPasswordSession(email, password);
+    await refreshUser();
+    alert('¡Registro exitoso! Ya estás dentro.');
+  } catch (e) {
+    authErrorMsg.textContent = e.message || 'Error al registrarse.';
   }
 });
 
 // Cerrar sesión
 logoutBtn.addEventListener('click', async () => {
-  if (!_supabase) return;
-  await _supabase.auth.signOut();
+  if (!awAccount) return;
+  try { await awAccount.deleteSession('current'); } catch (e) {}
+  applyUser(null);
 });
 
 function escapeHtml(v){ const d = document.createElement('div'); d.textContent = v; return d.innerHTML; }
 
-// ---- Modo local (fallback cuando Supabase no responde) ----
+// ---- Modo local (fallback cuando Appwrite no responde) ----
 function getLocalReviews() {
   try { return JSON.parse(localStorage.getItem('portafolio_reviews') || '[]'); }
   catch (e) { return []; }
@@ -601,7 +603,7 @@ function renderReviews(data, mode) {
   reviewsList.innerHTML = '';
   if (!data || data.length === 0) {
     reviewsList.innerHTML = mode === 'local'
-      ? '<div class="empty-review glass">Aún no hay reseñas locales. ¡Sé el primero! ⭐<br><small>Modo local: Supabase no responde. Revisa la URL en el código.</small></div>'
+      ? '<div class="empty-review glass">Aún no hay reseñas locales. ¡Sé el primero! ⭐<br><small>Modo local: backend no responde. Revisa Appwrite.</small></div>'
       : '<div class="empty-review glass">Aún no hay reseñas globales. ¡Sé el primero! ⭐</div>';
     reviewAverage.textContent = "—";
     reviewStars.textContent = "☆☆☆☆☆";
@@ -613,7 +615,7 @@ function renderReviews(data, mode) {
     const rating = Math.min(5, Math.max(1, Number(r.rating) || 0));
     total += rating;
     const msg = String(r.message || '');
-    const date = r.created_at ? new Date(r.created_at) : new Date();
+    const date = r.$createdAt ? new Date(r.$createdAt) : (r.created_at ? new Date(r.created_at) : new Date());
     const card = document.createElement('article');
     card.className = 'review-card glass';
     const needsMore = msg.length > 180;
@@ -633,8 +635,8 @@ function renderReviews(data, mode) {
   reviewCount.textContent = data.length;
 }
 function enterLocalMode(reason) {
-  console.warn('Supabase no disponible, modo local:', reason);
-  SUPABASE_OK = false;
+  console.warn('Backend no disponible, modo local:', reason);
+  BACKEND_OK = false;
   // En modo local no exigimos login para que la sección nunca quede bloqueada
   authPanel.style.display = 'none';
   reviewForm.style.display = 'flex';
@@ -642,20 +644,16 @@ function enterLocalMode(reason) {
     reviewName.value = 'Invitado';
     loggedInUser.textContent = 'Invitado (local)';
   }
-  reviewStatus.textContent = 'Modo local activado (Supabase no responde). Tu reseña se guarda en este navegador.';
+  reviewStatus.textContent = 'Modo local activado (Appwrite no responde). Tu reseña se guarda en este navegador.';
   renderReviews(getLocalReviews(), 'local');
 }
 
 async function cargarResenas() {
-  if (!_supabase) { enterLocalMode('sin cliente'); return; }
+  if (!awDb || !BACKEND_OK) { enterLocalMode('sin cliente'); return; }
   try {
-    const { data, error } = await _supabase
-      .from('reviews')
-      .select('*')
-      .order('created_at', { ascending: false });
-    if (error) throw error;
-    SUPABASE_OK = true;
-    renderReviews(data, 'global');
+    const res = await awDb.listDocuments(APPWRITE_DB, APPWRITE_TABLE, [Appwrite.Query.orderDesc('$createdAt')]);
+    BACKEND_OK = true;
+    renderReviews(res.documents || [], 'global');
   } catch (err) {
     console.error('cargarResenas falló:', err);
     enterLocalMode(err && err.message ? err.message : err);
@@ -672,7 +670,7 @@ reviewForm.addEventListener('submit', async e => {
   if (message.length > 500) { reviewStatus.textContent = 'Máximo 500 caracteres.'; return; }
 
   // Si estamos en modo local, guardar directo
-  if (!SUPABASE_OK || !_supabase) {
+  if (!BACKEND_OK || !awDb) {
     saveLocalReview({ name, message, rating, created_at: new Date().toISOString() });
     reviewStatus.textContent = '¡Reseña guardada localmente! ⭐';
     document.getElementById('reviewMessage').value = '';
@@ -682,8 +680,7 @@ reviewForm.addEventListener('submit', async e => {
   }
 
   try {
-    const { error } = await _supabase.from('reviews').insert([{ name, message, rating }]);
-    if (error) throw error;
+    await awDb.createDocument(APPWRITE_DB, APPWRITE_TABLE, Appwrite.ID.unique(), { name, message, rating: String(rating) });
     reviewStatus.textContent = '¡Reseña publicada con éxito! ⭐';
     document.getElementById('reviewMessage').value = '';
     document.getElementById('reviewMessage').dispatchEvent(new Event('input'));
@@ -691,7 +688,7 @@ reviewForm.addEventListener('submit', async e => {
   } catch (err) {
     console.error('insert falló, guardo local:', err);
     saveLocalReview({ name, message, rating, created_at: new Date().toISOString() });
-    reviewStatus.textContent = 'Supabase falló, guardada localmente. ⭐';
+    reviewStatus.textContent = 'Backend falló, guardada localmente. ⭐';
     enterLocalMode(err && err.message ? err.message : err);
   }
 });
