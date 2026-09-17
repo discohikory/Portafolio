@@ -169,12 +169,12 @@
   </div>
 </section>
 
-<!-- SECCIÓN DE RESEÑAS CON AUTENTICACIÓN DE SUPABASE -->
+<!-- SECCIÓN DE RESEÑAS CON SUPABASE AUTH -->
 <section id="resenas" class="section reveal">
   <div class="title"><span>07</span><h2 class="gradient-title">Reseñas</h2></div>
   <div class="reviews-head">
     <div class="review-score"><strong id="reviewAverage">—</strong><span id="reviewStars" class="stars">☆☆☆☆☆</span><small><span id="reviewCount">0</span> reseñas globales</small></div>
-    <div><p>Inicia sesión con Google o correo para dejar tu opinión sincronizada.</p></div>
+    <div><p>Inicia sesión o regístrate para dejar tu opinión sincronizada.</p></div>
   </div>
   
   <div class="review-layout">
@@ -183,7 +183,7 @@
       <h3>Acceso a Reseñas</h3>
       <p>Elige tu método preferido para identificarte y comentar:</p>
       
-      <button id="loginGoogleBtn" class="btn primary login-btn magnetic" style="width:100%; justify-content:center; margin-bottom:12px;">Continuar con Google</button>
+      <button id="loginGoogleBtn" class="btn primary login-btn magnetic" style="width:100%; justify-content:center; margin-bottom:12px;" type="button">Continuar con Google</button>
       
       <div class="auth-divider"><span>O usa correo electrónico</span></div>
 
@@ -198,7 +198,7 @@
       </div>
     </div>
 
-    <!-- Formulario de Reseñas (Oculto hasta iniciar sesión) -->
+    <!-- Formulario de Reseñas -->
     <form id="reviewForm" class="box review-form glass" style="display: none;">
       <div class="user-info-bar" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.1);">
         <span>Conectado como: <b id="loggedInUser">Usuario</b></span>
@@ -218,7 +218,7 @@
         <textarea id="reviewMessage" maxlength="500" minlength="3" required placeholder="Cuéntame brevemente cómo fue trabajar conmigo..."></textarea>
       </label>
       <button class="btn primary magnetic" type="submit">Publicar reseña ↗</button>
-      <small id="reviewStatus" class="review-status">Sincronizado globalmente con Supabase Auth.</small>
+      <small id="reviewStatus" class="review-status">Sincronizado globalmente con Supabase.</small>
     </form>
     
     <div id="reviewsList" class="reviews-list"><div class="empty-review glass">Cargando reseñas de la base de datos…</div></div>
@@ -322,7 +322,7 @@ function jump() {
   if (steve.grounded) { steve.dy = steve.jumpPower; steve.grounded = false; }
 }
 
-// Espacios permitidos en inputs/textareas
+// Permitir espacios en inputs y textareas sin que el juego interfiera
 window.addEventListener('keydown', e => {
   if (e.code === 'Space') {
     if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') {
@@ -418,10 +418,11 @@ document.querySelectorAll('.faq-question').forEach(q => {
 });
 
 // ==========================================
-// SUPABASE AUTH & REVIEWS
+// SUPABASE AUTH & REVIEWS (URL fija para redirección)
 // ==========================================
 const SUPABASE_URL = 'https://srxkiinmfjfjhbmkacax.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_0tZPMP4nKhsIjHg76oCUdw_0F71lkIB';
+const REDIRECT_URL = 'https://discohikory.github.io/Portafolio/#resenas';
 
 const { createClient } = supabase;
 const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -444,7 +445,7 @@ const reviewStars = document.getElementById('reviewStars');
 const reviewCount = document.getElementById('reviewCount');
 const reviewStatus = document.getElementById('reviewStatus');
 
-// Control de estado de autenticación de Supabase
+// Control de sesión de Supabase
 _supabase.auth.onAuthStateChange((event, session) => {
   if (session && session.user) {
     authPanel.style.display = 'none';
@@ -464,37 +465,56 @@ _supabase.auth.onAuthStateChange((event, session) => {
 loginGoogleBtn.addEventListener('click', async () => {
   const { error } = await _supabase.auth.signInWithOAuth({
     provider: 'google',
-    options: { redirectTo: window.location.href }
+    options: { redirectTo: REDIRECT_URL }
   });
   if (error) authErrorMsg.textContent = "Error al iniciar con Google: " + error.message;
 });
 
-// Login con Correo
+// Login con Correo y Contraseña
 emailLoginBtn.addEventListener('click', async () => {
   const email = authEmailInput.value.trim();
   const password = authPasswordInput.value.trim();
-  if (!email || !password) { authErrorMsg.textContent = "Completa correo y contraseña."; return; }
+  authErrorMsg.textContent = "";
+
+  if (!email || !password) { 
+    authErrorMsg.textContent = "Completa correo y contraseña."; 
+    return; 
+  }
   
   const { error } = await _supabase.auth.signInWithPassword({ email, password });
-  if (error) authErrorMsg.textContent = "Correo o contraseña incorrectos.";
+  if (error) {
+    authErrorMsg.textContent = "Correo o contraseña incorrectos.";
+  }
 });
 
-// Registro con Correo
+// Registro con Correo y Contraseña
 emailRegisterBtn.addEventListener('click', async () => {
   const email = authEmailInput.value.trim();
   const password = authPasswordInput.value.trim();
-  if (!email || !password) { authErrorMsg.textContent = "Completa correo y contraseña."; return; }
-  if (password.length < 6) { authErrorMsg.textContent = "La contraseña debe tener al menos 6 caracteres."; return; }
+  authErrorMsg.textContent = "";
+
+  if (!email || !password) { 
+    authErrorMsg.textContent = "Completa correo y contraseña."; 
+    return; 
+  }
+  if (password.length < 6) { 
+    authErrorMsg.textContent = "La contraseña debe tener al menos 6 caracteres."; 
+    return; 
+  }
 
   const { error } = await _supabase.auth.signUp({ 
     email, 
     password,
-    options: { data: { full_name: email.split('@')[0] } }
+    options: { 
+      data: { full_name: email.split('@')[0] },
+      emailRedirectTo: REDIRECT_URL
+    }
   });
+
   if (error) {
     authErrorMsg.textContent = error.message;
   } else {
-    alert('¡Registro exitoso! Revisa tu correo o inicia sesión directamente.');
+    alert('¡Registro exitoso! Ya puedes iniciar sesión.');
   }
 });
 
