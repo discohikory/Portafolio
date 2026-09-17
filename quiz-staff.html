@@ -31,6 +31,12 @@ main{max-width:900px;margin:auto;padding:24px}
 .chips{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:18px 0}
 .chip{padding:8px 16px;border:1px solid var(--line);border-radius:20px;background:rgba(255,255,255,.03);color:var(--muted);font-size:12px;font-weight:700;cursor:pointer}
 .chip.active,.chip:hover{color:#fff;border-color:#fbbf24;box-shadow:0 4px 16px rgba(251,191,36,.2)}
+#rankGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin:14px 0}
+.rankbtn{display:flex;flex-direction:column;align-items:center;gap:4px;padding:16px 10px;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.03);color:var(--text);cursor:pointer;font-size:14px}
+.rankbtn:hover:not(:disabled){border-color:#fbbf24;transform:translateY(-3px)}
+.rankbtn:disabled{opacity:.45;cursor:default}
+.rankbtn .rk-icon{font-size:28px}
+.rankbtn small{color:var(--muted);font-size:11px}
 .btn{padding:12px 24px;border:1px solid var(--line);border-radius:10px;font-size:14px;font-weight:700;color:#fff;background:rgba(255,255,255,.04);cursor:pointer}
 .btn:hover{border-color:#fbbf24}
 .primary{background:linear-gradient(#9d6bff,#6d28d9);border:2px solid #141414;box-shadow:inset 2px 2px 0 rgba(255,255,255,.4),inset -2px -3px 0 rgba(0,0,0,.4);border-radius:4px}
@@ -76,13 +82,12 @@ footer strong{color:#fff}
   <div class="hero-t">
     <p class="eyebrow">ENTRENAMIENTO · STAFF MINECRAFT</p>
     <h1>Quiz Staff</h1>
-    <p class="lead">Banco de 28 preguntas: cada partida saca 12 al azar, así que repetir cambia el examen. Récord: <b id="bestLine">0</b> pts.</p>
+    <p class="lead">10 rangos con 25 preguntas cada uno: completa un rango con 60% para desbloquear el siguiente. Récord: <b id="bestLine">0</b> pts.</p>
   </div>
   <div id="screen-start" class="card glass center">
-    <h2 style="font-family:'Space Grotesk';margin-top:0">Elige categoría</h2>
-    <div class="chips" id="chips"></div>
-    <button class="btn primary" id="startBtn" style="font-size:16px">Empezar quiz ▶</button>
-    <p class="muted">12 preguntas al azar por partida.</p>
+    <h2 style="font-family:'Space Grotesk';margin-top:0">Elige tu rango</h2>
+    <p class="muted">25 preguntas por rango · 60% para ascender · el orden rota en cada intento.</p>
+    <div id="rankGrid"></div>
   </div>
   <div class="card glass" id="histCard">
     <h2 style="font-family:'Space Grotesk';margin-top:0">📋 Tu registro</h2>
@@ -117,69 +122,324 @@ footer strong{color:#fff}
 </main>
 <footer>© 2026 Daniel Esteban Vera Fernandez · <strong>Discohikorybrs</strong> · Todos los derechos reservados.<br><small>Quiz con fines educativos. Hecho con ⛏️</small><div class="visits">👁 <span id="visitCount">…</span> visitas</div></footer>
 <script>
-const QS=[
- {c:"Normativa",q:"Un jugador hace spam por primera vez. ¿Sanción correcta?",o:["Mute 2 horas","Advertencia verbal","Ban 1 día","Mute 12 horas"],a:1,w:"El spam en primera vez es falta leve (Art. 3.1): siempre se empieza con advertencia verbal."},
- {c:"Normativa",q:"Video claro de KillAura, primera vez. ¿Qué aplicas?",o:["Ban 30 días","Mute 3 días","Ban 7 días","Advertencia"],a:2,w:"Hacks en primera vez: ban 7 días (Art. 7.1). La evidencia en video lo justifica."},
- {c:"Normativa",q:"Publican datos personales de un jugador (doxxing).",o:["Mute 1 hora","Ban 7 días","Ban permanente directo","Advertencia + borrar mensaje"],a:2,w:"El doxxing es falta grave (Art. 7.4): ban permanente sin escalas."},
- {c:"Normativa",q:"TP-trap por primera vez con devolución pendiente.",o:["Ban 1 día + devolución","Solo advertencia","Ban 15 días","Mute 1 hora"],a:0,w:"TP-trap primera vez: ban 1 día y devolver lo perdido (Art. 5.3)."},
- {c:"Normativa",q:"Un muteado entra con otra cuenta. ¿Qué haces?",o:["Lo muteas también 30 min","Ban permanente por evasión","Lo ignoras","Le das otra oportunidad"],a:1,w:"Evadir sanción con multicuenta es ban permanente (Art. 7.5)."},
- {c:"Comandos",q:"¿Comando para dar rango mod a un jugador en LuckPerms?",o:["/lp user Alex op","/lp user Alex parent set mod","/lp group mod add Alex","/pex user Alex group set mod"],a:1,w:"La sintaxis LuckPerms es: /lp user <nick> parent set <grupo>."},
- {c:"Comandos",q:"¿Qué permiso necesita un mod para mutear?",o:["essentials.mute","essentials.*","minecraft.command.op","mod.mutear"],a:0,w:"El nodo exacto es essentials.mute. Dar essentials.* a un mod es peligroso."},
- {c:"Comandos",q:"Sintaxis correcta de un tempban de 7 días:",o:["/ban Hacks_7 7d","/tempban Hacks_7 7d KillAura","/tempban 7d Hacks_7","/ban temporal Hacks_7"],a:1,w:"Orden Essentials: /tempban <jugador> <tiempo> [motivo]."},
- {c:"Criterio",q:"Acusan de hacks pero no hay evidencia suficiente.",o:["Banear por precaución","Pedir pruebas y vigilar en invisible","Ignorar el reporte","Mutear al acusado 1 hora"],a:1,w:"Sin evidencia no se sanciona: se pide pruebas y se observa."},
- {c:"Criterio",q:"Tu amigo publicita otro servidor en el general.",o:["Perdonarlo por amistad","Sancionarlo igual y hablarle en privado","Que lo sancione otro staff","Borrar el mensaje sin más"],a:1,w:"La normativa aplica a todos por igual; en privado cuidas la relación."},
- {c:"Criterio",q:"Insulto en caliente + disculpa inmediata.",o:["Ban permanente","Mute leve + mediación","No hacer nada","Ban 30 días"],a:1,w:"Proporcionalidad: sanción leve, mediación y constancia en historial."},
- {c:"Criterio",q:"Griefing de 200 bloques con logs claros.",o:["Pedir más pruebas","Sancionar + rollback","Solo advertir","Esperar a que la víctima insista"],a:1,w:"Con evidencia sólida se actúa: sanción tipificada + reparación."},
- {c:"Normativa",q:"Flood por segunda vez en el chat.",o:["Aviso verbal","Mute 30 minutos","Mute 2 horas","Ban 1 día"],a:1,w:"Flood en segunda vez: mute 30 minutos (Art. 3.1). La escala sube con la reincidencia."},
- {c:"Normativa",q:"Insulto discriminatorio, primera vez.",o:["Mute 12 horas","Ban 14 días","Ban permanente","Mute 3 días"],a:1,w:"Discriminación en primera vez: ban 14 días (Art. 7.2)."},
- {c:"Normativa",q:"Griefing menor y el jugador ofrece reparar el daño.",o:["Ban 1 día igual","Advertencia + reparación","Mute 2 horas","No hacer nada"],a:1,w:"Griefing menor primera vez con reparación: advertencia + reparar (Art. 5.4)."},
- {c:"Comandos",q:"¿Comando correcto para dar 64 diamantes a Alex?",o:["/give Alex diamond 64","/give Alex minecraft:diamond 64","/give minecraft:diamond Alex 64","/item Alex diamond 64"],a:1,w:"Sintaxis: /give <jugador> <item> [cantidad], con el ID completo del item."},
- {c:"Comandos",q:"¿Cómo ves el dinero de otro jugador?",o:["/money ver","/bal <jugador>","/eco check","/baltop <jugador>"],a:1,w:"Es /bal <jugador>. El baltop solo muestra el ranking."},
- {c:"Comandos",q:"Un usuario necesita ayuda privada en Discord.",o:["!ticket <asunto>","!report","!help","!canal"],a:0,w:"!ticket <asunto> abre un canal privado de soporte."},
- {c:"Criterio",q:"Te equivocas y muteas 1 día en vez de 1 hora.",o:["Dejarlo, ya está hecho","Corregir, disculparte y registrarlo","Quitarlo sin decir nada","Culpar al reglamento"],a:1,w:"Los errores se corrigen en público cuando toca: corrige, discúlpate y deja constancia."},
- {c:"Criterio",q:"Dos staffs discuten una sanción en el chat público.",o:["Apoyar al de mayor rango ahí mismo","Llevarlo a privado y unificar criterio","Discutirlo en público también","Ignorarlo, no es tu problema"],a:1,w:"Todo problema interno del Staff se resuelve en privado: criterio único y luego se comunica."},
- {c:"Normativa",q:"Publicidad de otro servidor, segunda vez.",o:["Mute 2 horas","Ban 7 días","Mute 1 día","Advertencia"],a:2,w:"Publicidad en segunda vez: mute 1 día (Art. 5.2)."},
- {c:"Normativa",q:"Off-topic reiterado tras un aviso.",o:["No hacer nada","Mute 15 minutos","Ban 1 día","Mute 2 horas"],a:1,w:"Off-topic reiterado: mute 15 minutos (Art. 3.3)."},
- {c:"Normativa",q:"Insultos por tercera vez.",o:["Mute 12 horas","Ban 7 días","Mute 3 días","Ban permanente"],a:2,w:"Insultos en tercera vez: mute 3 días (Art. 5.1)."},
- {c:"Comandos",q:"¿Cómo le quitas el OP a alguien?",o:["/deop <jugador>","/unop <jugador>","/op remove <jugador>","/lp user take op"],a:0,w:"Es /deop <jugador>, lo contrario de /op."},
- {c:"Comandos",q:"¿Comando para poner de día?",o:["/day","/time set day","/time day","/hora dia"],a:1,w:"Sintaxis completa: /time set day."},
- {c:"Comandos",q:"¿Cómo ves los strikes de un usuario en Discord?",o:["!info","!userinfo @usuario","/whois","!stats"],a:1,w:"!userinfo muestra info y strikes del usuario."},
- {c:"Criterio",q:"Reporte anónimo sin pruebas contra un moderador.",o:["Archivarlo por ser anónimo","Ignorarlo por ser contra un mod","Pedir pruebas y tratarlo igual","Creerle al moderador"],a:2,w:"Los reportes se evalúan igual sin importar el rango del acusado."},
- {c:"Criterio",q:"Un streamer famoso aparece en video con hacks.",o:["Ban directo sin revisar","Sanción más fuerte por dar ejemplo","Mismo proceso y sanción que cualquiera","Avisarle en privado primero"],a:2,w:"La fama no cambia la norma: mismo proceso, misma sanción."}
+const RANKS_Q=[
+{r:"Jr-Helper",icon:"🌱",qs:[
+["Un jugador hace spam por primera vez, ¿qué haces?",["Mutearlo una hora","Avisarle en el chat","Banearlo","Ignorarlo"],1,"Falta leve: siempre se empieza avisando en el chat."],
+["Alguien escribe TODO EN MAYÚSCULAS, ¿qué haces?",["Banearlo un día","Mutearlo ya","Pedirle que no lo haga","Reírte con él"],1,"Primero se avisa con educación; la sanción viene si repite."],
+["Hablan de otro juego en el canal de ayuda, ¿qué haces?",["Mutear a todos","Indicarles el canal correcto","Banearlos","Unirte a la charla"],1,"El Jr-Helper orienta: cada tema va en su canal."],
+["Un jugador hace flood, ¿qué haces?",["Mutearlo tú mismo","Pedirle que pare y avisar a un mod","Banearlo","Flood también"],1,"No tienes comandos: calmas y derivas a quien sí."],
+["Ves un insulto leve en el chat, ¿qué haces?",["Insultar de vuelta","Mutearlo","Reportarlo a un mod con captura","Ignorarlo"],2,"Reportas con evidencia; sancionar no es tu rol aún."],
+["Pasan la IP de otro servidor, ¿qué haces?",["Entrar a verlo","Reportarlo y no compartirla","Compartirla tú también","Pedir el Discord"],1,"La publicidad se reporta de inmediato y no se difunde."],
+["Un nuevo pregunta cómo volver al spawn, ¿qué haces?",["Ignorarlo","Decirle /spawn o llevarlo","Decirle que busque solo","Llamar a un admin"],1,"Ayudar en lo básico es tu trabajo principal."],
+["¿Para qué sirve /msg?",["Banear","Enviar mensaje privado","Ver dinero","Ir al spawn"],1,"/msg <nick> <texto> habla en privado."],
+["¿Qué muestra /help?",["Los hacks","La ayuda y comandos","Los baneados","El ping"],1,"/help lista la ayuda disponible."],
+["¿Qué hace /spawn?",["Te banea","Te lleva al spawn","Te da kits","Te mutea"],1,"Teleporta al punto de aparición."],
+["¿Dónde se ven las reglas?",["En /rules","En el Nether","No existen","En tu casa"],0,"/rules muestra la normativa del servidor."],
+["Encuentras un bug que duplica items, ¿qué haces?",["Usarlo antes que lo quiten","Avisar al Staff con detalles","Contarlo en el chat","Grabarlo y no decir nada"],1,"Abusar bugs se sanciona; reportarlo ayuda al servidor."],
+["¿Puedes compartir tu contraseña con un amigo?",["Sí, si es de confianza","Nunca","Solo con staff","Solo por Discord"],1,"Las cuentas son personales e intransferibles."],
+["Dos jugadores discuten en público, ¿qué haces?",["Elegir un bando","Pedir calma y avisar a un mod","Mutearlos","Insultarlos"],1,"Calmas, no tomas partido y derivas."],
+["Un mod te pide ayuda vigilando, ¿qué haces?",["Negarte","Ayudar y seguir sus indicaciones","Tomar el mando","Ignorarlo"],1,"Apoyas y aprendes siguiendo indicaciones."],
+["¿Qué hace un Jr-Helper?",["Banea hackers","Apoya, reporta y aprende","Da rangos","Reinicia el servidor"],1,"Tu rol es apoyar al equipo y a los jugadores."],
+["¿Cómo se reporta a alguien?",["Insultándolo","Con ticket o a un mod, con pruebas","Por Twitter","No se puede"],1,"Por los canales oficiales y con evidencia."],
+["¿Para qué sirve un ticket?",["Pedir ayuda privada","Banear gente","Hablar con amigos","Conseguir items"],0,"El ticket abre un canal privado de soporte."],
+["¿Dónde se apela una sanción?",["En el chat general","En tickets/apelaciones","Por mensaje privado al dueño","No se puede"],1,"Solo por el canal oficial de apelaciones."],
+["Un amigo te pide que lo desbanees, ¿qué haces?",["Desbanearlo","Decirle que apele por su canal","Ignorarlo para siempre","Banearlo más"],1,"Nadie está por encima del proceso, ni tus amigos."],
+["¿Se puede compartir cuenta?",["Sí","No, es personal","Solo con hermanos","Solo con staff"],1,"Compartir cuenta está prohibido."],
+["Alguien pide tus datos personales, ¿qué haces?",["Darlos si es mod","No darlos nunca","Darlos por Discord","Darlos si insiste"],1,"Tus datos no se comparten con nadie."],
+["Ves a alguien en zona prohibida, ¿qué haces?",["Acompañarlo","Avisarle y reportar","Darle items","Seguirlo en silencio"],1,"Avisas y reportas con ubicación."],
+["¿Qué haces antes de opinar de una sanción?",["Criticarla en público","Leer la norma y preguntar en privado","Ignorarla","Apoyar siempre"],1,"Primero entiendes la norma; las dudas van en privado."],
+["Un jugador nuevo está perdido, ¿qué haces?",["Reírte","Guiarlo y explicarle lo básico","Darle OP","Ignorarlo"],1,"Recibir bien a los nuevos retiene jugadores."]
+]},
+{r:"Helper",icon:"🛠️",qs:[
+["Flood por segunda vez, ¿sanción?",["Aviso","Mute 30 minutos","Mute 2 horas","Ban 1 día"],1,"Segunda vez de flood: mute 30 minutos."],
+["Insultos por segunda vez, ¿sanción?",["Mute 1 hora","Ban 7 días","Mute 12 horas","Advertencia"],2,"Segunda vez de insultos: mute 12 horas."],
+["Mayúsculas reiteradas tras aviso, ¿sanción?",["Ban 1 día","Nada","Mute 15 minutos","Mute 2 horas"],2,"Reincidir en mayúsculas: mute 15 minutos."],
+["Sintaxis correcta de un mute:",["/mute <nick> [tiempo] [motivo]","/mute [tiempo] <nick>","/silenciar <nick>","/mute <motivo> <nick>"],0,"Orden: jugador, tiempo y motivo."],
+["¿Para qué sirve /warn?",["Banear","Advertir y dejar registro","Mutear 1 hora","Perdonar"],1,"El warn advierte y queda en el historial."],
+["Dos jugadores discuten leve, ¿qué haces?",["Banear a los dos","Escuchar, calmar y mediar","Ignorarlos","Mutear 1 día"],1,"Medias primero: escucha y calma el ambiente."],
+["Uno se disculpa tras insultar, ¿qué haces?",["Ban permanente","Mute leve + mediación","Nada en absoluto","Ban 30 días"],1,"Proporcionalidad: leve, mediación y constancia."],
+["Ticket: no puede entrar (connection refused), ¿qué pides?",["Su contraseña","Versión, mensaje exacto y desde cuándo","Su IP","Nada, lo cierras"],1,"Sin datos no se diagnostica: versión y error exacto."],
+["Pide objetos perdidos sin protección, ¿qué haces?",["Devolverlos","Explicar y negar sin pruebas","Banearlo","Ignorarlo"],1,"Sin protección ni pruebas no hay devolución."],
+["¿Dónde se revisa una apelación?",["En el general","En el ticket de apelaciones","Por MD","En el juego"],1,"Solo por el canal oficial de apelaciones."],
+["Publicidad primera vez, ¿sanción?",["Ban 7 días","Nada","Mute 2 h + borrar mensaje","Mute 1 día"],2,"Primera vez: mute 2 horas y borrar el mensaje."],
+["Off-topic segunda vez, ¿sanción?",["Ban","Mute 15 minutos","Mute 2 horas","Nada"],1,"Segunda vez de off-topic: mute 15 minutos."],
+["Reporte sin pruebas, ¿qué haces?",["Sancionar igual","Pedir capturas o video","Ignorarlo","Banear al reportante"],1,"Sin evidencia se piden pruebas, no se sanciona."],
+["Reporte sin pruebas contra un mod, ¿qué haces?",["Archivarlo por anónimo","Ignorarlo","Pedir pruebas y tratarlo igual","Creerle al mod"],2,"Todos se evalúan igual, tenga el rango que tenga."],
+["Caso medio que te supera, ¿qué haces?",["Inventar sanción","Derivarlo a un Mod","Ignorarlo","Banear por si acaso"],1,"Derivar a tiempo también es buen criterio."],
+["En Discord, flood en un canal, ¿qué haces?",["Ban directo","Timeout o !mute temporal","Borrar el servidor","Nada"],1,"Timeout o mute temporal según la herramienta."],
+["Canal descontrolado, ¿qué haces?",["Cerrar el servidor","Activar slowmode","Banear a todos","Llorar"],1,"El modo lento enfría el canal."],
+["Cada sanción debe quedar...",["En secreto","Registrada en el historial","En tu cabeza","En papel"],1,"Sin registro no hay reincidencias ni control."],
+["Tu amigo insulta, ¿qué haces?",["Perdonarlo","Sancionarlo igual","Que lo haga otro","Mirar a otro lado"],1,"Mismo trato para amigos y desconocidos."],
+["Insulto con disculpa inmediata, ¿qué haces?",["Ban permanente","Mute leve + mediación","Nada","Ban 30 días"],1,"Leve, mediación y constancia."],
+["Posible raid de bots entrando, ¿qué haces?",["Saludarlos","Avisar a Mod+ de inmediato","Banear uno por uno","Apagar tu PC"],1,"Las raids se escalan rápido al rango superior."],
+["Todo reporte merece...",["Burla","Ser tomado en serio","Dinero","Silencio"],1,"Cada reporte se revisa con seriedad."],
+["Antes de cerrar un ticket, ¿qué haces?",["Cerrarlo ya","Confirmar la solución con el usuario","Borrarlo","Pasarlo a otro"],1,"Se cierra cuando el usuario confirma."],
+["Un jugador te insulta a ti como staff, ¿qué haces?",["Insultar de vuelta","Sancionar según norma, sin venganza","Banearlo permanente","Llorar en general"],1,"Se sanciona lo justo, sin tomarlo personal."],
+["Captura con insulto pero sin contexto, ¿qué haces?",["Sancionar ya","Pedir contexto y más pruebas","Ignorarla","Banear al que la envía"],1,"Una captura suelta no basta: se pide contexto."]
+]},
+{r:"Jr-Mod",icon:"🔰",qs:[
+["Sintaxis de tempban:",["/tempban <nick> <tiempo> [motivo]","/tempban <tiempo> <nick>","/ban temporal <nick>","/temp <nick>"],0,"Jugador, tiempo y motivo en ese orden."],
+["TP-trap primera vez, ¿sanción?",["Solo advertencia","Ban 1 día + devolución","Ban 15 días","Mute 1 hora"],1,"Primera vez: ban 1 día y devolver lo perdido."],
+["Griefing menor primera vez con reparación, ¿sanción?",["Ban 1 día","Advertencia + reparación","Mute 2 horas","Nada"],1,"Si repara: advertencia + reparación."],
+["Publicidad segunda vez, ¿sanción?",["Mute 2 horas","Ban 7 días","Mute 1 día","Advertencia"],2,"Segunda vez: mute 1 día."],
+["Insultos tercera vez, ¿sanción?",["Mute 12 horas","Ban 7 días","Mute 3 días","Ban permanente"],2,"Tercera vez: mute 3 días."],
+["Apelación de un mute, ¿qué revisas?",["Su skin","Pruebas, historial y contexto","Su dinero","Su edad"],1,"Se decide con pruebas e historial, no con simpatía."],
+["Sospecha de hacks sin pruebas, ¿qué haces?",["Banear ya","Vigilar en invisible y pedir pruebas","Ignorar","Anunciarlo"],1,"Se observa y se recaba evidencia antes de actuar."],
+["Sospecha de multicuenta evadiendo, ¿qué haces?",["Banear las dos ya","Revisar IPs y escalar con pruebas","Felicitarlo","Nada"],1,"Se verifica y se escala con evidencia."],
+["Necesitas rollback y no puedes, ¿qué haces?",["Lo intentas igual","Lo solicitas a Sr-Mod con coordenadas","Lo olvidas","Baneas al culpable x2"],1,"Se pide a quien tenga el permiso, con datos exactos."],
+["¿Comando para investigar bloques?",["/co lookup","/investigar","/who","/log ver"],0,"CoreProtect lookup muestra quién tocó qué."],
+["Sospecha de X-Ray, ¿qué revisas?",["Su skin","Estadísticas de minado y cuevas","Su casa","Su Discord"],1,"Patrones de minado delatan el X-Ray."],
+["Discriminación primera vez, ¿sanción?",["Mute 12 horas","Ban 14 días","Ban permanente","Mute 3 días"],1,"Primera vez: ban 14 días."],
+["TP-trap segunda vez, ¿sanción?",["Ban 1 día","Advertencia","Ban 3 días","Mute"],2,"Segunda vez: ban 3 días."],
+["Griefing menor segunda vez, ¿sanción?",["Advertencia","Ban 1 día","Mute","Nada"],1,"Segunda vez: ban 1 día."],
+["Robo de cofres con logs, ¿qué haces?",["Nada","Ban + devolución al dueño","Quedarte los items","Perdonar siempre"],1,"Se sanciona y se devuelve lo robado."],
+["Insulto grave aislado, ¿qué haces?",["Reírte","Escalar o sancionar según norma","Ban permanente directo","Ignorarlo"],1,"Lo grave se escala o se sanciona fuerte."],
+["Vigilar un evento PvP, ¿qué miras?",["Quién grita más","Trampas, insultos y trampas de TP","El chat de voz","Nada"],1,"En eventos se vigila juego limpio y ambiente."],
+["¿Cuándo usar /ban en vez de /tempban?",["Siempre","En faltas permanentes o 3ª grave","Nunca","Cuando estés enojado"],1,"El permanente es para lo más grave o reincidencia máxima."],
+["¿Cuándo usar /kick?",["Para banear","Expulsión seria sin ban","Para saludar","Para mutear"],1,"El kick expulsa como advertencia seria."],
+["Testimonio sin pruebas en falta grave, ¿vale?",["Sí, basta","No, se necesitan pruebas","A veces","Solo si es mod"],1,"Lo grave exige evidencia sólida."],
+["Sancionas algo, ¿a quién avisas?",["A nadie","Al equipo en el canal interno","Al general","A tu amigo"],1,"El equipo debe saber qué se sancionó."],
+["Apelación con pruebas nuevas reales, ¿qué haces?",["Ignorarla","Reabrir el caso y revisar","Banear de nuevo","Borrarla"],1,"Prueba nueva = caso reabierto."],
+["Vanish, ¿cuándo usarlo?",["Para jugar","Solo para vigilar sospechosos","Para asustar","Siempre"],1,"El vanish es herramienta de vigilancia, no juguete."],
+["Dos versiones distintas de un hecho, ¿qué haces?",["Creer al primero","Contrastar logs y testigos","Creer al más antiguo","Sortearlo"],1,"Se contrastan pruebas antes de decidir."],
+["Flood durante un evento oficial, ¿qué haces?",["Nada, es evento","Mute temporal para no arruinarlo","Ban permanente","Cancelar el evento"],1,"En eventos se corta rápido y leve."]
+]},
+{r:"Mod",icon:"🛡️",qs:[
+["Video claro de KillAura primera vez, ¿sanción?",["Ban 30 días","Mute","Ban 7 días","Advertencia"],2,"Primera vez con evidencia: ban 7 días."],
+["Hacks segunda vez, ¿sanción?",["Ban 7 días","Ban 30 días","Permanente","Mute"],1,"Segunda vez: ban 30 días."],
+["Hacks tercera vez, ¿sanción?",["Ban 30 días","Ban 7 días","Ban permanente","Mute 3 días"],2,"Tercera vez: permanente."],
+["Multicuenta evadiendo sanción, ¿sanción?",["Mute","Ban 1 día","Ban permanente","Aviso"],2,"Evadir es permanente."],
+["Doxxing confirmado, ¿sanción?",["Mute 1 hora","Ban 7 días","Ban permanente + borrar datos","Advertencia"],2,"Permanente y borrar todo rastro."],
+["Griefing mayor con pruebas, ¿qué haces?",["Nada","Ban 7 días + rollback","Advertencia","Mute"],1,"Grave: ban 7 días y rollback."],
+["Apelación de ban con disculpa pero sin pruebas nuevas, ¿qué haces?",["Aceptarla","Rechazarla: la evidencia se mantiene","Reducirla siempre","Ignorarla"],1,"Sin pruebas nuevas no hay cambio."],
+["¿Cuándo reducir una sanción?",["Nunca","Con atenuantes reales y pruebas","Si es amigo","Si llora mucho"],1,"Solo con motivos objetivos verificables."],
+["Disputa entre jugadores con insultos mutuos, ¿qué haces?",["Ban a los dos siempre","Mediar y sancionar proporcional","Ignorar","Elegir un culpable al azar"],1,"Se media y se sanciona a cada uno según lo suyo."],
+["Un Helper te pide ayuda con un caso, ¿qué haces?",["Ignorarlo","Guiarlo y supervisar","Hacerlo tú sin explicar","Regañarlo"],1,"Enseñar al equipo es tarea del Mod."],
+["Entran 20 bots spameando, ¿qué haces?",["Saludarlos","Bans + avisar a Admins","Banear uno","Apagar el servidor"],1,"Se contiene y se escala de inmediato."],
+["Sabes hacer rollback, ¿qué comando es?",["/rollback ya","/co rollback con filtros","/undo todo","/fix mundo"],1,"CoreProtect rollback con usuario, tiempo y radio."],
+["Tienda: un jugador estafa en intercambios, ¿qué haces?",["Reírte","Mediar, devolver y sancionar","Ban permanente directo","Nada, es su problema"],1,"Se media, se devuelve y se sanciona."],
+["Amenaza leve sin datos reales, ¿qué haces?",["Nada","Ban temporal + advertencia seria","Permanente","Mute 5 min"],1,"Se toma en serio con sanción temporal."],
+["Toxicidad reiterada pese a mutes, ¿qué haces?",["Seguir muteando igual","Subir la escala hasta ban","Perdonar","Ignorar"],1,"Si no corrige, la escala sigue subiendo."],
+["Reporte falso a propósito, ¿qué haces?",["Nada","Advertencia o sanción al acusador","Premiarlo","Borrarlo en silencio"],1,"Denunciar en falso también se sanciona."],
+["Sancionan a tu compañero y crees que erró, ¿qué haces?",["Criticarlo en público","Hablarlo en privado con pruebas","Apoyarlo siempre","Denunciarlo"],1,"Entre staff, en privado y con pruebas."],
+["Trampas en torneo oficial, ¿qué haces?",["Nada, es evento","Descalificar + sancionar","Darle el premio","Repetir el torneo"],1,"Hacer trampa en eventos se castiga."],
+["Spam de bots en Discord, ¿qué haces?",["Ban + limpiar mensajes","Saludarlos","Nada","Cerrar Discord"],0,"Ban, limpieza y revisar seguridad."],
+["Contenido NSFW en chat, ¿qué haces?",["Reírte","Ban + borrar todo","Advertencia leve","Ignorarlo"],1,"NSFW: ban y limpieza inmediata."],
+["Acoso a un menor, ¿qué haces?",["Nada","Permanente + reportar a Admins","Mute 1 hora","Hablar con él"],1,"Gravísimo: permanente y escala urgente."],
+["Venta por dinero real (RMT), ¿qué haces?",["Permitirlo","Ban + retirar lo vendido","alentarlo","Ignorarlo"],1,"El RMT rompe la economía y suele violar normas."],
+["Todo ban grave debe quedar...",["En secreto","Documentado con pruebas","En tu memoria","Sin registrar"],1,"Documentar protege al equipo ante apelaciones."],
+["Flood extremo que colapsa el chat, ¿qué haces?",["Esperar","Mute largo + limpiar","Ban permanente","Apagar el chat siempre"],1,"Se corta de raíz y se limpia."],
+["Un jugador corrige su conducta tras sanción, ¿qué haces?",["Subirle la sanción","Reconocerlo y cerrar bien","Ignorarlo","Sospechar siempre"],1,"El cambio positivo también se registra."]
+]},
+{r:"Sr-Mod",icon:"⚔️",qs:[
+["Doxxing con pruebas, ¿qué haces?",["Mute","Permanente + borrar + reportar","Advertencia","Nada"],1,"Permanente, limpieza y reporte a instancias mayores."],
+["Confirmas multicuenta evadiendo, ¿qué haces?",["Mutear una","Permanente a todas","Avisar nada más","Perdonar una"],1,"Todas las cuentas vinculadas caen."],
+["Dos staffs discuten en público, ¿qué haces?",["Unirte al debate","Llevarlo a privado y unificar","Apoyar al de mayor rango","Ignorarlo"],1,"Lo interno siempre en privado."],
+["Raid coordinada al servidor, ¿qué haces?",["Observar","Contención + bans + avisar Admins","Banear de a uno lento","Cerrar los ojos"],1,"Se contiene, se banea y se escala ya."],
+["Destrucción masiva, ¿qué haces?",["Llorar","Coordinar rollback + bans","Banear al primero que veas","Esperar"],1,"Se coordina equipo: rollback y sanciones."],
+["Un Jr-Mod comete errores seguidos, ¿qué haces?",["Expulsarlo","Plan de mejora con feedback","Humillarlo","Ignorarlo"],1,"Se forma con feedback, no con castigo."],
+["Servidor caído en tu turno, ¿qué haces?",["Callar","Comunicar a usuarios y escalar","Reiniciarlo a ciegas","Irte"],1,"Se informa con calma y se escala."],
+["Apelación dudosa de un ban grave, ¿qué haces?",["Decidir solo rápido","Votación del equipo con pruebas","Aceptarla siempre","Rechazarla siempre"],1,"Lo dudoso se decide en equipo."],
+["Staff corrupto con pruebas, ¿qué haces?",["Callar por lealtad","Reportar a Admins con pruebas","Enfrentarlo en público","Unirte"],1,"La corrupción se reporta arriba con pruebas."],
+["Favoritismo de un mod, ¿qué haces?",["Nada","Corregirlo en privado","Publicarlo","Expulsarlo ya"],1,"Se corrige en privado primero."],
+["Tienda pay-to-win reportada, ¿qué haces?",["Ignorarlo","Escalar a Admins (EULA)","Borrar la tienda","Banear al dueño"],1,"El pay-to-win viola la EULA: escala."],
+["Chargeback en la tienda, ¿qué haces?",["Regalarle más","Ban hasta resolver el pago","Nada","Borrar su cuenta"],1,"Se bloquea hasta aclarar el pago."],
+["Auditoría de sanciones del mes, ¿qué miras?",["Nada","Historiales, motivos y coherencia","Solo los bans","Los nombres"],1,"Se revisa coherencia y registros."],
+["Sanción en MC y mismo usuario en Discord, ¿qué haces?",["Nada","Sincronizar criterios en ambas","Solo una","Banear en las dos siempre"],1,"Criterio coherente en ambas plataformas."],
+["Equipo quemado (burnout), ¿qué haces?",["Exigir más","Rotar turnos y descansos","Expulsar","Ignorar"],1,"Se cuida al equipo con rotación."],
+["Manual interno desactualizado, ¿qué haces?",["Nada","Actualizarlo con el equipo","Borrarlo","Quejarse"],1,"La documentación vive actualizada."],
+["Evento grande con riesgos, ¿qué haces?",["Improvisar","Plan de seguridad y roles","Cancelarlo","Solo mirar"],1,"Se planifica seguridad y roles."],
+["Evidencia manipulada, ¿qué haces?",["Aceptarla","Verificar cadena y descartar si es falsa","Ignorarla","Banear al instante"],1,"La evidencia se verifica antes de usarse."],
+["Amenaza real fuera del juego, ¿qué haces?",["Mute","Permanente + autoridades/Admins","Nada","Hablar con él"],1,"Lo real se escala a instancias reales."],
+["Apelación que solo un Admin decide, ¿qué haces?",["Decidirla tú","Derivarla con tu informe","Rechazarla","Aceptarla"],1,"Se deriva con informe completo."],
+["Staff tóxico con jugadores, ¿qué haces?",["Reírte","Amonestar en privado","Expulsar ya","Nada"],1,"Primero amonestación privada."],
+["Staff inactivo sin aviso, ¿qué haces?",["Expulsar ya","Reportar a Admins","Cubrirlo siempre","Nada"],1,"Se reporta para reorganizar."],
+["Nuevo procedimiento útil, ¿qué haces?",["Guardarlo","Proponerlo al equipo","Imponerlo","Nada"],1,"Se propone y se acuerda en equipo."],
+["Métricas del mes, ¿qué miras?",["Nada","Tickets, sanciones y tiempos","Solo bans","Solo quejas"],1,"Datos para mejorar el servicio."],
+["Fin de turno con casos abiertos, ¿qué haces?",["Irte sin más","Entregar novedades al siguiente","Cerrar todo rápido","Borrarlos"],1,"Se entrega el turno con novedades."]
+]},
+{r:"Jr-Admin",icon:"🔧",qs:[
+["Crear un grupo en LuckPerms:",["/lp create group","/lp creategroup <nombre>","/group add","/rango crear"],1,"Sintaxis: /lp creategroup <nombre>."],
+["Dar grupo vip a un jugador:",["/lp user Alex op","/lp user Alex parent set vip","/lp vip add Alex","/dar vip Alex"],1,"Se asigna con parent set."],
+["Dar un permiso a un grupo:",["/lp group mod permission set <nodo>","/lp perm dar","/permiso add","/lp allow"],0,"Sintaxis completa con permission set."],
+["Poner prefijo a un grupo:",["/nick grupo","/lp group mod meta setprefix ...","/prefix poner","/tag set"],1,"Con meta setprefix y códigos &."],
+["Hacer que vip herede de default:",["/lp group vip parent add default","/lp vip hereda default","/copy default vip","No se puede"],0,"La herencia va con parent add."],
+["Antes de tocar la config, ¿qué haces?",["Nada","Backup de los archivos","Reiniciar","Borrar logs"],1,"Siempre backup antes de cambiar."],
+["Probar un cambio grande, ¿dónde?",["En producción","En servidor de prueba","En el lobby lleno","Donde sea"],1,"Nunca se experimenta en producción."],
+["Definir el spawn:",["/spawn","/setspawn mirando el punto","/warp spawn","/home spawn"],1,"Se para en el punto y /setspawn."],
+["Crear un kit básico:",["En config de Essentials","Con /kit","No se puede","Con OP"],0,"Los kits se definen en la config."],
+["Crear un warp:",["/warp crear","/setwarp <nombre>","/addwarp","/punto"],1,"Parado en el lugar: /setwarp."],
+["Mantenimiento con whitelist:",["Apagar sin avisar","/whitelist on + aviso","Banear a todos","Nada"],1,"Whitelist + aviso previo."],
+["Ver rendimiento (TPS):",["/tps","/lag?","/ping server","/ram"],0,"/tps muestra ticks por segundo."],
+["Revisar errores, ¿dónde?",["En Discord","En latest.log","En el chat","En tu cabeza"],1,"Los logs están en latest.log."],
+["Rollback de una zona con CoreProtect:",["/co rollback u: t: r:","/undo","/rollback ya","/fix"],0,"Con usuario, tiempo y radio."],
+["Crear región WorldGuard:",["/rg define <nombre>","/region nueva","/proteger","/wg new"],0,"Con selección previa: /rg define."],
+["Bloquear PvP en spawn:",["/rg flag spawn pvp deny","/pvp off","/nopelear","/flag"],0,"Flag pvp en deny."],
+["Dar dinero a un jugador:",["/eco give <nick> <monto>","/dinero dar","/pay","/dar plata"],0,"Sintaxis de Essentials."],
+["Precios de tienda desequilibrados, ¿qué haces?",["Nada","Revisar y ajustar con criterio","Regalar todo","Cerrar tienda"],1,"La economía se equilibra con datos."],
+["Preparar zona de evento, ¿qué haces?",["Nada","Proteger, reglas y premios claros","Abrir sin más","Solo premios"],1,"Zona protegida + reglas + premios."],
+["Actualizar un plugin, ¿cómo?",["Directo sin más","Backup + changelog + probar","Borrar el viejo","A ojo"],1,"Backup, changelog y prueba."],
+["Compatibilidad de versiones, ¿qué miras?",["El color","MC-Java-plugin compatibles","El nombre","Nada"],1,"Todo debe ser compatible entre sí."],
+["Reinicio programado, ¿qué haces?",["Reiniciar ya","Avisar con tiempo","Nunca reiniciar","A medianoche sin aviso"],1,"Se avisa con anticipación."],
+["Bug reportado, ¿qué haces?",["Ignorarlo","Reproducirlo y reportar al dev","Banear al que avisa","Borrarlo"],1,"Reproducir + reportar con datos."],
+["Cambias algo importante, ¿qué haces?",["Nada","Anotar el cambio y avisar","Callar","Borrar logs"],1,"Todo cambio se documenta."],
+["Pides ayuda a un dev, ¿qué llevas?",["Nada","Logs completos + pasos","Captura borrosa","Prisa"],1,"Con logs y pasos te ayudan rápido."]
+]},
+{r:"Admin",icon:"⚡",qs:[
+["Cuentas del Staff, ¿qué exigen?",["Nada","2FA y contraseñas únicas","Compartirlas","Anotarlas en Discord"],1,"Seguridad básica: 2FA y claves únicas."],
+["Tokens y claves API, ¿dónde?",["En el chat","Nunca en público ni en Git","En un bloc","En Discord"],1,"Jamás se exponen ni se suben a repos."],
+["Backups, ¿cómo deben estar?",["No hacen falta","Probados y externos","En el mismo disco","De adorno"],1,"Backup no probado no existe."],
+["Ataque DDoS, ¿qué haces?",["Llorar","Contactar al host + mitigar","Apagar todo","Esperar"],1,"Se escala al proveedor con mitigación."],
+["Contratar Staff, ¿cómo?",["A dedo","Proceso + prueba + seguimiento","Al primero","Al amigo"],1,"Proceso justo con periodo de prueba."],
+["Despedir Staff, ¿cómo?",["En público","En privado y con pruebas","Sin decir nada","Con ban"],1,"En privado, con motivos y pruebas."],
+["Diseñar reglas, ¿cómo?",["Largas y confusas","Claras y proporcionales","Sin reglas","Copiar otras"],1,"Claras, cortas y proporcionales."],
+["Acceso a consola, ¿para quién?",["Todos","Solo responsables","Cualquiera que pida","Nadie"],1,"La consola es acceso crítico limitado."],
+["Auditar permisos, ¿qué buscas?",["Nada","Wildcards y nodos de más","Los nombres","Los colores"],1,"Se buscan * y permisos sobrantes."],
+["Tienda y EULA de Mojang, ¿qué se vende?",["Todo","Solo cosméticos, nada pay-to-win","OP por dinero","Bans"],1,"La EULA prohíbe ventajas por dinero."],
+["Actualizar versión del servidor, ¿cómo?",["Directo","Plan + backup + rollback listo","Sin avisar","Nunca"],1,"Con plan y marcha atrás."],
+["Monitoreo básico, ¿qué miras?",["Nada","TPS, RAM y disco","El clima","El chat"],1,"Rendimiento y espacio constantes."],
+["Apelación final polémica, ¿quién decide?",["Un helper","El Admin con criterio","Votación popular","Nadie"],1,"La última palabra es del Admin."],
+["Crisis pública, ¿cómo comunicas?",["Silencio total","Información clara sin pánico","Culpar a alguien","Borrar todo"],1,"Transparencia calmada genera confianza."],
+["Datos del servidor, ¿dónde?",["En un USB","Backups externos automáticos","En el PC","No hacen falta"],1,"Externos y automáticos."],
+["Roles Discord-Minecraft, ¿cómo?",["Sin relación","Sincronizados y coherentes","Separados","Iguales todos"],1,"Coherencia entre plataformas."],
+["Inactividad del Staff, ¿qué haces?",["Nada","Política clara + seguimiento","Expulsar a todos","Ignorar"],1,"Reglas claras de actividad."],
+["Equipo quemado, ¿qué haces?",["Exigir más","Descansos y rotación","Expulsar","Nada"],1,"Cuidar al equipo rinde más."],
+["Tras un incidente grave, ¿qué haces?",["Olvidarlo","Post-mortem: qué pasó y fix","Culpar","Callar"],1,"Se aprende documentando."],
+["Mojang cambia la EULA, ¿qué haces?",["Ignorarlo","Revisar tienda y reglas","Cerrar","Nada"],1,"Cada cambio se revisa contra la tienda."],
+["Proteger menores, ¿qué haces?",["Nada","Normas + moderar DMs públicos","Banear menores","Ignorar"],1,"Protección activa de menores."],
+["Disputa de pago en tienda, ¿qué haces?",["Regalar más","Política de reembolsos clara","Ignorar","Banear"],1,"Política escrita y pareja."],
+["Ampliar slots, ¿cuándo?",["Siempre","Con demanda y recursos","Nunca","Por moda"],1,"Se amplía con datos, no por impulso."],
+["Seguridad de Discord, ¿qué revisas?",["Nada","Permisos de canales y bots","Emojis","Nombres"],1,"Permisos mínimos por rol y bot."],
+["Plan del trimestre, ¿cómo?",["Improvisar","Metas medibles + fechas","Copiar otro","No planear"],1,"Metas claras y medibles."]
+]},
+{r:"Developer",icon:"💻",qs:[
+["YAML, regla de oro:",["Usar tabs","Espacios, nunca tabs","Todo en una línea","Mayúsculas"],1,"El YAML usa espacios; un tab lo rompe."],
+["Permiso con * (wildcard), ¿a quién?",["A todos","Solo consola/admin total","A mods","A VIPs"],1,"El * da todo: solo nivel máximo."],
+["Negar un permiso, ¿cómo?",["Borrándolo","Nodo en false","Con /no","No se puede"],1,"Se niega poniéndolo en false."],
+["Investigar un permiso que falla:",["Adivinar","/lp verbose para ver checks","Reiniciar","Dar *"],1,"El verbose muestra qué nodo se evalúa."],
+["Error con stacktrace, ¿qué lees?",["La última línea","La primera causa del error","Todo el archivo","Nada"],1,"La causa raíz suele estar arriba."],
+["Probar código nuevo, ¿dónde?",["En producción","En servidor de test","En el lobby","Donde sea"],1,"Jamás en producción directamente."],
+["Compatibilidad, ¿qué verificas?",["El nombre","Versión MC-Java-plugin","El tamaño","El autor"],1,"Todo debe ser compatible entre sí."],
+["Commits en Git, ¿cómo?",["Sin mensaje","Mensajes claros y cortos","Un commit gigante","Sin Git"],1,"Mensajes claros facilitan volver atrás."],
+["Antes de editar configs, ¿qué haces?",["Nada","Backup","Borrar","Rezar"],1,"Backup siempre antes de tocar."],
+["Lag en el servidor, ¿cómo mides?",["A ojo","Timings/Spark","Preguntando","Reiniciando"],1,"Se mide con timings o Spark."],
+["Plugins en conflicto, ¿cómo hallas cuál?",["Borrar todos","Quitar por mitades","Reinstalar todo","Llorar"],1,"Bisección: mitad fuera hasta hallarlo."],
+["Alternativa ligera a plugins pesados:",["Más RAM","Skript para cosas simples","Más plugins","Nada"],1,"Skript resuelve cosas simples sin peso."],
+["Tareas repetidas del servidor:",["Hacerlas a mano","Automatizar con scheduler/eventos","Ignorarlas","Pedir ayuda"],1,"Se automatiza lo repetitivo."],
+["Código en servidor async, ¿cuidado?",["Ninguno","No tocar API de Bukkit en async","Todo vale","Más hilos siempre"],1,"La API principal no es thread-safe."],
+["Base de datos pequeña, ¿cuál?",["Oracle","SQLite","Excel","Texto"],1,"SQLite sobra para empezar."],
+["Red de servidores moderna:",["Bungee viejo","Velocity","Sin proxy","Hamachi"],1,"Velocity es lo actual."],
+["Permisos por mundo, ¿cómo?",["No se puede","Con contextos","A mano","Con OP"],1,"Los contextos separan por mundo."],
+["Permisos por defecto, ¿cuáles?",["Todos","Solo lo básico seguro","Ninguno","El *"],1,"Por defecto, mínimo necesario."],
+["Tu código, ¿cómo lo dejas?",["Sin comentar","Comentado y ordenado","Enredado","En tu cabeza"],1,"Se documenta para tu yo futuro."],
+["Cambios en plugins, ¿dónde se anotan?",["En ningún lado","En el changelog","En Discord","En papel"],1,"Changelog siempre actualizado."],
+["Falló un deploy, ¿qué haces?",["Pánico","Git revert + backup","Borrar todo","Culpar al host"],1,"Se revierte con Git y backup."],
+["Probar permisos nuevos, ¿cómo?",["Con tu cuenta admin","Con cuenta de prueba","En producción","A ojo"],1,"Con cuenta de prueba del rango."],
+["Logs de tu plugin, ¿cómo?",["System.out","Logger del plugin","Sin logs","En chat"],1,"Logger con niveles, no prints."],
+["Dependencias externas, ¿cómo?",["Copiar jars","Declararlas en el plugin","Ignorarlas","Pegar código"],1,"Se declaran como dependencias."],
+["Keys y secretos en código, ¿dónde?",["En el código","En variables de entorno","En GitHub","En Discord"],1,"Nunca hardcodeados ni subidos."]
+]},
+{r:"Manager",icon:"📋",qs:[
+["Roles del equipo, ¿cómo?",["Sin definir","Funciones claras por rol","Todos hacen todo","Por antigüedad"],1,"Cada rol con funciones escritas."],
+["Conflicto entre staffs, ¿qué haces?",["Elegir bando","Mediar en privado","Publicarlo","Ignorarlo"],1,"Mediación privada e imparcial."],
+["Planear un evento, ¿qué incluye?",["Nada","Fecha, reglas y premios","Solo premios","Improvisar"],1,"Fecha, reglas claras y premios."],
+["Antes de un cambio grande, ¿qué haces?",["Imponerlo","Encuestar a la comunidad","Callar","Copiar otro server"],1,"Se pregunta antes de imponer."],
+["Precios de tienda, ¿cómo?",["Caros","Justos, sin pay-to-win","Regalados","Al azar"],1,"Justos y sin ventajas pagadas."],
+["Reglas nuevas, ¿cómo se comunican?",["Sin avisar","Anuncio claro y sencillo","En código","Por MD"],1,"Anuncio visible y entendible."],
+["Discord desordenado, ¿qué haces?",["Más canales","Canales por tema","Borrar todo","Nada"],1,"Estructura por temas, sin exceso."],
+["Alianza con otro servidor, ¿qué haces?",["Aceptar ya","Evaluar pros y contras","Rechazar siempre","Copiarles todo"],1,"Se evalúa antes de firmar."],
+["Presupuesto del host, ¿cómo?",["Al azar","Cálculo mensual real","Lo más caro","Lo más barato"],1,"Con números reales mensuales."],
+["Promocionar el servidor, ¿cómo?",["Spam","Clips y constancia","Comprar bots","Nada"],1,"Contenido constante y real."],
+["Métricas clave, ¿cuáles?",["Ninguna","Pico, retención y tickets","Solo dinero","Solo quejas"],1,"Datos para decidir mejor."],
+["Feedback tóxico, ¿qué haces?",["Banear","Filtrar lo útil","Ignorar todo","Responder igual"],1,"Se extrae lo útil sin engancharse."],
+["Staff quemado, ¿qué haces?",["Exigir","Descansos y rotación","Expulsar","Nada"],1,"Descanso y rotación rinden."],
+["Nuevo modo de juego, ¿cuándo?",["Ya","Si hay demanda real","Nunca","Por moda"],1,"Solo con demanda comprobada."],
+["Horario de eventos, ¿según qué?",["Tu antojo","Tu región de jugadores","Otro país","Azar"],1,"Según dónde está tu comunidad."],
+["Premios de torneo, ¿cómo?",["Exagerados","Proporcionales al esfuerzo","Nada","Al azar"],1,"Proporcionales y anunciados antes."],
+["Patrocinio sospechoso, ¿qué haces?",["Aceptar","Investigar antes","Rechazar todo","Pedir más"],1,"Se investiga su reputación."],
+["Normas MC y Discord, ¿cómo?",["Distintas","Coherentes entre sí","Sin normas","Copiadas"],1,"Un solo criterio en ambas."],
+["Crisis de reputación, ¿qué haces?",["Silencio","Comunicado honesto","Culpar","Borrar pruebas"],1,"Honestidad calmada recupera confianza."],
+["Equipo sin cubrir turnos, ¿qué haces?",["Nada","Reorganizar cobertura","Expulsar","Cerrar"],1,"Se reorganiza la cobertura."],
+["Decisiones importantes, ¿dónde quedan?",["En memoria","Documentadas","En chat","En ningún lado"],1,"Todo queda por escrito."],
+["Logro del equipo, ¿qué haces?",["Nada","Reconocerlo en público","Apropiártelo","Ignorarlo"],1,"Se celebra y se reconoce."],
+["Competencia fuerte, ¿qué haces?",["Copiarla","Diferenciarte","Atacarla","Rendirse"],1,"Se compite diferenciándose."],
+["Staff que se retira, ¿cómo?",["Ban","Salida digna y agradecida","Ignorarlo","Borrarlo"],1,"Toda salida merece respeto."],
+["Tu reemplazo como Manager, ¿qué haces?",["Nadie","Formarlo con tiempo","Imponerlo","No pensar en eso"],1,"Se forma sucesión con tiempo."]
+]},
+{r:"Head-Manager",icon:"👑",qs:[
+["Rumbo del servidor, ¿qué necesitas?",["Nada","Visión clara y comunicada","Improvisar","Copiar"],1,"Sin visión no hay rumbo."],
+["Elegir host, ¿qué miras?",["El más barato","Rendimiento, precio y soporte","El color","El primero"],1,"Las tres patas del hosting."],
+["Nombre del servidor, ¿cómo?",["Cualquiera","Dominio propio memorable","IP con números","Copiado"],1,"Marca propia y memorable."],
+["EULA de Mojang, ¿qué haces?",["Ignorarla","Cumplirla siempre","Burlarla","No existe"],1,"Cumplirla protege el proyecto."],
+["Finanzas, ¿cómo?",["Al azar","Ingresos vs gastos al día","Gastar todo","No mirar"],1,"Números claros cada mes."],
+["Marketing, ¿cómo funciona?",["Un video viral","Constancia en contenido","Spam","Pagar bots"],1,"La constancia gana al viral."],
+["Menores en la comunidad, ¿qué haces?",["Nada","Protección y normas claras","Banearlos","Ignorar"],1,"Protección activa de menores."],
+["Hackeo grave al servidor, ¿qué haces?",["Callar","Transparencia + acción rápida","Culpar al host","Cerrar sin avisar"],1,"Transparencia y acción inmediata."],
+["Si te vas tú, ¿qué pasa?",["Muere todo","Sucesión formada","Caos","Nada"],1,"Nadie debe ser imprescindible."],
+["Expandir a red, ¿cuándo?",["Ya","Con base sólida y demanda","Nunca","Por moda"],1,"Primero base, luego red."],
+["Asociación seria, ¿cómo?",["De palabra","Contrato y términos claros","Un apretón","Por chat"],1,"Todo serio va por escrito."],
+["Roadmap anual, ¿cómo?",["Sin plan","Metas medibles","Sueños","Copiado"],1,"Metas medibles y revisables."],
+["Equipo senior, ¿cómo lo llevas?",["Microgestionar","Delegar con confianza","Ignorar","Competir"],1,"Se delega y se confía."],
+["Cultura del servidor, ¿de dónde sale?",["De los users","Del ejemplo de arriba","Sola","De las reglas"],1,"La cultura baja desde el liderazgo."],
+["Decisiones grandes, ¿con qué?",["Corazón","Datos y métricas","Dados","Moda"],1,"Con datos, no corazonadas."],
+["Ingresos de tienda, ¿qué haces?",["Gastarlos","Llevar cuentas claras","Esconderlos","Regalarlos"],1,"Cuentas claras siempre."],
+["Marcas ajenas, ¿qué haces?",["Usarlas","Respetarlas","Copiarlas","Ignorar"],1,"Se respetan marcas y derechos."],
+["Cerrar un proyecto, ¿cómo?",["De golpe","Digno: aviso + datos","Huir","Borrar todo"],1,"Cierre digno con aviso previo."],
+["Rebranding, ¿cómo?",["En secreto","Comunicado y gradual","De golpe","Sin avisar"],1,"Se comunica y se hace gradual."],
+["Comunidad tóxica de raíz, ¿qué haces?",["Banear a todos","Reformar reglas y cultura","Cerrar","Nada"],1,"Se reforma desde la raíz."],
+["Fundador inactivo, ¿qué haces?",["Nada","Hablar claro y redefinir","Expulsarlo","Ignorar"],1,"Conversación clara y roles nuevos."],
+["Invertir dinero, ¿cómo?",["Todo de golpe","Conservador y medido","Nada","Prestado"],1,"Medido y sin arriesgar todo."],
+["Backups, ¿qué estrategia?",["Una copia","Estrategia 3-2-1","Ninguna","En el PC"],1,"Tres copias, dos medios, una externa."],
+["Uptime, ¿cómo lo aseguras?",["Rezos","Monitoreo 24/7 + host serio","Nada","Suerte"],1,"Monitoreo constante y buen host."],
+["Tu legado, ¿qué es?",["Nada","Todo documentado y equipo formado","Dinero","Fama"],1,"Legado es equipo + documentos."]
+]}
 ];
-const RANKS=[[1,"Fundador 👑"],[0.8,"Admin ⚡"],[0.6,"Moderador 🛡️"],[0.4,"Helper en pruebas 🛠️"]];
 const esc=v=>{const d=document.createElement('div');d.textContent=v;return d.innerHTML};
 const store={get:(k,f)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):f}catch(e){return f}},set:(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
-document.getElementById('bestLine').textContent=store.get('quiz_best',0);
 let pool=[],idx=0,score=0,streak=0,hits=0,fails=[],timer=null,timeLeft=0;
-const RUN_LEN=12;
+const RUN_LEN=25,PASS=0.6;
 function renderHist(){
   const h=store.get('quiz_hist',[]);
   document.getElementById('histList').innerHTML=h.length?h.map(x=>`<div class="hist-item"><span><b>${x.score}</b> pts · ${x.hits}/${x.total} · ${esc(x.rank)} <small>(${esc(x.date)})</small>${x.fails&&x.fails.length?`<details><summary>Ver ${x.fails.length} falladas</summary><small>${x.fails.map(f=>esc(f)).join('<br>')}</small></details>`:''}</span></div>`).join(''):'<p class="muted">Aún no juegas ninguna partida.</p>';
 }
 document.getElementById('histClear').addEventListener('click',()=>{if(confirm('¿Limpiar registro?')){store.set('quiz_hist',[]);renderHist()}});
 renderHist();
-const CATS=["Todas","Normativa","Comandos","Criterio"];
-let catSel="Todas";
-const chipsEl=document.getElementById('chips');
-chipsEl.innerHTML=CATS.map(c=>`<button class="chip${c===catSel?" active":""}" data-qc="${c}">${c}</button>`).join('');
-chipsEl.querySelectorAll('[data-qc]').forEach(b=>b.addEventListener('click',()=>{
-  catSel=b.dataset.qc;
-  chipsEl.querySelectorAll('.chip').forEach(x=>x.classList.toggle('active',x===b));
-}));
+RANKS_Q.forEach(R=>{R.qs=R.qs.map(q=>({q:q[0],o:q[1],a:q[2],w:q[3],c:R.r}))});
+let bank=[];
+const RUN_LEN=25,PASS=0.6;
+let prog=store.get('quiz_prog',{unlocked:1,best:{},plays:{}});
+let curRank=0;
+function saveProg(){store.set('quiz_prog',prog)}
+function renderRanks(){
+  const g=document.getElementById('rankGrid');
+  g.innerHTML=RANKS_Q.map((R,i)=>{
+    const locked=i>=prog.unlocked;
+    const best=prog.best[i];
+    const plays=prog.plays[i]||0;
+    return `<button class="rankbtn${locked?' locked':''}" data-rank="${i}" ${locked?'disabled':''}><span class="rk-icon">${locked?'🔒':R.icon}</span><b>${R.r}</b><small>${locked?'Supera el anterior':(best!=null?('Récord: '+best+' pts · '+plays+' intentos'):'25 preguntas · sin jugar')}</small></button>`;
+  }).join('');
+  const allB=Object.values(prog.best);
+  document.getElementById('bestLine').textContent=allB.length?Math.max.apply(null,allB):0;
+}
+document.getElementById('rankGrid').addEventListener('click',e=>{
+  const b=e.target.closest?e.target.closest('[data-rank]'):null;
+  if(!b||b.disabled)return;
+  startRank(Number(b.dataset.rank));
+});
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));const t=a[i];a[i]=a[j];a[j]=t}return a}
-document.getElementById('startBtn').addEventListener('click',()=>{
-  pool=shuffle(QS.filter(q=>catSel==="Todas"||q.c===catSel).map((q,i)=>i)).slice(0,RUN_LEN);
-  if(!pool.length)return;
+function startRank(i){
+  curRank=i;bank=RANKS_Q[i].qs;
+  pool=shuffle(bank.map((_,k)=>k));
   idx=0;score=0;streak=0;hits=0;fails=[];
   document.getElementById('screen-start').style.display='none';
   document.getElementById('screen-end').style.display='none';
   document.getElementById('screen-play').style.display='block';
   window.scrollTo({top:0,behavior:'smooth'});
   showQ();
-});
+}
+renderRanks();
 function showQ(){
-  const q=QS[pool[idx]];
+  const q=bank[pool[idx]];
   clearInterval(timer);timeLeft=30;
   document.getElementById('qNum').textContent=(idx+1)+'/'+pool.length;
   document.getElementById('qScore').textContent=score;
@@ -207,7 +467,7 @@ document.getElementById('qOpts').addEventListener('click',e=>{
 });
 function answer(j){
   clearInterval(timer);
-  const q=QS[pool[idx]];
+  const q=bank[pool[idx]];
   document.querySelectorAll('#qOpts .opt').forEach((o,k)=>{o.disabled=true;if(k===q.a)o.classList.add('ok')});
   if(j===q.a){
     hits++;streak++;
@@ -235,23 +495,27 @@ function endQuiz(){
   const end=document.getElementById('screen-end');
   end.style.display='block';
   const pct=pool.length?hits/pool.length:0;
-  let rank="Postulante 🌱";
-  for(const r of RANKS){if(pct>=r[0]){rank=r[1];break}}
+  const passed=pct>=PASS;
+  const R=RANKS_Q[curRank];
+  const rank=R.icon+' '+R.r+(passed?' ✅':'');
   document.getElementById('qRank').textContent=rank;
   document.getElementById('qFinal').textContent=score;
   document.getElementById('qHits').textContent=hits+'/'+pool.length;
-  const best=store.get('quiz_best',0);
-  if(score>best){store.set('quiz_best',score);document.getElementById('qBest').textContent='🏆 ¡Nuevo récord! Antes: '+best}
-  else document.getElementById('qBest').textContent='Récord: '+best+' pts';
-  const rankEntry={date:new Date().toLocaleString('es-CO'),score,hits,total:pool.length,rank,fails:fails.slice()};
+  prog.plays[curRank]=(prog.plays[curRank]||0)+1;
+  if(passed&&curRank+1<RANKS_Q.length)prog.unlocked=Math.max(prog.unlocked,curRank+2);
+  if(prog.best[curRank]==null||score>prog.best[curRank])prog.best[curRank]=score;
+  saveProg();renderRanks();
+  const best=prog.best[curRank];
+  document.getElementById('qBest').textContent=(passed?'🎖 ¡Rango superado! ':'')+'Récord del rango: '+best+' pts';
+  const rankEntry={rank:R.r,date:new Date().toLocaleString('es-CO'),score,hits,total:pool.length,passed,fails:fails.slice()};
   const hh=store.get('quiz_hist',[]);hh.unshift(rankEntry);store.set('quiz_hist',hh.slice(0,20));renderHist();
-  document.getElementById('bestLine').textContent=store.get('quiz_best',0);
   document.getElementById('qAiOut').innerHTML='';
   window.scrollTo({top:0,behavior:'smooth'});
 }
 document.getElementById('qRetry').addEventListener('click',()=>{
   document.getElementById('screen-end').style.display='none';
   document.getElementById('screen-start').style.display='block';
+  renderRanks();
 });
 function aiExtract(r){if(!r)return"";if(typeof r==="string")return r;const m=r.message&&r.message.content;if(typeof m==="string")return m;if(Array.isArray(m))return m.map(p=>typeof p==="string"?p:(p.text||"")).join("");return r.text||r.output||""}
 async function aiChat(prompt){
@@ -265,7 +529,7 @@ document.getElementById('qAi').addEventListener('click',()=>{
   const slot=document.getElementById('qAiOut'),btn=document.getElementById('qAi');
   const bad=fails.length?`Temas a reforzar (preguntas que falló): ${fails.join(' | ')}.`:'No falló ninguna pregunta: felicítalo y sugiere un reto mayor.';
   slot.innerHTML='<small class="muted">Generando con IA… ⏳</small>';btn.disabled=true;
-  aiChat(`Eres un mentor de Staff de Minecraft (español neutro). Datos EXACTOS del quiz, úsalos tal cual sin inventar ni mezclar cifras: aciertos ${hits} de ${pool.length}, puntos ${score}. ${bad} Escribe un consejo breve y motivador (máximo 90 palabras): qué reforzar y 1 tip práctico.`).then(r=>{
+  aiChat(`Eres un mentor de Staff de Minecraft (español neutro). Datos EXACTOS del quiz de rango ${RANKS_Q[curRank].r}, úsalos tal cual sin inventar ni mezclar cifras: aciertos ${hits} de ${pool.length}, puntos ${score}. ${bad} Escribe un consejo breve y motivador (máximo 90 palabras): qué reforzar y 1 tip práctico para este rango.`).then(r=>{
     slot.innerHTML=`<pre class="tpl ai-pre"></pre><small class="muted">Vía ${r.via} 🤖</small>`;
     slot.querySelector('.ai-pre').textContent=r.text;
   }).catch(()=>{slot.innerHTML='<small class="muted">La IA no responde ahora. Intenta luego. ⚠️</small>'}).finally(()=>{btn.disabled=false});
