@@ -6,6 +6,19 @@
 <meta name="description" content="Portafolio profesional de Daniel Esteban Vera Fernandez (Discohikorybrs), Staff y Developer enfocado en comunidades de Minecraft y Discord.">
 <title>Discohikorybrs — Staff & Developer Portfolio</title>
 <link rel="stylesheet" href="style.css">
+<style>
+/* Límite visual reseñas: no se extienden al infinito */
+.reviews-list { max-height: 600px; overflow-y: auto; }
+.review-card p {
+  overflow-wrap: anywhere; word-break: break-word; white-space: pre-wrap;
+  display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical; overflow: hidden;
+  max-height: 8.5em;
+}
+.review-card.expanded p { -webkit-line-clamp: unset; max-height: none; }
+.review-more { background: none; border: none; color: #b39aff; cursor: pointer; font-size: 12px; padding: 0; margin-top: 6px; }
+#reviewMessage { max-height: 300px; }
+#charCount { color: var(--muted, #9da8c5); font-size: 11px; text-align: right; }
+</style>
 </head>
 <body>
 <div class="bg"></div><div class="bg-glow"></div><div class="scroll-progress" aria-hidden="true"></div>
@@ -214,7 +227,8 @@
         </select>
       </label>
       <label>Tu Reseña
-        <textarea id="reviewMessage" maxlength="500" minlength="3" required placeholder="Cuéntame brevemente cómo fue trabajar conmigo..."></textarea>
+        <textarea id="reviewMessage" maxlength="500" minlength="3" required placeholder="Cuéntame brevemente cómo fue trabajar conmigo... (máx. 500)"></textarea>
+        <small id="charCount">0/500</small>
       </label>
       <button class="btn primary magnetic" type="submit">Publicar reseña ↗</button>
       <small id="reviewStatus" class="review-status">Sincronizado globalmente con Supabase Auth.</small>
@@ -593,10 +607,19 @@ function renderReviews(data, mode) {
   data.forEach(r => {
     const rating = Math.min(5, Math.max(1, Number(r.rating) || 0));
     total += rating;
+    const msg = String(r.message || '');
     const date = r.created_at ? new Date(r.created_at) : new Date();
     const card = document.createElement('article');
     card.className = 'review-card glass';
-    card.innerHTML = `<div class="review-top"><strong>${escapeHtml(r.name || 'Anónimo')}</strong><span class="stars-color">${'★'.repeat(rating)}${'☆'.repeat(5-rating)}</span></div><p>${escapeHtml(r.message || '')}</p><small>${date.toLocaleDateString('es-CO')}${mode === 'local' ? ' · local' : ''}</small>`;
+    const needsMore = msg.length > 180;
+    card.innerHTML = `<div class="review-top"><strong>${escapeHtml(r.name || 'Anónimo')}</strong><span class="stars-color">${'★'.repeat(rating)}${'☆'.repeat(5-rating)}</span></div><p>${escapeHtml(msg)}</p>${needsMore ? '<button type="button" class="review-more">Ver más</button>' : ''}<small>${date.toLocaleDateString('es-CO')}${mode === 'local' ? ' · local' : ''}</small>`;
+    if (needsMore) {
+      const btn = card.querySelector('.review-more');
+      btn.addEventListener('click', () => {
+        const exp = card.classList.toggle('expanded');
+        btn.textContent = exp ? 'Ver menos' : 'Ver más';
+      });
+    }
     reviewsList.appendChild(card);
   });
   const avg = total / data.length;
@@ -648,6 +671,7 @@ reviewForm.addEventListener('submit', async e => {
     saveLocalReview({ name, message, rating, created_at: new Date().toISOString() });
     reviewStatus.textContent = '¡Reseña guardada localmente! ⭐';
     document.getElementById('reviewMessage').value = '';
+    document.getElementById('reviewMessage').dispatchEvent(new Event('input'));
     renderReviews(getLocalReviews(), 'local');
     return;
   }
@@ -657,6 +681,7 @@ reviewForm.addEventListener('submit', async e => {
     if (error) throw error;
     reviewStatus.textContent = '¡Reseña publicada con éxito! ⭐';
     document.getElementById('reviewMessage').value = '';
+    document.getElementById('reviewMessage').dispatchEvent(new Event('input'));
     cargarResenas();
   } catch (err) {
     console.error('insert falló, guardo local:', err);
@@ -665,6 +690,22 @@ reviewForm.addEventListener('submit', async e => {
     enterLocalMode(err && err.message ? err.message : err);
   }
 });
+
+// Contador + auto-crecimiento del textarea (máx 500, se engorda hasta 300px)
+(function () {
+  const ta = document.getElementById('reviewMessage');
+  const cc = document.getElementById('charCount');
+  if (!ta) return;
+  const upd = () => {
+    if (ta.value.length > 500) ta.value = ta.value.slice(0, 500);
+    if (cc) cc.textContent = ta.value.length + '/500';
+    ta.style.height = 'auto';
+    ta.style.height = Math.min(300, Math.max(90, ta.scrollHeight)) + 'px';
+    ta.style.overflowY = ta.scrollHeight > 300 ? 'auto' : 'hidden';
+  };
+  ta.addEventListener('input', upd);
+  upd();
+})();
 
 // Cargar reseñas al iniciar
 cargarResenas();
