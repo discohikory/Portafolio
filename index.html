@@ -53,7 +53,7 @@
 .mob-row { display: flex; gap: 26px; margin-top: 24px; align-items: flex-end; flex-wrap: wrap; }
 .mob { position: relative; image-rendering: pixelated; animation: mobFloat 3s ease-in-out infinite; }
 .mob::after { content: ""; position: absolute; left: 50%; bottom: -10px; width: 70%; height: 8px; transform: translateX(-50%); background: radial-gradient(ellipse, rgba(0,0,0,.5), transparent 70%); }
-.mob.creeper { width: 56px; height: 72px; background: repeating-linear-gradient(0deg, #4caf50 0 8px, #43a047 8px 16px); box-shadow: inset -4px -4px 0 rgba(0,0,0,.25), inset 4px 4px 0 rgba(255,255,255,.15); animation-delay: .2s; }
+.mob.creeper { width: 56px; height: 72px; background: repeating-linear-gradient(0deg, #2f9e6e 0 8px, #257a56 8px 16px); box-shadow: inset -4px -4px 0 rgba(0,0,0,.25), inset 4px 4px 0 rgba(255,255,255,.15); animation-delay: .2s; }
 .mob.creeper .e { position: absolute; top: 18px; width: 12px; height: 12px; background: #111; }
 .mob.creeper .e.l { left: 10px; } .mob.creeper .e.r { right: 10px; }
 .mob.creeper .m { position: absolute; left: 50%; top: 34px; width: 8px; height: 18px; margin-left: -4px; background: #111; box-shadow: -8px 5px 0 #111, 8px 5px 0 #111; }
@@ -62,14 +62,17 @@
 .mob.enderman .e.l { left: 5px; } .mob.enderman .e.r { right: 5px; }
 .mob.pig { width: 72px; height: 44px; background: #f9a8d4; box-shadow: inset -4px -4px 0 rgba(0,0,0,.15), inset 4px 4px 0 rgba(255,255,255,.3); animation-delay: .7s; }
 .mob.pig .snout { position: absolute; left: 50%; top: 50%; width: 22px; height: 14px; transform: translate(-50%,-50%); background: #f472b6; box-shadow: inset 0 0 0 2px #db2777; }
-/* Warden del Deep Dark */
-.mob.warden { width: 52px; height: 104px; background: linear-gradient(#134e4a, #082a28); box-shadow: inset -4px -4px 0 rgba(0,0,0,.55), inset 4px 4px 0 rgba(94,234,212,.14); animation-delay: 1.6s; }
-.mob.warden .h { position: absolute; top: -8px; width: 10px; height: 12px; background: #0f766e; }
-.mob.warden .h.l { left: 6px; transform: rotate(-12deg); } .mob.warden .h.r { right: 6px; transform: rotate(12deg); }
-.mob.warden .e { position: absolute; top: 18px; width: 10px; height: 4px; background: #5eead4; box-shadow: 0 0 8px #5eead4; }
-.mob.warden .e.l { left: 8px; } .mob.warden .e.r { right: 8px; }
-.mob.warden .core { position: absolute; left: 50%; top: 46px; width: 14px; height: 28px; transform: translateX(-50%); background: #22d3ee; box-shadow: 0 0 12px #22d3ee, 0 0 28px rgba(34,211,238,.6); animation: corePulse 2.2s ease-in-out infinite; }
-.mob.warden .ribs { position: absolute; left: 50%; top: 80px; width: 30px; height: 4px; transform: translateX(-50%); background: #134e4a; box-shadow: 0 7px 0 #134e4a; }
+/* Warden del Deep Dark (rediseñado: más imponente) */
+.mob.warden { width: 60px; height: 112px; background: linear-gradient(#134e4a 0 32%, #0a2b29 32% 100%); box-shadow: inset -5px -5px 0 rgba(0,0,0,.55), inset 5px 5px 0 rgba(94,234,212,.12); animation-delay: 1.6s; }
+.mob.warden .head { position: absolute; top: 0; left: 0; width: 100%; height: 36px; background: linear-gradient(#175e59, #0d3835); box-shadow: inset 0 -3px 0 rgba(0,0,0,.45), inset 3px 3px 0 rgba(94,234,212,.15); }
+.mob.warden .h { position: absolute; top: -9px; width: 12px; height: 15px; background: #14b8a6; box-shadow: inset -2px -2px 0 rgba(0,0,0,.4); z-index: 0; }
+.mob.warden .h.l { left: 7px; transform: rotate(-12deg); } .mob.warden .h.r { right: 7px; transform: rotate(12deg); }
+.mob.warden .e { position: absolute; top: 15px; width: 13px; height: 5px; background: #99f6e4; box-shadow: 0 0 10px #5eead4; z-index: 1; }
+.mob.warden .e.l { left: 9px; transform: rotate(14deg); } .mob.warden .e.r { right: 9px; transform: rotate(-14deg); }
+.mob.warden .core { position: absolute; left: 50%; top: 48px; width: 18px; height: 32px; transform: translateX(-50%); background: linear-gradient(#a5f3fc, #22d3ee); box-shadow: 0 0 14px #22d3ee, 0 0 30px rgba(34,211,238,.65); animation: corePulse 2.2s ease-in-out infinite; }
+.mob.warden .ribs { position: absolute; left: 50%; top: 88px; width: 34px; height: 4px; transform: translateX(-50%); background: #155e59; box-shadow: 0 7px 0 #155e59; }
+.mob.warden .arm { position: absolute; top: 44px; width: 11px; height: 48px; background: #0a2927; box-shadow: inset -2px -2px 0 rgba(0,0,0,.5); }
+.mob.warden .arm.l { left: -11px; } .mob.warden .arm.r { right: -11px; }
 @keyframes corePulse { 0%,100% { opacity: .7; } 50% { opacity: 1; } }
 /* Interacción: los mobs reaccionan al pasar el mouse */
 .mob { cursor: pointer; transition: transform .2s ease; }
@@ -80,6 +83,15 @@
 @keyframes wardenShake { 0% { transform: scale(1.12) translateX(0); } 25% { transform: scale(1.12) translateX(-2px); } 75% { transform: scale(1.12) translateX(2px); } 100% { transform: scale(1.12) translateX(0); } }
 .mob.warden:hover::before { content: ""; position: absolute; left: 50%; top: 58%; width: 20px; height: 20px; border: 2px solid rgba(34,211,238,.8); border-radius: 50%; transform: translate(-50%,-50%); animation: sonar 1s ease-out infinite; pointer-events: none; }
 @keyframes sonar { to { width: 96px; height: 96px; opacity: 0; } }
+/* Allay: el hada azul que revolotea */
+.mob.allay { width: 26px; height: 34px; background: linear-gradient(#bae6fd, #38bdf8); border-radius: 7px; box-shadow: 0 0 16px rgba(56,189,248,.85); animation: allayFly 6s ease-in-out infinite; }
+.mob.allay::after { display: none; }
+.mob.allay .wing { position: absolute; top: 4px; width: 11px; height: 18px; background: rgba(255,255,255,.75); border-radius: 50%; transform-origin: top center; animation: flap .28s ease-in-out infinite alternate; }
+.mob.allay .wing.l { left: -9px; } .mob.allay .wing.r { right: -9px; }
+@keyframes flap { from { transform: scaleX(1); } to { transform: scaleX(.35); } }
+@keyframes allayFly { 0%,100% { transform: translate(0,0); } 25% { transform: translate(14px,-16px); } 50% { transform: translate(-10px,-24px); } 75% { transform: translate(-16px,-8px); } }
+/* Efecto oscuridad del Warden al acercar el mouse */
+#darkness { position: fixed; inset: 0; z-index: 150; pointer-events: none; opacity: 0; transition: opacity .6s ease; background: radial-gradient(ellipse at center, transparent 28%, rgba(0,0,0,.78) 100%); }
 @keyframes mobFloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-9px); } }
 @keyframes eyeBlink { 0%,92%,100% { opacity: 1; } 95% { opacity: 0; } }
 /* Resplandor de antorcha en la tarjeta hero */
@@ -91,12 +103,12 @@
 @keyframes orbFloat { 0% { transform: translateY(0); opacity: 0; } 12% { opacity: .9; } 85% { opacity: .9; } 100% { transform: translateY(-115vh); opacity: 0; } }
 .canvas-container { cursor: crosshair; }
 @media (prefers-reduced-motion: reduce) {
-  .mob, .mob .core, .mob .e, .hero-card, .xp-orb { animation: none !important; }
+  .mob, .mob .core, .mob .e, .mob .wing, .hero-card, .xp-orb { animation: none !important; }
 }
 </style>
 </head>
 <body>
-<div class="bg"></div><div class="bg-glow"></div><div id="xpField" aria-hidden="true"></div><div class="scroll-progress" aria-hidden="true"></div>
+<div class="bg"></div><div class="bg-glow"></div><div id="xpField" aria-hidden="true"></div><div id="darkness" aria-hidden="true"></div><div class="scroll-progress" aria-hidden="true"></div>
 <header>
   <a class="brand magnetic" href="#inicio">◆ Discohikorybrs</a>
   <nav>
@@ -126,7 +138,8 @@
       <div class="mob creeper" title="¡Ssssss... 💥"><i class="e l"></i><i class="e r"></i><i class="m"></i></div>
       <div class="mob pig" title="Oink 🐷"><i class="snout"></i></div>
       <div class="mob enderman" title="No lo mires a los ojos 👀"><i class="e l"></i><i class="e r"></i></div>
-      <div class="mob warden" title="El Warden te escucha... 🤫"><i class="h l"></i><i class="h r"></i><i class="e l"></i><i class="e r"></i><i class="core"></i><i class="ribs"></i></div>
+      <div class="mob warden" id="wardenMob" title="El Warden te escucha... 🤫"><i class="h l"></i><i class="h r"></i><i class="head"></i><i class="e l"></i><i class="e r"></i><i class="core"></i><i class="ribs"></i><i class="arm l"></i><i class="arm r"></i></div>
+      <div class="mob allay" title="¡Un Allay salvaje! 🧚"><i class="wing l"></i><i class="wing r"></i></div>
     </div>
   </div>
   <div class="hero-card tilt glass">
@@ -405,6 +418,15 @@ document.querySelectorAll('.magnetic').forEach(btn => {
     o.style.animationDelay = (-Math.random() * 18) + 's';
     field.appendChild(o);
   }
+})();
+
+// Oscuridad del Warden al acercar el mouse (efecto Darkness)
+(function () {
+  const w = document.getElementById('wardenMob');
+  const d = document.getElementById('darkness');
+  if (!w || !d) return;
+  w.addEventListener('mouseenter', () => { d.style.opacity = '1'; });
+  w.addEventListener('mouseleave', () => { d.style.opacity = '0'; });
 })();
 
 // Terminal Interactiva
