@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Staff Toolkit: herramienta demostrativa para Staff de servidores Minecraft. Calculadora de sanciones, tickets, reportes, respuestas, reglamento y casos prácticos.">
+<title>Staff Toolkit — Discohikorybrs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#04060d;--panel:rgba(15,20,35,.55);--line:rgba(139,92,246,.2);--text:#f5f7ff;--muted:#9da8c5;--a:#8b5cf6;--a2:#b39aff}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,sans-serif;line-height:1.6}
+header{max-width:1120px;margin:auto;padding:20px 24px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:50;background:rgba(4,6,13,.8);backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,255,255,.06)}
+.brand{font:700 16px 'Space Grotesk';color:#fff;text-decoration:none}
+.back{color:var(--a2);text-decoration:none;font-size:13px;border:1px solid var(--line);padding:8px 14px;border-radius:8px}
+.back:hover{border-color:var(--a)}
+main{max-width:1120px;margin:auto;padding:24px}
+.hero-t{text-align:center;padding:30px 0 10px}
+.hero-t h1{font:700 clamp(28px,4.5vw,46px) 'Space Grotesk';margin:10px 0;background:linear-gradient(90deg,#fff 25%,#bca8ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+.eyebrow{color:var(--a2);font-size:10px;font-family:'Press Start 2P',monospace;letter-spacing:2px}
+.lead{color:var(--muted);max-width:700px;margin:0 auto}
+.tabs{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:26px 0}
+.tab{padding:10px 18px;border:1px solid var(--line);border-radius:10px;background:rgba(255,255,255,.03);color:var(--muted);font-weight:700;font-size:13px;cursor:pointer}
+.tab.active,.tab:hover{color:#fff;border-color:var(--a);box-shadow:0 6px 20px rgba(139,92,246,.25)}
+.tool{display:none}
+.tool.active{display:block;animation:fade .3s ease}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.glass{background:var(--panel);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.08);border-radius:15px;box-shadow:0 8px 32px rgba(0,0,0,.3)}
+.card{padding:22px;margin-bottom:18px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+label{display:flex;flex-direction:column;gap:8px;font-size:13px;color:var(--muted);margin-bottom:12px}
+input,select,textarea{font-family:inherit;color:#fff;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:12px;outline:none;font-size:14px}
+textarea{min-height:110px;resize:vertical}
+.btn{padding:11px 20px;border:1px solid var(--line);border-radius:10px;font-size:13px;font-weight:700;color:#fff;background:rgba(255,255,255,.04);cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+.btn:hover{border-color:var(--a)}
+.primary{background:linear-gradient(#9d6bff,#6d28d9);border:2px solid #141414;box-shadow:inset 2px 2px 0 rgba(255,255,255,.4),inset -2px -3px 0 rgba(0,0,0,.4);text-shadow:1px 1px 0 rgba(0,0,0,.5);border-radius:4px}
+.primary:hover{filter:brightness(1.12)}
+.danger{border-color:rgba(239,68,68,.5);color:#fca5a5}
+.result{border-left:4px solid var(--a);padding:16px 20px;margin-top:14px}
+.result b{color:#fff}
+.pill{display:inline-block;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;border:1px solid var(--line);color:var(--a2)}
+.st-Pendiente{color:#fbbf24;border-color:#fbbf24}
+.st-Proceso{color:#60a5fa;border-color:#60a5fa}
+.st-Resuelto,.st-Archivado{color:#34d399;border-color:#34d399}
+.st-Pruebas{color:#f472b6;border-color:#f472b6}
+.st-Escalado{color:#f87171;border-color:#f87171}
+.prio-Alta{color:#f87171;border-color:#f87171}
+.prio-Media{color:#fbbf24;border-color:#fbbf24}
+.prio-Baja{color:#34d399;border-color:#34d399}
+.rowbtns{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.hist-item{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.06);font-size:13px}
+.hist-item small{color:var(--muted)}
+.opt{display:block;width:100%;text-align:left;margin:8px 0;padding:12px 14px;border-radius:10px;border:1px solid var(--line);background:rgba(255,255,255,.03);color:var(--text);cursor:pointer;font-size:14px}
+.opt:hover:not(:disabled){border-color:var(--a)}
+.opt.ok{border-color:#34d399;background:rgba(52,211,153,.08)}
+.opt.bad{border-color:#f87171;background:rgba(248,113,113,.08)}
+.opt:disabled{cursor:default;opacity:.85}
+.why{font-size:13px;color:var(--muted);margin:4px 0 10px}
+.best{border-left:4px solid #34d399;padding:12px 16px;font-size:13px;margin-top:10px}
+h2.st{font:700 24px 'Space Grotesk';margin:0 0 6px}
+.muted{color:var(--muted);font-size:14px}
+pre.tpl{white-space:pre-wrap;background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:16px;font-size:13px;font-family:inherit}
+footer{text-align:center;padding:34px 20px;color:var(--muted);font-size:12px;border-top:1px solid rgba(255,255,255,.06);margin-top:30px}
+footer strong{color:#fff}
+@media(max-width:760px){.grid2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <a class="back" href="index.html">← Portafolio</a>
+  <a class="brand" href="#">◆ Staff Toolkit</a>
+</header>
+<main>
+  <div class="hero-t">
+    <p class="eyebrow">HERRAMIENTA DEMO · STAFF MINECRAFT</p>
+    <h1>Staff Toolkit</h1>
+    <p class="lead">Normativa ficticia con fines demostrativos. Calcula sanciones, gestiona tickets y reportes, genera respuestas y entrena tu criterio como Staff.</p>
+  </div>
+  <nav class="tabs" id="tabs">
+    <button class="tab active" data-t="sanc">⚖️ Sanciones</button>
+    <button class="tab" data-t="tick">🎫 Tickets</button>
+    <button class="tab" data-t="rep">🚨 Reportes</button>
+    <button class="tab" data-t="gen">📝 Respuestas</button>
+    <button class="tab" data-t="reg">📚 Reglamento</button>
+    <button class="tab" data-t="cas">🧠 Casos</button>
+  </nav>
+
+  <section class="tool active" id="t-sanc">
+    <div class="grid2">
+      <div class="card glass">
+        <h2 class="st">Calculadora de sanciones</h2>
+        <label>Jugador<input id="sancUser" maxlength="30" placeholder="Nick del jugador"></label>
+        <label>Infracción<select id="sancRule"></select></label>
+        <label>Reincidencia<select id="sancRep"><option value="0">Primera vez</option><option value="1">Segunda vez</option><option value="2">Tercera vez o más</option></select></label>
+        <button class="btn primary" id="sancGo">Calcular sanción</button>
+        <div class="result glass" id="sancOut" style="display:none"></div>
+        <div class="rowbtns"><button class="btn" id="sancReg" style="display:none">Registrar en historial</button></div>
+      </div>
+      <div class="card glass">
+        <h2 class="st">Historial de sanciones</h2>
+        <p class="muted">Se guarda en este navegador.</p>
+        <div id="sancHist"></div>
+        <div class="rowbtns"><button class="btn danger" id="sancClear">Limpiar historial</button></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="tool" id="t-tick">
+    <div class="card glass"><h2 class="st">Simulador de tickets</h2><p class="muted">Tickets ficticios. Avanza su estado como lo haría un Staff.</p></div>
+    <div id="tickList"></div>
+  </section>
+
+  <section class="tool" id="t-rep">
+    <div class="card glass"><h2 class="st">Simulador de reportes</h2><p class="muted">Evalúa la evidencia y decide: archivar, pedir pruebas o escalar.</p></div>
+    <div id="repList"></div>
+  </section>
+
+  <section class="tool" id="t-gen">
+    <div class="grid2">
+      <div class="card glass">
+        <h2 class="st">Generador de respuestas</h2>
+        <label>Tipo<select id="genType"><option value="ticket">Ticket</option><option value="reporte">Reporte</option><option value="apelacion">Apelación</option><option value="advertencia">Advertencia</option></select></label>
+        <label>Jugador<input id="genUser" maxlength="30" placeholder="Nick del jugador"></label>
+        <label>Motivo / asunto<input id="genMotivo" maxlength="80" placeholder="Ej. uso de hacks"></label>
+        <label>Sanción o detalle<input id="genExtra" maxlength="80" placeholder="Ej. ban de 7 días"></label>
+        <button class="btn primary" id="genGo">Generar respuesta</button>
+      </div>
+      <div class="card glass">
+        <h2 class="st">Vista previa</h2>
+        <pre class="tpl" id="genOut">Completa los campos y genera tu respuesta…</pre>
+        <div class="rowbtns"><button class="btn" id="genCopy">Copiar texto</button></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="tool" id="t-reg">
+    <div class="card glass"><h2 class="st">Reglamento (ficticio)</h2><p class="muted">Normativa de ejemplo generada desde los mismos datos de la calculadora.</p></div>
+    <div id="regList"></div>
+  </section>
+
+  <section class="tool" id="t-cas">
+    <div class="card glass"><h2 class="st">Casos de Staff</h2><p class="muted">Lee la situación, elige cómo actuar y compara con la buena práctica. Puntos: <b id="caseScore">0</b></p></div>
+    <div id="caseList"></div>
+  </section>
+</main>
+<footer>© 2026 Daniel Esteban Vera Fernandez · <strong>Discohikorybrs</strong> · Todos los derechos reservados.<br><small>Staff Toolkit es una herramienta demostrativa con normativa ficticia. Hecho con ⛏️</small></footer>
+
+<script>
+// ============ DATOS (normativa ficticia) ============
+const RULES = [
+ {cat:"A · Faltas leves", arts:[
+  {id:"spam", name:"Spam / Flood", s:["Advertencia verbal","Mute 30 minutos","Mute 2 horas"], art:"Art. 3.1", ex:"Repetir el mismo mensaje 3 o más veces."},
+  {id:"caps", name:"Mayúsculas excesivas", s:["Aviso en chat","Mute 15 minutos","Mute 1 hora"], art:"Art. 3.2", ex:"Escribir mensajes completos en mayúsculas."},
+  {id:"offtopic", name:"Off-topic reiterado", s:["Aviso","Mute 15 minutos","Mute 45 minutos"], art:"Art. 3.3", ex:"Conversar fuera del canal indicado tras un aviso."}
+ ]},
+ {cat:"B · Faltas medias", arts:[
+  {id:"insulto", name:"Insultos / faltas de respeto", s:["Mute 1 hora","Mute 12 horas","Mute 3 días"], art:"Art. 5.1", ex:"Insultar o menospreciar a otro jugador."},
+  {id:"publi", name:"Publicidad de otros servidores", s:["Mute 2 h + borrar mensaje","Mute 1 día","Ban 7 días"], art:"Art. 5.2", ex:"Compartir IPs, nombres o invites."},
+  {id:"tptrap", name:"TP-trap / TPA-kill", s:["Ban 1 día + devolución","Ban 3 días","Ban 15 días"], art:"Art. 5.3", ex:"Matar a quien aceptó tu teleport."},
+  {id:"grief", name:"Griefing menor", s:["Advertencia + reparación","Ban 1 día","Ban 7 días"], art:"Art. 5.4", ex:"Romper construcciones pequeñas ajenas."}
+ ]},
+ {cat:"C · Faltas graves", arts:[
+  {id:"hacks", name:"Hacks / clientes ilegales", s:["Ban 7 días","Ban 30 días","Ban permanente"], art:"Art. 7.1", ex:"KillAura, Fly, X-Ray, macros de combate."},
+  {id:"odio", name:"Discriminación / discursos de odio", s:["Ban 14 días","Ban 30 días","Ban permanente"], art:"Art. 7.2", ex:"Insultos racistas, homófobos o similares."},
+  {id:"griefg", name:"Griefing mayor", s:["Ban 7 días + rollback","Ban 30 días","Ban permanente"], art:"Art. 7.3", ex:"Destruir zonas amplias o con protección."},
+  {id:"dox", name:"Doxxing / amenazas reales", s:["Ban permanente","Ban permanente","Ban permanente"], art:"Art. 7.4", ex:"Publicar datos personales o amenazar fuera del juego."},
+  {id:"bypass", name:"Evadir sanción (multicuenta)", s:["Ban permanente","Ban permanente","Ban permanente"], art:"Art. 7.5", ex:"Entrar con otra cuenta estando sancionado."}
+ ]}
+];
+const ALL_ARTS = RULES.flatMap(c => c.arts.map(a => ({...a, cat: c.cat})));
+const TICKETS = [
+ {u:"xX_Dragon_Xx", subject:"No puedo entrar al servidor", msg:"Me sale 'Connection refused' desde ayer en la noche. Mi internet va bien.", pr:"Alta"},
+ {u:"MinaCraftPro", subject:"Me robaron mis diamantes", msg:"Dejé mis cosas en un cofre sin protección y desaparecieron. ¿Me los devuelven?", pr:"Media"},
+ {u:"SrLobo_99", subject:"Apelo mi mute", msg:"Me mutearon por spam pero fue mi hermano pequeño usando mi cuenta.", pr:"Media"},
+ {u:"LunaBuilds", subject:"Sugerencia de minijuego", msg:"¿Podrían agregar BedWars los fines de semana? Mucha gente lo pide.", pr:"Baja"},
+ {u:"TomasPvP", subject:"Posible hacker en survival", msg:"El jugador Dark_Slayer cruza el mapa volando. Tengo video.", pr:"Alta"}
+];
+const REPORTS = [
+ {rep:"Dark_Slayer", by:"TomasPvP", reason:"Posible Fly en survival", ev:"Video de 40 s donde cruza el mapa sin tocar el suelo.", hist:0},
+ {rep:"Kevin_R", by:"LunaBuilds", reason:"Griefing en su parcela", ev:"Capturas del antes/después + registro de cofres.", hist:1},
+ {rep:"Anon_77", by:"SrLobo_99", reason:"Insultos por chat", ev:"Solo testimonio, sin capturas ni testigos.", hist:2},
+ {rep:"MegaSteve", by:"xX_Dragon_Xx", reason:"TP-trap", ev:"Chat donde acepta el TP y muere al instante.", hist:0}
+];
+const CASES = [
+ {t:"Hacks sin evidencia suficiente", s:"Un jugador acusa a otro de usar hacks, pero no hay video ni logs concluyentes.",
+  opts:[
+   {t:"Banearlo de inmediato para dar ejemplo.", ok:false, why:"Sin evidencia, un ban es injusto y daña la credibilidad del Staff."},
+   {t:"Pedir pruebas al reportante y vigilar al sospechoso en modo invisible.", ok:true, why:"Correcto: se actúa con prudencia, se recaba evidencia y se evita sancionar a un inocente."},
+   {t:"Ignorar el reporte por falta de pruebas.", ok:false, why:"Archivar sin seguimiento deja pasar un posible infractor real."}],
+  best:"Toda sanción grave exige evidencia. Registra el reporte, solicita pruebas y observa antes de actuar."},
+ {t:"Tu amigo rompe las reglas", s:"Un amigo tuyo del servidor hace publicidad de otro servidor en el chat general.",
+  opts:[
+   {t:"Perdonarlo porque es tu amigo.", ok:false, why:"El favoritismo destruye la confianza de la comunidad en el Staff."},
+   {t:"Aplicar la sanción que corresponda y explicarle en privado.", ok:true, why:"Correcto: la normativa aplica a todos por igual, y en privado cuidas la relación."},
+   {t:"Pedirle a otro Staff que lo sancione para no quedar mal.", ok:false, why:"Evadir tu responsabilidad no es liderazgo; además el resultado es el mismo."}],
+  best:"La imparcialidad no es negociable: mismo trato para amigos y desconocidos."},
+ {t:"Insulto en caliente con disculpa", s:"Dos jugadores se insultan tras perder un PvP, pero uno se disculpa de inmediato y borra sus mensajes.",
+  opts:[
+   {t:"Ban permanente a los dos.", ok:false, why:"Desproporcionado: la norma busca corregir, no castigar por castigar."},
+   {t:"Mute leve + mediar entre ambos.", ok:true, why:"Correcto: sanción proporcional, mediación y cierre del conflicto."},
+   {t:"No hacer nada porque ya se disculpó.", ok:false, why:"Sin registro ni aviso, la conducta se repite. Al menos deja constancia."}],
+  best:"Proporcionalidad: la sanción debe ajustarse a la gravedad y al contexto."},
+ {t:"Griefing con logs claros", s:"Los registros muestran que un jugador rompió 200 bloques de una parcela protegida.",
+  opts:[
+   {t:"Pedir más pruebas a la víctima.", ok:false, why:"Los logs ya son evidencia suficiente; pedir más solo retrasa la solución."},
+   {t:"Sancionar según normativa + rollback de la zona.", ok:true, why:"Correcto: evidencia sólida, sanción tipificada y reparación del daño."},
+   {t:"Solo advertirle para no perder un jugador activo.", ok:false, why:"La impunidad invita a repetir y molesta a la víctima."}],
+  best:"Con evidencia sólida se actúa rápido: sanción + reparación + registro."}
+];
+const STAFF = "Discohikorybrs";
+const store = {
+  get:(k,f)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):f}catch(e){return f}},
+  set:(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+};
+const esc = v => {const d=document.createElement('div');d.textContent=v;return d.innerHTML};
+
+// ============ TABS ============
+document.querySelectorAll('#tabs .tab').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('#tabs .tab').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.tool').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');
+  document.getElementById('t-'+b.dataset.t).classList.add('active');
+}));
+
+// ============ 1. CALCULADORA ============
+const sancRule=document.getElementById('sancRule');
+RULES.forEach(c=>{
+  const g=document.createElement('optgroup');g.label=c.cat;
+  c.arts.forEach(a=>{const o=document.createElement('option');o.value=a.id;o.textContent=`${a.name} (${a.art})`;g.appendChild(o)});
+  sancRule.appendChild(g);
+});
+let lastCalc=null;
+document.getElementById('sancGo').addEventListener('click',()=>{
+  const a=ALL_ARTS.find(x=>x.id===sancRule.value);
+  const r=Number(document.getElementById('sancRep').value);
+  const user=document.getElementById('sancUser').value.trim()||"—";
+  lastCalc={user,rule:a.name,art:a.art,san:a.s[r],rep:["Primera vez","Segunda vez","Tercera vez o más"][r],date:new Date().toLocaleString('es-CO')};
+  const out=document.getElementById('sancOut');
+  out.style.display='block';
+  out.innerHTML=`<b>Sanción sugerida: ${esc(a.s[r])}</b><br><small>Jugador: ${esc(user)} · ${esc(a.cat)} · ${esc(a.art)} · ${esc(lastCalc.rep)}<br>Ejemplo: ${esc(a.ex)}</small>`;
+  document.getElementById('sancReg').style.display='inline-flex';
+});
+function paintHist(){
+  const h=store.get('stk_hist',[]);
+  document.getElementById('sancHist').innerHTML=h.length?h.map((x,i)=>`<div class="hist-item"><span><b>${esc(x.san)}</b> → ${esc(x.user)} <small>(${esc(x.rule)} · ${esc(x.rep)})</small></span><button class="btn danger" data-h="${i}" style="padding:4px 10px">✕</button></div>`).join(''):'<p class="muted">Sin registros todavía.</p>';
+  document.querySelectorAll('[data-h]').forEach(b=>b.addEventListener('click',()=>{const hh=store.get('stk_hist',[]);hh.splice(Number(b.dataset.h),1);store.set('stk_hist',hh);paintHist()}));
+}
+document.getElementById('sancReg').addEventListener('click',()=>{
+  if(!lastCalc)return;
+  const h=store.get('stk_hist',[]);h.unshift(lastCalc);store.set('stk_hist',h.slice(0,50));paintHist();
+});
+document.getElementById('sancClear').addEventListener('click',()=>{if(confirm('¿Limpiar historial?')){store.set('stk_hist',[]);paintHist()}});
+paintHist();
+
+// ============ 2. TICKETS ============
+const TSTATES=["Pendiente","En proceso","Resuelto"];
+const TCLS=["st-Pendiente","st-Proceso","st-Resuelto"];
+function paintTickets(){
+  const st=store.get('stk_tick',{});
+  document.getElementById('tickList').innerHTML=TICKETS.map((t,i)=>{
+    const s=st[i]||0;
+    return `<div class="card glass"><div><span class="pill ${TCLS[s]}">${TSTATES[s]}</span> <span class="pill prio-${t.pr}">${t.pr}</span></div>
+    <h2 class="st" style="margin-top:8px">${esc(t.subject)}</h2>
+    <p class="muted">De: <b>${esc(t.u)}</b></p><p>${esc(t.msg)}</p>
+    <div class="rowbtns">${s<2?`<button class="btn primary" data-tk="${i}">Avanzar estado →</button>`:''}<button class="btn" data-tkr="${i}">Reiniciar demo</button></div></div>`;
+  }).join('');
+  document.querySelectorAll('[data-tk]').forEach(b=>b.addEventListener('click',()=>{const s=store.get('stk_tick',{});s[b.dataset.tk]=Math.min(2,(s[b.dataset.tk]||0)+1);store.set('stk_tick',s);paintTickets()}));
+  document.querySelectorAll('[data-tkr]').forEach(b=>b.addEventListener('click',()=>{const s=store.get('stk_tick',{});delete s[b.dataset.tkr];store.set('stk_tick',s);paintTickets()}));
+}
+paintTickets();
+
+// ============ 3. REPORTES ============
+const RSTATES={arch:"Archivado",pruebas:"Esperando pruebas",esc:"Escalado"};
+const RCLS={arch:"st-Archivado",pruebas:"st-Pruebas",esc:"st-Escalado"};
+function paintReports(){
+  const st=store.get('stk_rep',{});
+  document.getElementById('repList').innerHTML=REPORTS.map((r,i)=>{
+    const s=st[i];
+    return `<div class="card glass"><div>${s?`<span class="pill ${RCLS[s]}">${RSTATES[s]}</span>`:'<span class="pill st-Pendiente">Pendiente</span>'} <span class="pill">Historial: ${r.hist}</span></div>
+    <h2 class="st" style="margin-top:8px">${esc(r.rep)} <small class="muted">reportado por ${esc(r.by)}</small></h2>
+    <p><b>Motivo:</b> ${esc(r.reason)}</p><p><b>Evidencia:</b> ${esc(r.ev)}</p>
+    <div class="rowbtns"><button class="btn" data-rp="arch|${i}">Archivar</button><button class="btn" data-rp="pruebas|${i}">Solicitar pruebas</button><button class="btn danger" data-rp="esc|${i}">Escalar</button></div></div>`;
+  }).join('');
+  document.querySelectorAll('[data-rp]').forEach(b=>b.addEventListener('click',()=>{
+    const [act,idx]=b.dataset.rp.split('|');
+    const s=store.get('stk_rep',{});s[idx]=act;store.set('stk_rep',s);paintReports();
+  }));
+}
+paintReports();
+
+// ============ 4. GENERADOR ============
+const TPL={
+ ticket:(u,m,e)=>`Hola ${u},\n\nGracias por contactarnos. Revisamos tu caso sobre "${m}" y te confirmamos lo siguiente: ${e}.\n\nSi necesitas algo más, responde a este mismo ticket.\n\nAtentamente,\n${STAFF} · Equipo Staff`,
+ reporte:(u,m,e)=>`Hola ${u},\n\nRecibimos un reporte relacionado contigo por "${m}". Tras revisar la evidencia (${e}), se aplicará la medida correspondiente según el reglamento.\n\nPuedes apelar esta decisión abriendo un ticket.\n\nAtentamente,\n${STAFF} · Equipo Staff`,
+ apelacion:(u,m,e)=>`Hola ${u},\n\nRevisamos tu apelación sobre "${m}". Decisión: ${e}.\n\nAgradecemos tu interés en resolver la situación de buena manera.\n\nAtentamente,\n${STAFF} · Equipo Staff`,
+ advertencia:(u,m,e)=>`Hola ${u},\n\nEsto es una advertencia formal por "${m}". ${e}.\n\nSi la conducta continúa, se aplicarán sanciones mayores según el reglamento.\n\nAtentamente,\n${STAFF} · Equipo Staff`
+};
+document.getElementById('genGo').addEventListener('click',()=>{
+  const t=document.getElementById('genType').value;
+  const u=document.getElementById('genUser').value.trim()||"[jugador]";
+  const m=document.getElementById('genMotivo').value.trim()||"[motivo]";
+  const e=document.getElementById('genExtra').value.trim()||"[detalle]";
+  document.getElementById('genOut').textContent=TPL[t](u,m,e);
+});
+document.getElementById('genCopy').addEventListener('click',async()=>{
+  const txt=document.getElementById('genOut').textContent;
+  try{await navigator.clipboard.writeText(txt);alert('¡Copiado! 📋')}
+  catch(e){const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');alert('¡Copiado! 📋')}catch(_){alert('No se pudo copiar automáticamente.')}ta.remove()}
+});
+
+// ============ 5. REGLAMENTO ============
+document.getElementById('regList').innerHTML=RULES.map(c=>`<div class="card glass"><h2 class="st">${esc(c.cat)}</h2>${c.arts.map(a=>`<div class="hist-item"><span><b>${esc(a.art)}</b> · ${esc(a.name)}<br><small>${esc(a.ex)}<br>1ª: ${esc(a.s[0])} · 2ª: ${esc(a.s[1])} · 3ª+: ${esc(a.s[2])}</small></span></div>`).join('')}</div>`).join('');
+
+// ============ 6. CASOS ============
+let caseScore=store.get('stk_score',0);
+document.getElementById('caseScore').textContent=caseScore;
+document.getElementById('caseList').innerHTML=CASES.map((c,i)=>`<div class="card glass"><h2 class="st">${i+1}. ${esc(c.t)}</h2><p>${esc(c.s)}</p><div id="case-opts-${i}">${c.opts.map((o,j)=>`<button class="opt" data-c="${i}|${j}">${esc(o.t)}</button>`).join('')}</div><div id="case-fb-${i}"></div></div>`).join('');
+document.querySelectorAll('[data-c]').forEach(b=>b.addEventListener('click',()=>{
+  const [i,j]=b.dataset.c.split('|').map(Number);
+  const box=document.getElementById(`case-opts-${i}`);
+  box.querySelectorAll('.opt').forEach((o,k)=>{o.disabled=true;if(CASES[i].opts[k].ok)o.classList.add('ok');});
+  const chosen=CASES[i].opts[j];
+  if(!chosen.ok)b.classList.add('bad');
+  else{caseScore++;store.set('stk_score',caseScore);document.getElementById('caseScore').textContent=caseScore;}
+  document.getElementById(`case-fb-${i}`).innerHTML=`<p class="why">${chosen.ok?'✅':'❌'} ${esc(chosen.why)}</p><div class="best"><b>Buena práctica:</b> ${esc(CASES[i].best)}</div>`;
+}));
+</script>
+</body>
+</html>
