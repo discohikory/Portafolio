@@ -206,6 +206,22 @@
       <label>Tu nombre
         <input type="text" id="reviewName" maxlength="60" required placeholder="¿Cómo te llamas?">
       </label>
+      <div class="gate-box glass" id="gateBox" style="padding:14px; border-radius:10px; border:1px dashed rgba(139,92,246,0.5);">
+        <b>Paso 1 · Identifícate (obligatorio para publicar)</b>
+        <div style="display:flex; gap:8px; flex-wrap:wrap; margin:8px 0;">
+          <button type="button" class="btn magnetic oauth-btn" data-prov="google">Google</button>
+          <button type="button" class="btn magnetic oauth-btn" data-prov="discord">Discord</button>
+          <button type="button" class="btn magnetic oauth-btn" data-prov="github">GitHub</button>
+        </div>
+        <small style="display:block; margin-bottom:8px;">El login con Google/Discord/GitHub se activa en fase 2 (requiere backend con credenciales OAuth). Por ahora identifícate con el captcha:</small>
+        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+          <strong id="captchaQ">? + ? = ?</strong>
+          <input type="text" id="captchaA" inputmode="numeric" placeholder="Respuesta" style="width:90px;" autocomplete="off">
+          <button type="button" class="btn primary magnetic" id="gateBtn">Desbloquear</button>
+        </div>
+        <input type="text" id="hpField" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;opacity:0;height:0;width:0;">
+        <small id="gateStatus" style="display:block; margin-top:6px;">Sin identificar: no puedes publicar aún.</small>
+      </div>
       <label>Puntuación
         <select id="reviewRating" required>
           <option value="5">★★★★★ — 5 Estrellas</option>
@@ -250,6 +266,14 @@
 </section>
 
 <footer>© 2026 Daniel Esteban Vera Fernandez · <strong>Discohikorybrs</strong></footer>
+
+<button id="adminGear" type="button" title="Admin" style="position:fixed;bottom:16px;right:16px;z-index:200;width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:rgba(15,20,35,0.9);color:#fff;cursor:pointer;font-size:18px;">⚙️</button>
+<div id="adminBar" class="glass" style="display:none;position:fixed;bottom:70px;right:16px;z-index:200;padding:12px;border-radius:12px;flex-direction:column;gap:8px;max-width:240px;">
+  <strong>Modo admin 🛠️</strong>
+  <button id="editLeadBtn" type="button" class="btn magnetic">Editar texto hero</button>
+  <button id="editQuoteBtn" type="button" class="btn magnetic">Editar frase final</button>
+  <button id="exitAdminBtn" type="button" class="btn magnetic">Salir admin</button>
+</div>
 
 <!-- Sin SDK: reseñas via JSONBin REST + respaldo local -->
 
@@ -575,7 +599,12 @@ document.querySelectorAll('.faq-question').forEach(q => {
 const JB_BIN = '6aab5c2dffd5d16053106c1c';
 const JB_KEY = '$2a$10$XbVd43wzBhlIfE1632782ePKNz5e/MaX25U3NJ5JRIBKtJt0ILnXC';
 const JB_URL = 'https://api.jsonbin.io/v3/b/' + JB_BIN;
+// PIN de admin (visible en el código: es disuasorio, no seguridad real.
+// La seguridad real exige backend con roles; va en fase 2).
+const ADMIN_PIN = '1234';
 let BACKEND_OK = true;
+let isAdmin = sessionStorage.getItem('rv_admin') === '1';
+let gateOK = sessionStorage.getItem('rv_gate') === '1';
 
 const reviewForm = document.getElementById('reviewForm');
 const reviewName = document.getElementById('reviewName');
@@ -611,7 +640,7 @@ function renderReviews(data, mode) {
     return;
   }
   let total = 0;
-  data.forEach(r => {
+  data.forEach((r, idx) => {
     const rating = Math.min(5, Math.max(1, Number(r.rating) || 0));
     total += rating;
     const msg = String(r.message || '');
@@ -619,14 +648,16 @@ function renderReviews(data, mode) {
     const card = document.createElement('article');
     card.className = 'review-card glass';
     const needsMore = msg.length > 180;
-    card.innerHTML = `<div class="review-top"><strong>${escapeHtml(r.name || 'Anónimo')}</strong><span class="stars-color">${'★'.repeat(rating)}${'☆'.repeat(5-rating)}</span></div><p>${escapeHtml(msg)}</p>${needsMore ? '<button type="button" class="review-more">Ver más</button>' : ''}<small>${date.toLocaleDateString('es-CO')}${mode === 'local' ? ' · local' : ''}</small>`;
+    card.innerHTML = `<div class="review-top"><strong>${escapeHtml(r.name || 'Anónimo')}</strong><span class="stars-color">${'★'.repeat(rating)}${'☆'.repeat(5-rating)}</span></div><p>${escapeHtml(msg)}</p>${needsMore ? '<button type="button" class="review-more">Ver más</button>' : ''}<small>${date.toLocaleDateString('es-CO')}${mode === 'local' ? ' · local' : ''}</small>${(isAdmin && mode === 'global') ? '<button type="button" class="review-more" data-del="' + idx + '" style="color:#ff6b6b;">🗑 Eliminar</button>' : ''}`;
     if (needsMore) {
-      const btn = card.querySelector('.review-more');
+      const btn = card.querySelector('.review-more:not([data-del])');
       btn.addEventListener('click', () => {
         const exp = card.classList.toggle('expanded');
         btn.textContent = exp ? 'Ver menos' : 'Ver más';
       });
     }
+    const del = card.querySelector('[data-del]');
+    if (del) del.addEventListener('click', () => deleteReview(idx));
     reviewsList.appendChild(card);
   });
   const avg = total / data.length;
@@ -642,28 +673,60 @@ function enterLocalMode(reason) {
   renderReviews(getLocalReviews(), 'local');
 }
 
-async function jbRead() {
+async function jbReadRecord() {
   const res = await fetch(JB_URL + '/latest', { headers: { 'X-Access-Key': JB_KEY } });
   if (!res.ok) throw new Error('jsonbin read ' + res.status);
   const j = await res.json();
-  const arr = Array.isArray(j.record) ? j.record : (j.record && Array.isArray(j.record.reviews) ? j.record.reviews : []);
-  return arr;
+  return j.record || {};
+}
+
+async function jbRead() {
+  const rec = await jbReadRecord();
+  return Array.isArray(rec) ? rec : (rec && Array.isArray(rec.reviews) ? rec.reviews : []);
 }
 
 async function jbWrite(all) {
+  let record = {};
+  try { record = await jbReadRecord(); if (Array.isArray(record)) record = {}; }
+  catch (e) { record = {}; }
+  record.reviews = all.slice(0, 100);
   const res = await fetch(JB_URL, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json', 'X-Access-Key': JB_KEY, 'X-Bin-Versioning': 'false' },
-    body: JSON.stringify({ reviews: all.slice(0, 100) })
+    body: JSON.stringify(record)
   });
   if (!res.ok) throw new Error('jsonbin write ' + res.status);
 }
 
+function applyContent(content) {
+  if (!content || typeof content !== 'object') return;
+  const lead = document.querySelector('.hero .lead');
+  if (content.lead && lead) lead.textContent = content.lead;
+  const quote = document.querySelector('.centered-quote p');
+  if (content.quote && quote) quote.textContent = content.quote;
+}
+
+async function deleteReview(idx) {
+  if (!isAdmin) return;
+  if (!confirm('¿Eliminar esta reseña?')) return;
+  try {
+    const current = await jbRead();
+    current.splice(idx, 1);
+    await jbWrite(current);
+    reviewStatus.textContent = 'Reseña eliminada. 🗑';
+    renderReviews(current, 'global');
+  } catch (err) {
+    reviewStatus.textContent = 'No se pudo eliminar: ' + (err.message || err);
+  }
+}
+
 async function cargarResenas() {
   try {
-    const arr = await jbRead();
+    const rec = await jbReadRecord();
+    const arr = Array.isArray(rec) ? rec : (rec && Array.isArray(rec.reviews) ? rec.reviews : []);
     BACKEND_OK = true;
     reviewStatus.textContent = 'Sincronizado globalmente con JSONBin.';
+    if (rec && rec.content) applyContent(rec.content);
     renderReviews(arr, 'global');
   } catch (err) {
     console.error('cargarResenas falló:', err);
@@ -673,13 +736,23 @@ async function cargarResenas() {
 
 reviewForm.addEventListener('submit', async e => {
   e.preventDefault();
-  const name = (reviewName.value || 'Invitado').trim().slice(0, 60) || 'Invitado';
+  // Honeypot: si un bot lo llenó, se ignora en silencio
+  const hp = document.getElementById('hpField');
+  if (hp && hp.value) { return; }
+  if (!gateOK) { reviewStatus.textContent = 'Primero identifícate en el Paso 1. 🔒'; return; }
+  const name = (reviewName.value || '').trim().slice(0, 60);
   const rating = Math.min(5, Math.max(1, Number(document.getElementById('reviewRating').value) || 5));
   const message = document.getElementById('reviewMessage').value.trim();
 
   if (name.length < 2) { reviewStatus.textContent = 'Escribe tu nombre.'; return; }
   if (message.length < 3) { reviewStatus.textContent = 'Escribe al menos 3 caracteres.'; return; }
   if (message.length > 500) { reviewStatus.textContent = 'Máximo 500 caracteres.'; return; }
+  // Cooldown 60s por navegador
+  const last = Number(localStorage.getItem('rv_last') || 0);
+  if (Date.now() - last < 60000 && !isAdmin) { reviewStatus.textContent = 'Espera un minuto entre reseñas. ⏳'; return; }
+  // Duplicados exactos
+  const lastMsg = localStorage.getItem('rv_last_msg') || '';
+  if ((name + '|' + message) === lastMsg) { reviewStatus.textContent = 'Esa reseña ya fue publicada.'; return; }
 
   const item = { name, message, rating, created_at: new Date().toISOString() };
   try {
@@ -687,6 +760,10 @@ reviewForm.addEventListener('submit', async e => {
     const updated = [item].concat(current).slice(0, 100);
     await jbWrite(updated);
     BACKEND_OK = true;
+    try {
+      localStorage.setItem('rv_last', String(Date.now()));
+      localStorage.setItem('rv_last_msg', name + '|' + message);
+    } catch (err2) {}
     reviewStatus.textContent = '¡Reseña publicada con éxito! ⭐';
     document.getElementById('reviewMessage').value = '';
     document.getElementById('reviewMessage').dispatchEvent(new Event('input'));
@@ -698,6 +775,119 @@ reviewForm.addEventListener('submit', async e => {
     enterLocalMode(err && err.message ? err.message : err);
   }
 });
+
+// ---- Gate de identidad + captcha + OAuth (fase 2) ----
+let captchaAns = 0;
+function newCaptcha() {
+  const a = 2 + Math.floor(Math.random() * 7);
+  const b = 2 + Math.floor(Math.random() * 7);
+  captchaAns = a + b;
+  const q = document.getElementById('captchaQ');
+  if (q) q.textContent = a + ' + ' + b + ' = ?';
+  const inp = document.getElementById('captchaA');
+  if (inp) inp.value = '';
+}
+function refreshGate() {
+  const st = document.getElementById('gateStatus');
+  if (gateOK) {
+    if (st) st.textContent = 'Identificado ✅ Ya puedes publicar.';
+    const box = document.getElementById('gateBox');
+    if (box) box.style.opacity = '0.75';
+  } else if (st) st.textContent = 'Sin identificar: no puedes publicar aún.';
+}
+document.querySelectorAll('.oauth-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const prov = btn.getAttribute('data-prov');
+    reviewStatus.textContent = 'Login con ' + prov + ' llega en fase 2 (requiere backend OAuth). Usa el captcha por ahora. 🔜';
+  });
+});
+document.getElementById('gateBtn').addEventListener('click', () => {
+  const hp = document.getElementById('hpField');
+  if (hp && hp.value) return;
+  const v = Number((document.getElementById('captchaA').value || '').trim());
+  const nm = (reviewName.value || '').trim();
+  if (nm.length < 2) { document.getElementById('gateStatus').textContent = 'Escribe tu nombre primero.'; return; }
+  if (v !== captchaAns) {
+    document.getElementById('gateStatus').textContent = 'Captcha incorrecto, intenta de nuevo. 🤖';
+    newCaptcha();
+    return;
+  }
+  gateOK = true;
+  try { sessionStorage.setItem('rv_gate', '1'); } catch (e) {}
+  refreshGate();
+});
+newCaptcha();
+refreshGate();
+
+// ---- Panel admin ----
+const adminGear = document.getElementById('adminGear');
+const adminBar = document.getElementById('adminBar');
+function refreshAdmin() {
+  adminBar.style.display = isAdmin ? 'flex' : 'none';
+  if (BACKEND_OK) cargarResenas();
+}
+adminGear.addEventListener('click', () => {
+  if (isAdmin) {
+    adminBar.style.display = adminBar.style.display === 'flex' ? 'none' : 'flex';
+    return;
+  }
+  const pin = prompt('PIN de admin:');
+  if (pin === null) return;
+  if (pin === ADMIN_PIN) {
+    isAdmin = true;
+    try { sessionStorage.setItem('rv_admin', '1'); } catch (e) {}
+    refreshAdmin();
+  } else alert('PIN incorrecto.');
+});
+document.getElementById('exitAdminBtn').addEventListener('click', () => {
+  isAdmin = false;
+  try { sessionStorage.removeItem('rv_admin'); } catch (e) {}
+  refreshAdmin();
+});
+document.getElementById('editLeadBtn').addEventListener('click', async () => {
+  const cur = document.querySelector('.hero .lead');
+  const v = prompt('Texto del hero:', cur ? cur.textContent.trim() : '');
+  if (v === null) return;
+  try {
+    const rec = await jbReadRecord();
+    const content = (rec && rec.content && typeof rec.content === 'object') ? rec.content : {};
+    content.lead = v.slice(0, 300);
+    const arr = Array.isArray(rec) ? rec : (rec.reviews || []);
+    let full = Array.isArray(rec) ? { reviews: rec } : rec;
+    full.content = content;
+    if (!Array.isArray(full.reviews)) full.reviews = arr;
+    const res = await fetch(JB_URL, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'X-Access-Key': JB_KEY, 'X-Bin-Versioning': 'false' },
+      body: JSON.stringify(full)
+    });
+    if (!res.ok) throw new Error('write ' + res.status);
+    applyContent(content);
+    reviewStatus.textContent = 'Texto hero actualizado. ✅';
+  } catch (err) { reviewStatus.textContent = 'No se pudo guardar: ' + (err.message || err); }
+});
+document.getElementById('editQuoteBtn').addEventListener('click', async () => {
+  const cur = document.querySelector('.centered-quote p');
+  const v = prompt('Frase final:', cur ? cur.textContent.trim() : '');
+  if (v === null) return;
+  try {
+    const rec = await jbReadRecord();
+    const content = (rec && rec.content && typeof rec.content === 'object') ? rec.content : {};
+    content.quote = v.slice(0, 300);
+    let full = Array.isArray(rec) ? { reviews: rec } : rec;
+    full.content = content;
+    if (!Array.isArray(full.reviews)) full.reviews = [];
+    const res = await fetch(JB_URL, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'X-Access-Key': JB_KEY, 'X-Bin-Versioning': 'false' },
+      body: JSON.stringify(full)
+    });
+    if (!res.ok) throw new Error('write ' + res.status);
+    applyContent(content);
+    reviewStatus.textContent = 'Frase actualizada. ✅';
+  } catch (err) { reviewStatus.textContent = 'No se pudo guardar: ' + (err.message || err); }
+});
+refreshAdmin();
 
 // Contador + auto-crecimiento del textarea (máx 500, se engorda hasta 300px)
 (function () {
