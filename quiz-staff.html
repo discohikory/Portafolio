@@ -148,14 +148,14 @@ const RANKS_Q=[
 ["Alguien pide tus datos personales, ¿qué haces?",["Darlos si es mod","No darlos nunca","Darlos por Discord","Darlos si insiste"],1,"Tus datos no se comparten con nadie."],
 ["Ves a alguien en zona prohibida, ¿qué haces?",["Acompañarlo","Avisarle y reportar","Darle items","Seguirlo en silencio"],1,"Avisas y reportas con ubicación."],
 ["¿Qué haces antes de opinar de una sanción?",["Criticarla en público","Leer la norma y preguntar en privado","Ignorarla","Apoyar siempre"],1,"Primero entiendes la norma; las dudas van en privado."],
-["Un jugador nuevo está perdido, ¿qué haces?",["Reírte","Guiarlo y explicarle lo básico","Darle OP","Ignorarlo"],1,"Recibir bien a los nuevos retiene jugadores."]
+["Dos nuevos discuten por un nombre parecido, ¿qué haces?",["Reírte","Mediar con calma y proponer solución","Banear a uno","Ignorarlos"],1,"Mediar temprano evita un conflicto grande."]
 ]},
 {r:"Helper",icon:"🛠️",qs:[
 ["Flood por segunda vez, ¿sanción?",["Aviso","Mute 30 minutos","Mute 2 horas","Ban 1 día"],1,"Segunda vez de flood: mute 30 minutos."],
 ["Insultos por segunda vez, ¿sanción?",["Mute 1 hora","Ban 7 días","Mute 12 horas","Advertencia"],2,"Segunda vez de insultos: mute 12 horas."],
 ["El mismo usuario abre ticket duplicado por impaciencia, ¿qué haces?",["Cerrar los dos","Unificar, responder en uno y pedir paciencia","Ignorar ambos","Regañarlo"],1,"Se unifica en un hilo y se pide paciencia."],
-["Sintaxis correcta de un mute:",["/mute <nick> [tiempo] [motivo]","/mute [tiempo] <nick>","/silenciar <nick>","/mute <motivo> <nick>"],0,"Orden: jugador, tiempo y motivo."],
-["¿Para qué sirve /warn?",["Banear","Advertir y dejar registro","Mutear 1 hora","Perdonar"],1,"El warn advierte y queda en el historial."],
+["Insulto leve pero es su 1ª vez y pide disculpas, ¿qué aplicas?",["Mute 1 hora","Warn + registro","Ban 1 día","Nada en absoluto"],1,"Primera vez con disculpa: warn + registro."],
+["Flood leve de un nuevo que no leyó reglas, ¿qué aplicas?",["Mute 30 min","Aviso + explicar la norma","Ban","Warn directo"],1,"Nuevo sin malicia: aviso educativo primero."],
 ["Dos jugadores discuten leve, ¿qué haces?",["Banear a los dos","Escuchar, calmar y mediar","Ignorarlos","Mutear 1 día"],1,"Medias primero: escucha y calma el ambiente."],
 ["Uno se disculpa tras insultar, ¿qué haces?",["Ban permanente","Mute leve + mediación","Nada en absoluto","Ban 30 días"],1,"Proporcionalidad: leve, mediación y constancia."],
 ["Ticket: no puede entrar (connection refused), ¿qué pides?",["Su contraseña","Versión, mensaje exacto y desde cuándo","Su IP","Nada, lo cierras"],1,"Sin datos no se diagnostica: versión y error exacto."],
@@ -166,7 +166,7 @@ const RANKS_Q=[
 ["Reporte sin pruebas, ¿qué haces?",["Sancionar igual","Pedir capturas o video","Ignorarlo","Banear al reportante"],1,"Sin evidencia se piden pruebas, no se sanciona."],
 ["Reporte sin pruebas contra un mod, ¿qué haces?",["Archivarlo por anónimo","Ignorarlo","Pedir pruebas y tratarlo igual","Creerle al mod"],2,"Todos se evalúan igual, tenga el rango que tenga."],
 ["Caso medio que te supera, ¿qué haces?",["Inventar sanción","Derivarlo a un Mod","Ignorarlo","Banear por si acaso"],1,"Derivar a tiempo también es buen criterio."],
-["En Discord, flood en un canal, ¿qué haces?",["Ban directo","Timeout o !mute temporal","Borrar el servidor","Nada"],1,"Timeout o mute temporal según la herramienta."],
+["Insultan en el hilo de un ticket ajeno, ¿qué haces?",["Ban del servidor","Timeout + borrar + redirigir al general","Nada","Cerrar el ticket"],1,"Se limpia, se redirige y se sanciona leve."],
 ["Canal descontrolado, ¿qué haces?",["Cerrar el servidor","Activar slowmode","Banear a todos","Llorar"],1,"El modo lento enfría el canal."],
 ["Cada sanción debe quedar...",["En secreto","Registrada en el historial","En tu cabeza","En papel"],1,"Sin registro no hay reincidencias ni control."],
 ["Tu amigo insulta, ¿qué haces?",["Perdonarlo","Sancionarlo igual","Que lo haga otro","Mirar a otro lado"],1,"Mismo trato para amigos y desconocidos."],
@@ -449,7 +449,8 @@ function showQ(){
   document.getElementById('qFb').innerHTML='';
   document.getElementById('qNext').style.display='none';
   const box=document.getElementById('qOpts');
-  box.innerHTML=q.o.map((o,j)=>`<button class="opt" data-qo="${j}">${esc(o)}</button>`).join('');
+  const order=shuffle([0,1,2,3]);
+  box.innerHTML=order.map(j=>`<button class="opt" data-qo="${j}">${esc(q.o[j])}</button>`).join('');
   const bar=document.getElementById('qTime');
   bar.style.width='100%';bar.style.background='#34d399';
   timer=setInterval(()=>{
@@ -467,7 +468,7 @@ document.getElementById('qOpts').addEventListener('click',e=>{
 function answer(j){
   clearInterval(timer);
   const q=bank[pool[idx]];
-  document.querySelectorAll('#qOpts .opt').forEach((o,k)=>{o.disabled=true;if(k===q.a)o.classList.add('ok')});
+  document.querySelectorAll('#qOpts .opt').forEach(o=>{o.disabled=true;if(Number(o.dataset.qo)===q.a)o.classList.add('ok')});
   if(j===q.a){
     hits++;streak++;
     const pts=100+timeLeft*2+Math.min(streak,5)*10;
@@ -552,9 +553,10 @@ function parseAIQ(t){
 }
 function renderAIQ(){
   const box=document.getElementById('aiQBox');
-  box.innerHTML=`<h3 style="font-family:'Space Grotesk'">${esc(aiQ.q)}</h3><div>${aiQ.opts.map((o,j)=>`<button class="opt" data-aiqo="${j}">${esc(o)}</button>`).join('')}</div><div id="aiQFb"></div><div class="rowbtns"><button class="btn" id="aiQMore" style="display:none">Otra pregunta ↻</button></div>`;
+  const order=shuffle([0,1,2]);
+  box.innerHTML=`<h3 style="font-family:'Space Grotesk'">${esc(aiQ.q)}</h3><div>${order.map(j=>`<button class="opt" data-aiqo="${j}">${esc(aiQ.opts[j])}</button>`).join('')}</div><div id="aiQFb"></div><div class="rowbtns"><button class="btn" id="aiQMore" style="display:none">Otra pregunta ↻</button></div>`;
   box.querySelectorAll('[data-aiqo]').forEach(btn=>btn.addEventListener('click',()=>{
-    box.querySelectorAll('[data-aiqo]').forEach((o,k)=>{o.disabled=true;if(k===aiQ.a)o.classList.add('ok')});
+    box.querySelectorAll('[data-aiqo]').forEach(o=>{o.disabled=true;if(Number(o.dataset.aiqo)===aiQ.a)o.classList.add('ok')});
     if(Number(btn.dataset.aiqo)===aiQ.a){
       document.getElementById('aiQFb').innerHTML=`<p class="why">✅ ¡Correcto! ${esc(aiQ.w)}</p>`;
     }else{
