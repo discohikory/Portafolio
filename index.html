@@ -169,19 +169,19 @@
   </div>
 </section>
 
-<!-- SECCIÓN DE RESEÑAS CON SUPABASE AUTH -->
+<!-- SECCIÓN DE RESEÑAS CON AUTENTICACIÓN SUPABASE -->
 <section id="resenas" class="section reveal">
   <div class="title"><span>07</span><h2 class="gradient-title">Reseñas</h2></div>
   <div class="reviews-head">
     <div class="review-score"><strong id="reviewAverage">—</strong><span id="reviewStars" class="stars">☆☆☆☆☆</span><small><span id="reviewCount">0</span> reseñas globales</small></div>
-    <div><p>Inicia sesión o regístrate para dejar tu opinión sincronizada.</p></div>
+    <div><p>Inicia sesión con Google o correo para dejar tu opinión protegida contra bots.</p></div>
   </div>
   
   <div class="review-layout">
     <!-- Panel de Autenticación -->
     <div id="authPanel" class="box auth-panel glass">
-      <h3>Acceso a Reseñas</h3>
-      <p>Elige tu método preferido para identificarte y comentar:</p>
+      <h3>Acceso Anti-Bots</h3>
+      <p>Identifícate para poder opinar:</p>
       
       <button id="loginGoogleBtn" class="btn primary login-btn magnetic" style="width:100%; justify-content:center; margin-bottom:12px;" type="button">Continuar con Google</button>
       
@@ -218,7 +218,7 @@
         <textarea id="reviewMessage" maxlength="500" minlength="3" required placeholder="Cuéntame brevemente cómo fue trabajar conmigo..."></textarea>
       </label>
       <button class="btn primary magnetic" type="submit">Publicar reseña ↗</button>
-      <small id="reviewStatus" class="review-status">Sincronizado globalmente con Supabase.</small>
+      <small id="reviewStatus" class="review-status">Sincronizado globalmente con Supabase Auth.</small>
     </form>
     
     <div id="reviewsList" class="reviews-list"><div class="empty-review glass">Cargando reseñas de la base de datos…</div></div>
@@ -322,7 +322,7 @@ function jump() {
   if (steve.grounded) { steve.dy = steve.jumpPower; steve.grounded = false; }
 }
 
-// Permitir espacios en inputs y textareas sin que el juego interfiera
+// Permitir espacios en inputs y textareas
 window.addEventListener('keydown', e => {
   if (e.code === 'Space') {
     if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') {
@@ -418,7 +418,7 @@ document.querySelectorAll('.faq-question').forEach(q => {
 });
 
 // ==========================================
-// SUPABASE AUTH & REVIEWS (URL fija para redirección)
+// SUPABASE AUTH & REVIEWS (Antispam / Anti-bots)
 // ==========================================
 const SUPABASE_URL = 'https://srxkiinmfjfjhbmkacax.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_0tZPMP4nKhsIjHg76oCUdw_0F71lkIB';
@@ -461,11 +461,13 @@ _supabase.auth.onAuthStateChange((event, session) => {
   }
 });
 
-// Login con Google
+// Login con Google limpio
 loginGoogleBtn.addEventListener('click', async () => {
   const { error } = await _supabase.auth.signInWithOAuth({
     provider: 'google',
-    options: { redirectTo: REDIRECT_URL }
+    options: { 
+      redirectTo: REDIRECT_URL 
+    }
   });
   if (error) authErrorMsg.textContent = "Error al iniciar con Google: " + error.message;
 });
