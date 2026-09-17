@@ -397,7 +397,6 @@ const RANKS_Q=[
 const esc=v=>{const d=document.createElement('div');d.textContent=v;return d.innerHTML};
 const store={get:(k,f)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):f}catch(e){return f}},set:(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 let pool=[],idx=0,score=0,streak=0,hits=0,fails=[],timer=null,timeLeft=0;
-const RUN_LEN=25,PASS=0.6;
 function renderHist(){
   const h=store.get('quiz_hist',[]);
   document.getElementById('histList').innerHTML=h.length?h.map(x=>`<div class="hist-item"><span><b>${x.score}</b> pts · ${x.hits}/${x.total} · ${esc(x.rank)} <small>(${esc(x.date)})</small>${x.fails&&x.fails.length?`<details><summary>Ver ${x.fails.length} falladas</summary><small>${x.fails.map(f=>esc(f)).join('<br>')}</small></details>`:''}</span></div>`).join(''):'<p class="muted">Aún no juegas ninguna partida.</p>';
