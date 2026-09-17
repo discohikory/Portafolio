@@ -454,7 +454,12 @@ document.querySelectorAll('.faq-question').forEach(q => {
 // ==========================================
 const SUPABASE_URL = 'https://srxkiinmfjfjhbmkacax.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_0tZPMP4nKhsIjHg760cUdw_0F71lkIB';
-const REDIRECT_URL = 'https://discohikory.github.io/Portafolio/';
+// Redirect dinámico: funciona en GitHub Pages y en localhost sin cambiar código
+function getRedirectUrl() {
+  const path = window.location.pathname.endsWith('/') ? window.location.pathname : window.location.pathname + '/';
+  return window.location.origin + path;
+}
+const REDIRECT_URL = getRedirectUrl();
 
 let _supabase = null;
 let SUPABASE_OK = false;
