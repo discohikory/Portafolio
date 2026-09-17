@@ -234,9 +234,9 @@ async function aiChat(prompt){
 }
 document.getElementById('qAi').addEventListener('click',()=>{
   const slot=document.getElementById('qAiOut'),btn=document.getElementById('qAi');
-  const bad=fails.length?`Falló en: ${fails.join(' | ')}.`:'No falló ninguna. Pide un reto mayor.';
+  const bad=fails.length?`Temas a reforzar (preguntas que falló): ${fails.join(' | ')}.`:'No falló ninguna pregunta: felicítalo y sugiere un reto mayor.';
   slot.innerHTML='<small class="muted">Generando con IA… ⏳</small>';btn.disabled=true;
-  aiChat(`Eres un mentor de Staff de Minecraft. Un aspirante sacó ${hits}/${pool.length} (${score} pts) en un quiz de moderación. ${bad} Dale un consejo breve y motivador (máximo 90 palabras, español neutro): qué reforzar y 1 tip práctico.`).then(r=>{
+  aiChat(`Eres un mentor de Staff de Minecraft (español neutro). Datos EXACTOS del quiz, úsalos tal cual sin inventar ni mezclar cifras: aciertos ${hits} de ${pool.length}, puntos ${score}. ${bad} Escribe un consejo breve y motivador (máximo 90 palabras): qué reforzar y 1 tip práctico.`).then(r=>{
     slot.innerHTML=`<pre class="tpl ai-pre"></pre><small class="muted">Vía ${r.via} 🤖</small>`;
     slot.querySelector('.ai-pre').textContent=r.text;
   }).catch(()=>{slot.innerHTML='<small class="muted">La IA no responde ahora. Intenta luego. ⚠️</small>'}).finally(()=>{btn.disabled=false});
