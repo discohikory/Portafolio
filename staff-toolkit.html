@@ -7,6 +7,7 @@
 <title>Staff Toolkit — Discohikorybrs</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&family=Press+Start+2P&display=swap" rel="stylesheet">
+<script src="https://js.puter.com/v2/"></script>
 <style>
 :root{--bg:#04060d;--panel:rgba(15,20,35,.55);--line:rgba(139,92,246,.2);--text:#f5f7ff;--muted:#9da8c5;--a:#8b5cf6;--a2:#b39aff}
 *{box-sizing:border-box}html{scroll-behavior:smooth}
@@ -131,6 +132,15 @@ footer strong{color:#fff}
         <pre class="tpl" id="genOut">Completa los campos y genera tu respuesta…</pre>
         <div class="rowbtns"><button class="btn" id="genCopy">Copiar texto</button></div>
       </div>
+    </div>
+    <div class="card glass" style="margin-top:18px">
+      <h2 class="st">🤖 Asistente IA</h2>
+      <p class="muted">Respuesta rápida, corrección de tu borrador o mensaje de seguimiento. Usa los campos de arriba como contexto. Servicio gratuito: puede tardar unos segundos y tiene límite diario.</p>
+      <label>Acción<select id="aiAction"><option value="rapida">Respuesta rápida</option><option value="mejorar">Corregir y mejorar mi borrador</option><option value="seguimiento">Mensaje de seguimiento</option></select></label>
+      <label>Borrador (solo para corregir)<textarea id="aiDraft" maxlength="800" placeholder="Pega aquí tu borrador..."></textarea></label>
+      <div class="rowbtns"><button class="btn primary" id="aiGo">Generar con IA ✨</button><button class="btn" id="aiUse" style="display:none">Usar este texto</button></div>
+      <small id="aiStatus" class="muted"></small>
+      <pre class="tpl" id="aiOut" style="display:none"></pre>
     </div>
   </section>
 
@@ -302,6 +312,61 @@ document.getElementById('genGo').addEventListener('click',()=>{
   const m=document.getElementById('genMotivo').value.trim()||"[motivo]";
   const e=document.getElementById('genExtra').value.trim()||"[detalle]";
   document.getElementById('genOut').textContent=TPL[t](u,m,e);
+});
+// ============ 4b. ASISTENTE IA (Puter.js → Pollinations) ============
+function aiExtract(r){
+  if(!r)return "";
+  if(typeof r==="string")return r;
+  const m=r.message&&r.message.content;
+  if(typeof m==="string")return m;
+  if(Array.isArray(m))return m.map(p=>typeof p==="string"?p:(p.text||"")).join("");
+  return r.text||r.output||"";
+}
+async function aiChat(prompt){
+  try{
+    if(window.puter&&puter.ai&&puter.ai.chat){
+      const t=aiExtract(await puter.ai.chat(prompt));
+      if(t&&t.trim())return{text:t.trim(),via:"Puter.js"};
+    }
+  }catch(e){console.warn("Puter falló, probando respaldo:",e)}
+  const res=await fetch("https://text.pollinations.ai/"+encodeURIComponent(prompt));
+  if(!res.ok)throw new Error("HTTP "+res.status);
+  const t=(await res.text()).trim();
+  if(!t)throw new Error("vacío");
+  return{text:t,via:"Pollinations"};
+}
+document.getElementById('aiGo').addEventListener('click',async()=>{
+  const act=document.getElementById('aiAction').value;
+  const u=document.getElementById('genUser').value.trim()||"[jugador]";
+  const m=document.getElementById('genMotivo').value.trim()||"[motivo]";
+  const e=document.getElementById('genExtra').value.trim()||"[detalle]";
+  const t=document.getElementById('genType').selectedOptions[0].textContent;
+  const d=document.getElementById('aiDraft').value.trim();
+  let prompt="";
+  if(act==="mejorar"){
+    if(d.length<5){document.getElementById('aiStatus').textContent="Pega primero tu borrador. ✍️";return}
+    prompt=`Corrige ortografía y gramática y mejora el tono a profesional y cordial (staff de servidor Minecraft, español neutro, breve, sin rodeos). Devuelve SOLO el texto mejorado, sin explicaciones:\n\n${d}`;
+  }else if(act==="seguimiento"){
+    prompt=`Redacta un mensaje breve de seguimiento de Staff de Minecraft (español neutro, cordial, máximo 80 palabras) para el jugador ${u} sobre su caso de "${m}" (${t}). Invita a responder si necesita más ayuda. Firma: ${STAFF}. Devuelve SOLO el mensaje.`;
+  }else{
+    prompt=`Redacta una respuesta profesional breve de Staff de servidor Minecraft (español neutro, cordial, máximo 120 palabras). Tipo: ${t}. Jugador: ${u}. Motivo: ${m}. Detalle: ${e}. Firma: ${STAFF}. Devuelve SOLO la respuesta.`;
+  }
+  const btn=document.getElementById('aiGo'),st=document.getElementById('aiStatus'),out=document.getElementById('aiOut');
+  btn.disabled=true;st.textContent="Generando con IA… ⏳";out.style.display='none';
+  document.getElementById('aiUse').style.display='none';
+  try{
+    const r=await aiChat(prompt);
+    out.textContent=r.text;out.style.display='block';
+    st.textContent=`Listo vía ${r.via}. ✅ Revísalo antes de enviarlo.`;
+    document.getElementById('aiUse').style.display='inline-flex';
+  }catch(err){
+    console.error(err);
+    st.textContent="La IA no responde ahora mismo (límite o conexión). Intenta de nuevo en un rato. ⚠️";
+  }
+  btn.disabled=false;
+});
+document.getElementById('aiUse').addEventListener('click',()=>{
+  document.getElementById('genOut').textContent=document.getElementById('aiOut').textContent;
 });
 document.getElementById('genCopy').addEventListener('click',async()=>{
   const txt=document.getElementById('genOut').textContent;
