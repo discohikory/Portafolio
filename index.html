@@ -190,33 +190,13 @@
   </div>
   
   <div class="review-layout">
-    <!-- Panel de Autenticación -->
-    <div id="authPanel" class="box auth-panel glass">
-      <h3>Acceso Anti-Bots</h3>
-      <p>Identifícate para poder opinar:</p>
-      
-      <button id="loginGoogleBtn" class="btn primary login-btn magnetic" style="width:100%; justify-content:center; margin-bottom:12px;" type="button">Continuar con Google</button>
-      
-      <div class="auth-divider"><span>O usa correo electrónico</span></div>
-
-      <div class="email-auth-form">
-        <input type="email" id="authEmail" placeholder="Tu correo electrónico" required>
-        <input type="password" id="authPassword" placeholder="Contraseña (mín. 6 caracteres)" required>
-        <div class="auth-buttons-grid" style="display: flex; gap: 10px; margin-top: 10px;">
-          <button type="button" id="emailLoginBtn" class="btn magnetic" style="flex:1;">Iniciar Sesión</button>
-          <button type="button" id="emailRegisterBtn" class="btn primary magnetic" style="flex:1;">Registrarse</button>
-        </div>
-        <small id="authErrorMsg" class="auth-error" style="color: #ef4444; display:block; margin-top:8px;"></small>
-      </div>
-    </div>
+    <!-- Sin login: nombre directo (seguridad luego) -->
 
     <!-- Formulario de Reseñas -->
-    <form id="reviewForm" class="box review-form glass" style="display: none;">
-      <div class="user-info-bar" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.1);">
-        <span>Conectado como: <b id="loggedInUser">Usuario</b></span>
-        <button type="button" id="logoutBtn" class="logout-link" style="background: none; border: none; color: #ef4444; cursor: pointer; text-decoration: underline;">Cerrar sesión</button>
-      </div>
-      <input type="hidden" id="reviewName">
+    <form id="reviewForm" class="box review-form glass" style="display: flex;">
+      <label>Tu nombre
+        <input type="text" id="reviewName" maxlength="60" required placeholder="¿Cómo te llamas?">
+      </label>
       <label>Puntuación
         <select id="reviewRating" required>
           <option value="5">★★★★★ — 5 Estrellas</option>
@@ -231,7 +211,7 @@
         <small id="charCount">0/500</small>
       </label>
       <button class="btn primary magnetic" type="submit">Publicar reseña ↗</button>
-      <small id="reviewStatus" class="review-status">Sincronizado globalmente con Appwrite.</small>
+      <small id="reviewStatus" class="review-status">Sincronizado globalmente con JSONBin.</small>
     </form>
     
     <div id="reviewsList" class="reviews-list"><div class="empty-review glass">Cargando reseñas de la base de datos…</div></div>
@@ -262,8 +242,7 @@
 
 <footer>© 2026 Daniel Esteban Vera Fernandez · <strong>Discohikorybrs</strong></footer>
 
-<!-- SDK DE APPWRITE -->
-<script src="https://cdn.jsdelivr.net/npm/appwrite@17.0.0/dist/umd/appwrite.min.js"></script>
+<!-- Sin SDK: reseñas via JSONBin REST + respaldo local -->
 
 <script>
 // Revelación al hacer scroll
@@ -446,150 +425,29 @@ document.querySelectorAll('.faq-question').forEach(q => {
 });
 
 // ==========================================
-// APPWRITE AUTH & REVIEWS
-// Proyecto: Mi primer proyecto (FRA)
-// Si Appwrite falla, la web usa modo local (localStorage).
+// RESEÑAS SIN LOGIN via JSONBin + respaldo local
+// Bin: 6aab5c2dffd5d16053106c1c  Contenido: {"reviews": []}
+// NOTA: la Access Key queda visible en el frontend (sin login no hay forma de
+// ocultarla). Luego agregamos anti-spam/rate-limit.
 // ==========================================
-const APPWRITE_ENDPOINT = 'https://fra.cloud.appwrite.io/v1';
-const APPWRITE_PROJECT = '6aab57b9002ebd8d40e8';
-const APPWRITE_DB = '6aab5850000209a20617';
-const APPWRITE_TABLE = '6aab58680011b08721c3';
-// Redirect dinámico: funciona en GitHub Pages y en localhost sin cambiar código
-function getRedirectUrl() {
-  const path = window.location.pathname.endsWith('/') ? window.location.pathname : window.location.pathname + '/';
-  return window.location.origin + path;
-}
-const REDIRECT_URL = getRedirectUrl();
+const JB_BIN = '6aab5c2dffd5d16053106c1c';
+const JB_KEY = '$2a$10$XbVd43wzBhlIfE1632782ePKNz5e/MaX25U3NJ5JRIBKtJt0ILnXC';
+const JB_URL = 'https://api.jsonbin.io/v3/b/' + JB_BIN;
+let BACKEND_OK = true;
 
-let awClient = null, awAccount = null, awDb = null;
-let BACKEND_OK = false;
-try {
-  if (typeof Appwrite === 'undefined') {
-    console.error('Appwrite SDK no cargó.');
-  } else {
-    awClient = new Appwrite.Client();
-    awClient.setEndpoint(APPWRITE_ENDPOINT).setProject(APPWRITE_PROJECT);
-    awAccount = new Appwrite.Account(awClient);
-    awDb = new Appwrite.Databases(awClient);
-    BACKEND_OK = true;
-  }
-} catch (e) {
-  console.error('Appwrite init falló, modo local:', e);
-  BACKEND_OK = false;
-}
-
-const authPanel = document.getElementById('authPanel');
 const reviewForm = document.getElementById('reviewForm');
-const loginGoogleBtn = document.getElementById('loginGoogleBtn');
-const emailLoginBtn = document.getElementById('emailLoginBtn');
-const emailRegisterBtn = document.getElementById('emailRegisterBtn');
-const logoutBtn = document.getElementById('logoutBtn');
 const reviewName = document.getElementById('reviewName');
-const loggedInUser = document.getElementById('loggedInUser');
-const authEmailInput = document.getElementById('authEmail');
-const authPasswordInput = document.getElementById('authPassword');
-const authErrorMsg = document.getElementById('authErrorMsg');
 
 const reviewsList = document.getElementById('reviewsList');
 const reviewAverage = document.getElementById('reviewAverage');
 const reviewStars = document.getElementById('reviewStars');
 const reviewCount = document.getElementById('reviewCount');
 const reviewStatus = document.getElementById('reviewStatus');
-
-// Control de sesión de Appwrite
-function applyUser(user) {
-  if (user) {
-    authPanel.style.display = 'none';
-    reviewForm.style.display = 'flex';
-    const displayName = user.name || (user.email ? user.email.split('@')[0] : 'Usuario');
-    reviewName.value = displayName;
-    loggedInUser.textContent = displayName;
-  } else {
-    authPanel.style.display = 'flex';
-    reviewForm.style.display = 'none';
-    reviewName.value = "";
-  }
-}
-
-async function refreshUser() {
-  if (!awAccount || !BACKEND_OK) return;
-  try {
-    const user = await awAccount.get();
-    applyUser(user);
-  } catch (e) {
-    applyUser(null);
-  }
-}
-
-if (awAccount && BACKEND_OK) { refreshUser(); }
-
-// Login con Google (OAuth2 Appwrite)
-loginGoogleBtn.addEventListener('click', () => {
-  if (!awAccount || !BACKEND_OK) { authErrorMsg.textContent = "Backend no configurado. Usa el modo local de abajo."; enterLocalMode('bloqueo oauth'); return; }
-  try {
-    awAccount.createOAuth2Session('google', REDIRECT_URL, REDIRECT_URL + '?oauth=fail');
-  } catch (e) {
-    authErrorMsg.textContent = "Error al iniciar con Google: " + (e.message || e);
-  }
-});
-
-// Login con Correo y Contraseña (Appwrite)
-emailLoginBtn.addEventListener('click', async () => {
-  if (!awAccount || !BACKEND_OK) { authErrorMsg.textContent = "Backend no configurado. Usa el modo local de abajo."; enterLocalMode('bloqueo login'); return; }
-  const email = authEmailInput.value.trim();
-  const password = authPasswordInput.value.trim();
-  authErrorMsg.textContent = "";
-
-  if (!email || !password) {
-    authErrorMsg.textContent = "Completa correo y contraseña.";
-    return;
-  }
-
-  try {
-    await awAccount.createEmailPasswordSession(email, password);
-    await refreshUser();
-  } catch (e) {
-    authErrorMsg.textContent = "Correo o contraseña incorrectos.";
-  }
-});
-
-// Registro con Correo y Contraseña (Appwrite)
-emailRegisterBtn.addEventListener('click', async () => {
-  if (!awAccount || !BACKEND_OK) { authErrorMsg.textContent = "Backend no configurado. Usa el modo local de abajo."; enterLocalMode('bloqueo registro'); return; }
-  const email = authEmailInput.value.trim();
-  const password = authPasswordInput.value.trim();
-  authErrorMsg.textContent = "";
-
-  if (!email || !password) {
-    authErrorMsg.textContent = "Completa correo y contraseña.";
-    return;
-  }
-  if (password.length < 6) {
-    authErrorMsg.textContent = "La contraseña debe tener al menos 6 caracteres.";
-    return;
-  }
-
-  try {
-    const name = email.split('@')[0];
-    await awAccount.create(Appwrite.ID.unique(), email, password, name);
-    await awAccount.createEmailPasswordSession(email, password);
-    await refreshUser();
-    alert('¡Registro exitoso! Ya estás dentro.');
-  } catch (e) {
-    authErrorMsg.textContent = e.message || 'Error al registrarse.';
-  }
-});
-
-// Cerrar sesión
-logoutBtn.addEventListener('click', async () => {
-  if (!awAccount) return;
-  try { await awAccount.deleteSession('current'); } catch (e) {}
-  applyUser(null);
-});
+reviewForm.style.display = 'flex';
 
 function escapeHtml(v){ const d = document.createElement('div'); d.textContent = v; return d.innerHTML; }
 
-// ---- Modo local (fallback cuando Appwrite no responde) ----
+// ---- Modo local (fallback cuando JSONBin no responde) ----
 function getLocalReviews() {
   try { return JSON.parse(localStorage.getItem('portafolio_reviews') || '[]'); }
   catch (e) { return []; }
@@ -603,7 +461,7 @@ function renderReviews(data, mode) {
   reviewsList.innerHTML = '';
   if (!data || data.length === 0) {
     reviewsList.innerHTML = mode === 'local'
-      ? '<div class="empty-review glass">Aún no hay reseñas locales. ¡Sé el primero! ⭐<br><small>Modo local: backend no responde. Revisa Appwrite.</small></div>'
+      ? '<div class="empty-review glass">Aún no hay reseñas locales. ¡Sé el primero! ⭐<br><small>Modo local: jsonbin no responde.</small></div>'
       : '<div class="empty-review glass">Aún no hay reseñas globales. ¡Sé el primero! ⭐</div>';
     reviewAverage.textContent = "—";
     reviewStars.textContent = "☆☆☆☆☆";
@@ -637,23 +495,34 @@ function renderReviews(data, mode) {
 function enterLocalMode(reason) {
   console.warn('Backend no disponible, modo local:', reason);
   BACKEND_OK = false;
-  // En modo local no exigimos login para que la sección nunca quede bloqueada
-  authPanel.style.display = 'none';
   reviewForm.style.display = 'flex';
-  if (!reviewName.value) {
-    reviewName.value = 'Invitado';
-    loggedInUser.textContent = 'Invitado (local)';
-  }
-  reviewStatus.textContent = 'Modo local activado (Appwrite no responde). Tu reseña se guarda en este navegador.';
+  reviewStatus.textContent = 'Modo local activado (jsonbin no responde). Tu reseña se guarda en este navegador.';
   renderReviews(getLocalReviews(), 'local');
 }
 
+async function jbRead() {
+  const res = await fetch(JB_URL + '/latest', { headers: { 'X-Access-Key': JB_KEY } });
+  if (!res.ok) throw new Error('jsonbin read ' + res.status);
+  const j = await res.json();
+  const arr = Array.isArray(j.record) ? j.record : (j.record && Array.isArray(j.record.reviews) ? j.record.reviews : []);
+  return arr;
+}
+
+async function jbWrite(all) {
+  const res = await fetch(JB_URL, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', 'X-Access-Key': JB_KEY, 'X-Bin-Versioning': 'false' },
+    body: JSON.stringify({ reviews: all.slice(0, 100) })
+  });
+  if (!res.ok) throw new Error('jsonbin write ' + res.status);
+}
+
 async function cargarResenas() {
-  if (!awDb || !BACKEND_OK) { enterLocalMode('sin cliente'); return; }
   try {
-    const res = await awDb.listDocuments(APPWRITE_DB, APPWRITE_TABLE, [Appwrite.Query.orderDesc('$createdAt')]);
+    const arr = await jbRead();
     BACKEND_OK = true;
-    renderReviews(res.documents || [], 'global');
+    reviewStatus.textContent = 'Sincronizado globalmente con JSONBin.';
+    renderReviews(arr, 'global');
   } catch (err) {
     console.error('cargarResenas falló:', err);
     enterLocalMode(err && err.message ? err.message : err);
@@ -666,28 +535,23 @@ reviewForm.addEventListener('submit', async e => {
   const rating = Math.min(5, Math.max(1, Number(document.getElementById('reviewRating').value) || 5));
   const message = document.getElementById('reviewMessage').value.trim();
 
+  if (name.length < 2) { reviewStatus.textContent = 'Escribe tu nombre.'; return; }
   if (message.length < 3) { reviewStatus.textContent = 'Escribe al menos 3 caracteres.'; return; }
   if (message.length > 500) { reviewStatus.textContent = 'Máximo 500 caracteres.'; return; }
 
-  // Si estamos en modo local, guardar directo
-  if (!BACKEND_OK || !awDb) {
-    saveLocalReview({ name, message, rating, created_at: new Date().toISOString() });
-    reviewStatus.textContent = '¡Reseña guardada localmente! ⭐';
-    document.getElementById('reviewMessage').value = '';
-    document.getElementById('reviewMessage').dispatchEvent(new Event('input'));
-    renderReviews(getLocalReviews(), 'local');
-    return;
-  }
-
+  const item = { name, message, rating, created_at: new Date().toISOString() };
   try {
-    await awDb.createDocument(APPWRITE_DB, APPWRITE_TABLE, Appwrite.ID.unique(), { name, message, rating: String(rating) });
+    const current = await jbRead();
+    const updated = [item].concat(current).slice(0, 100);
+    await jbWrite(updated);
+    BACKEND_OK = true;
     reviewStatus.textContent = '¡Reseña publicada con éxito! ⭐';
     document.getElementById('reviewMessage').value = '';
     document.getElementById('reviewMessage').dispatchEvent(new Event('input'));
-    cargarResenas();
+    renderReviews(updated, 'global');
   } catch (err) {
     console.error('insert falló, guardo local:', err);
-    saveLocalReview({ name, message, rating, created_at: new Date().toISOString() });
+    saveLocalReview(item);
     reviewStatus.textContent = 'Backend falló, guardada localmente. ⭐';
     enterLocalMode(err && err.message ? err.message : err);
   }
