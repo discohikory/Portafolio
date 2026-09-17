@@ -50,6 +50,8 @@ textarea{min-height:110px;resize:vertical}
 .prio-Media{color:#fbbf24;border-color:#fbbf24}
 .prio-Baja{color:#34d399;border-color:#34d399}
 .rowbtns{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.ai-slot{margin-top:10px}
+.ai-slot:empty{display:none}
 .hist-item{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.06);font-size:13px}
 .hist-item small{color:var(--muted)}
 .opt{display:block;width:100%;text-align:left;margin:8px 0;padding:12px 14px;border-radius:10px;border:1px solid var(--line);background:rgba(255,255,255,.03);color:var(--text);cursor:pointer;font-size:14px}
@@ -96,7 +98,8 @@ footer strong{color:#fff}
         <label>Reincidencia<select id="sancRep"><option value="0">Primera vez</option><option value="1">Segunda vez</option><option value="2">Tercera vez o más</option></select></label>
         <button class="btn primary" id="sancGo">Calcular sanción</button>
         <div class="result glass" id="sancOut" style="display:none"></div>
-        <div class="rowbtns"><button class="btn" id="sancReg" style="display:none">Registrar en historial</button></div>
+        <div class="rowbtns"><button class="btn" id="sancReg" style="display:none">Registrar en historial</button><button type="button" class="btn primary" id="aiSancGo">✨ Redactar aviso con IA</button></div>
+        <div class="ai-slot" id="asanc"></div>
       </div>
       <div class="card glass">
         <h2 class="st">Historial de sanciones</h2>
@@ -254,7 +257,6 @@ document.getElementById('sancGo').addEventListener('click',()=>{
 function paintHist(){
   const h=store.get('stk_hist',[]);
   document.getElementById('sancHist').innerHTML=h.length?h.map((x,i)=>`<div class="hist-item"><span><b>${esc(x.san)}</b> → ${esc(x.user)} <small>(${esc(x.rule)} · ${esc(x.rep)})</small></span><button class="btn danger" data-h="${i}" style="padding:4px 10px">✕</button></div>`).join(''):'<p class="muted">Sin registros todavía.</p>';
-  document.querySelectorAll('[data-h]').forEach(b=>b.addEventListener('click',()=>{const hh=store.get('stk_hist',[]);hh.splice(Number(b.dataset.h),1);store.set('stk_hist',hh);paintHist()}));
 }
 document.getElementById('sancReg').addEventListener('click',()=>{
   if(!lastCalc)return;
@@ -273,10 +275,8 @@ function paintTickets(){
     return `<div class="card glass"><div><span class="pill ${TCLS[s]}">${TSTATES[s]}</span> <span class="pill prio-${t.pr}">${t.pr}</span></div>
     <h2 class="st" style="margin-top:8px">${esc(t.subject)}</h2>
     <p class="muted">De: <b>${esc(t.u)}</b></p><p>${esc(t.msg)}</p>
-    <div class="rowbtns">${s<2?`<button class="btn primary" data-tk="${i}">Avanzar estado →</button>`:''}<button class="btn" data-tkr="${i}">Reiniciar demo</button></div></div>`;
+    <div class="rowbtns">${s<2?`<button type="button" class="btn primary" data-tk="${i}">Avanzar estado →</button>`:''}<button type="button" class="btn" data-tkr="${i}">Reiniciar demo</button><button type="button" class="btn" data-atk="${i}">✨ Sugerir respuesta</button></div><div class="ai-slot" id="atk-${i}"></div></div>`;
   }).join('');
-  document.querySelectorAll('[data-tk]').forEach(b=>b.addEventListener('click',()=>{const s=store.get('stk_tick',{});s[b.dataset.tk]=Math.min(2,(s[b.dataset.tk]||0)+1);store.set('stk_tick',s);paintTickets()}));
-  document.querySelectorAll('[data-tkr]').forEach(b=>b.addEventListener('click',()=>{const s=store.get('stk_tick',{});delete s[b.dataset.tkr];store.set('stk_tick',s);paintTickets()}));
 }
 paintTickets();
 
@@ -290,12 +290,8 @@ function paintReports(){
     return `<div class="card glass"><div>${s?`<span class="pill ${RCLS[s]}">${RSTATES[s]}</span>`:'<span class="pill st-Pendiente">Pendiente</span>'} <span class="pill">Historial: ${r.hist}</span></div>
     <h2 class="st" style="margin-top:8px">${esc(r.rep)} <small class="muted">reportado por ${esc(r.by)}</small></h2>
     <p><b>Motivo:</b> ${esc(r.reason)}</p><p><b>Evidencia:</b> ${esc(r.ev)}</p>
-    <div class="rowbtns"><button class="btn" data-rp="arch|${i}">Archivar</button><button class="btn" data-rp="pruebas|${i}">Solicitar pruebas</button><button class="btn danger" data-rp="esc|${i}">Escalar</button></div></div>`;
+    <div class="rowbtns"><button type="button" class="btn" data-rp="arch|${i}">Archivar</button><button type="button" class="btn" data-rp="pruebas|${i}">Solicitar pruebas</button><button type="button" class="btn danger" data-rp="esc|${i}">Escalar</button><button type="button" class="btn" data-arp="${i}">🔍 Análisis IA</button></div><div class="ai-slot" id="arp-${i}"></div></div>`;
   }).join('');
-  document.querySelectorAll('[data-rp]').forEach(b=>b.addEventListener('click',()=>{
-    const [act,idx]=b.dataset.rp.split('|');
-    const s=store.get('stk_rep',{});s[idx]=act;store.set('stk_rep',s);paintReports();
-  }));
 }
 paintReports();
 
@@ -368,20 +364,71 @@ document.getElementById('aiGo').addEventListener('click',async()=>{
 document.getElementById('aiUse').addEventListener('click',()=>{
   document.getElementById('genOut').textContent=document.getElementById('aiOut').textContent;
 });
-document.getElementById('genCopy').addEventListener('click',async()=>{
-  const txt=document.getElementById('genOut').textContent;
-  try{await navigator.clipboard.writeText(txt);alert('¡Copiado! 📋')}
-  catch(e){const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');alert('¡Copiado! 📋')}catch(_){alert('No se pudo copiar automáticamente.')}ta.remove()}
+document.getElementById('genCopy').addEventListener('click',()=>copyText(document.getElementById('genOut').textContent));
+
+// ============ INTERACCIONES (delegación global: ningún botón dinámico queda muerto) ============
+async function copyText(t){
+  try{await navigator.clipboard.writeText(t);alert('¡Copiado! 📋')}
+  catch(e){const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');alert('¡Copiado! 📋')}catch(_){alert('No se pudo copiar automáticamente.')}ta.remove()}
+}
+async function aiInto(slot,prompt,btn){
+  slot.innerHTML='<small class="muted">Generando con IA… ⏳</small>';
+  if(btn)btn.disabled=true;
+  try{
+    const r=await aiChat(prompt);
+    slot.innerHTML=`<pre class="tpl ai-pre"></pre><div class="rowbtns"><button type="button" class="btn" data-acopy="${slot.id}">Copiar</button></div><small class="muted">Vía ${esc(r.via)} · revísalo antes de usarlo. ✅</small>`;
+    slot.querySelector('.ai-pre').textContent=r.text;
+  }catch(err){console.error(err);slot.innerHTML='<small class="muted">La IA no responde ahora (límite o conexión). Intenta luego. ⚠️</small>'}
+  if(btn)btn.disabled=false;
+}
+function suggestTicket(i,btn){
+  const t=TICKETS[i];
+  const st=(store.get('stk_tick',{})[i]||0);
+  aiInto(document.getElementById('atk-'+i),`Eres Staff de un servidor Minecraft. Sugiere una respuesta profesional breve (máximo 100 palabras, español neutro, cordial) para este ticket. Jugador: ${t.u}. Asunto: ${t.subject}. Mensaje: "${t.msg}". Prioridad: ${t.pr}. Estado: ${TSTATES[st]}. Devuelve SOLO la respuesta sugerida, firmada por ${STAFF}.`,btn);
+}
+function analyzeReport(i,btn){
+  const r=REPORTS[i];
+  aiInto(document.getElementById('arp-'+i),`Eres un administrador de servidor Minecraft. Analiza este reporte y recomienda UNA acción (Archivar, Solicitar pruebas o Escalar) con justificación breve (máximo 80 palabras, español neutro). Reportado: ${r.rep}. Reportante: ${r.by}. Motivo: ${r.reason}. Evidencia: ${r.ev}. Reportes previos del acusado: ${r.hist}.`,btn);
+}
+function explainRule(key,btn){
+  const parts=key.split('|');
+  const a=RULES[Number(parts[0])].arts[Number(parts[1])];
+  aiInto(document.getElementById('areg-'+parts[0]+'-'+parts[1]),`Explica con un ejemplo práctico breve (máximo 80 palabras, español neutro) esta regla de servidor Minecraft: ${a.art} - ${a.name}. Sanciones: 1ª ${a.s[0]}, 2ª ${a.s[1]}, 3ª+ ${a.s[2]}. Inventa una situación de juego concreta.`,btn);
+}
+function hintCase(i,btn){
+  const c=CASES[i];
+  aiInto(document.getElementById('acase-'+i),`Da UNA pista breve (máximo 40 palabras, español neutro, SIN revelar cuál opción es correcta) para este caso de moderación en Minecraft. Situación: ${c.s}. Opciones: ${c.opts.map(o=>o.t).join(' / ')}.`,btn);
+}
+document.addEventListener('click',e=>{
+  if(!e.target.closest)return;
+  const q=s=>e.target.closest(s);
+  let b;
+  if(b=q('[data-tk]')){const s=store.get('stk_tick',{});s[b.dataset.tk]=Math.min(2,(s[b.dataset.tk]||0)+1);store.set('stk_tick',s);paintTickets();return}
+  if(b=q('[data-tkr]')){const s=store.get('stk_tick',{});delete s[b.dataset.tkr];store.set('stk_tick',s);paintTickets();return}
+  if(b=q('[data-rp]')){const parts=b.dataset.rp.split('|');const s=store.get('stk_rep',{});s[parts[1]]=parts[0];store.set('stk_rep',s);paintReports();return}
+  if(b=q('[data-h]')){const hh=store.get('stk_hist',[]);hh.splice(Number(b.dataset.h),1);store.set('stk_hist',hh);paintHist();return}
+  if(b=q('[data-c]')){answerCase(b);return}
+  if(b=q('[data-atk]')){suggestTicket(Number(b.dataset.atk),b);return}
+  if(b=q('[data-acopy]')){const pre=document.querySelector('#'+b.dataset.acopy+' .ai-pre');if(pre)copyText(pre.textContent);return}
+  if(b=q('[data-arp]')){analyzeReport(Number(b.dataset.arp),b);return}
+  if(b=q('[data-areg]')){explainRule(b.dataset.areg,b);return}
+  if(b=q('[data-acase]')){hintCase(Number(b.dataset.acase),b);return}
+});
+document.getElementById('aiSancGo').addEventListener('click',()=>{
+  const a=ALL_ARTS.find(x=>x.id===document.getElementById('sancRule').value);
+  const r=Number(document.getElementById('sancRep').value);
+  const user=document.getElementById('sancUser').value.trim()||"[jugador]";
+  aiInto(document.getElementById('asanc'),`Redacta un aviso formal breve de Staff de servidor Minecraft (español neutro, cordial pero firme, máximo 100 palabras) para ${user}: infracción "${a.name}" (${a.art}), ${["primera vez","segunda vez","tercera vez o más"][r]}, sanción: ${a.s[r]}. Firma: ${STAFF}. Devuelve SOLO el aviso.`,document.getElementById('aiSancGo'));
 });
 
 // ============ 5. REGLAMENTO ============
-document.getElementById('regList').innerHTML=RULES.map(c=>`<div class="card glass"><h2 class="st">${esc(c.cat)}</h2>${c.arts.map(a=>`<div class="hist-item"><span><b>${esc(a.art)}</b> · ${esc(a.name)}<br><small>${esc(a.ex)}<br>1ª: ${esc(a.s[0])} · 2ª: ${esc(a.s[1])} · 3ª+: ${esc(a.s[2])}</small></span></div>`).join('')}</div>`).join('');
+document.getElementById('regList').innerHTML=RULES.map((c,ci)=>`<div class="card glass"><h2 class="st">${esc(c.cat)}</h2>${c.arts.map((a,ai)=>`<div class="hist-item"><span><b>${esc(a.art)}</b> · ${esc(a.name)}<br><small>${esc(a.ex)}<br>1ª: ${esc(a.s[0])} · 2ª: ${esc(a.s[1])} · 3ª+: ${esc(a.s[2])}</small></span></div><div class="rowbtns" style="margin:2px 0 10px"><button type="button" class="btn" data-areg="${ci}|${ai}">💡 Ejemplo con IA</button></div><div class="ai-slot" id="areg-${ci}-${ai}"></div>`).join('')}</div>`).join('');
 
 // ============ 6. CASOS ============
 let caseScore=store.get('stk_score',0);
 document.getElementById('caseScore').textContent=caseScore;
-document.getElementById('caseList').innerHTML=CASES.map((c,i)=>`<div class="card glass"><h2 class="st">${i+1}. ${esc(c.t)}</h2><p>${esc(c.s)}</p><div id="case-opts-${i}">${c.opts.map((o,j)=>`<button class="opt" data-c="${i}|${j}">${esc(o.t)}</button>`).join('')}</div><div id="case-fb-${i}"></div></div>`).join('');
-document.querySelectorAll('[data-c]').forEach(b=>b.addEventListener('click',()=>{
+document.getElementById('caseList').innerHTML=CASES.map((c,i)=>`<div class="card glass"><h2 class="st">${i+1}. ${esc(c.t)}</h2><p>${esc(c.s)}</p><div id="case-opts-${i}">${c.opts.map((o,j)=>`<button type="button" class="opt" data-c="${i}|${j}">${esc(o.t)}</button>`).join('')}</div><div class="rowbtns"><button type="button" class="btn" data-acase="${i}">💡 Pista IA</button></div><div class="ai-slot" id="acase-${i}"></div><div id="case-fb-${i}"></div></div>`).join('');
+function answerCase(b){
   const [i,j]=b.dataset.c.split('|').map(Number);
   const box=document.getElementById(`case-opts-${i}`);
   box.querySelectorAll('.opt').forEach((o,k)=>{o.disabled=true;if(CASES[i].opts[k].ok)o.classList.add('ok');});
@@ -389,7 +436,7 @@ document.querySelectorAll('[data-c]').forEach(b=>b.addEventListener('click',()=>
   if(!chosen.ok)b.classList.add('bad');
   else{caseScore++;store.set('stk_score',caseScore);document.getElementById('caseScore').textContent=caseScore;}
   document.getElementById(`case-fb-${i}`).innerHTML=`<p class="why">${chosen.ok?'✅':'❌'} ${esc(chosen.why)}</p><div class="best"><b>Buena práctica:</b> ${esc(CASES[i].best)}</div>`;
-}));
+}
 </script>
 </body>
 </html>
