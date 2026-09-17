@@ -117,6 +117,8 @@
 .xp-orb { position: absolute; top: 100%; border-radius: 50%; background: radial-gradient(circle, #d9f99d 20%, #84cc16 60%, transparent 72%); animation: orbFloat linear infinite; }
 @keyframes orbFloat { 0% { transform: translateY(0); opacity: 0; } 12% { opacity: .9; } 85% { opacity: .9; } 100% { transform: translateY(-115vh); opacity: 0; } }
 .canvas-container { cursor: crosshair; }
+#skinHead { width: 64px; height: 64px; image-rendering: pixelated; border-radius: 6px; transition: filter .25s ease; }
+#skinHead:hover { filter: drop-shadow(0 0 12px rgba(34,211,238,.8)) brightness(1.12); }
 /* Brillo que sigue el mouse en cada opción */
 .spot { position: relative; overflow: hidden; }
 .spot::after { content: ""; position: absolute; inset: 0; background: radial-gradient(190px circle at var(--mx, 50%) var(--my, 50%), rgba(167,139,250,.35), transparent 70%); opacity: 0; transition: opacity .25s ease; pointer-events: none; }
@@ -163,7 +165,7 @@
   </div>
   <div class="hero-card tilt glass">
     <div class="profile-orb pulsing"><div class="gojo-card">
-      <div class="head-box"><div class="mini-head" title="Discohikorybrs"></div><span class="flag-badge" title="Colombia 🇨🇴"><i></i><i></i><i></i></span></div>
+      <div class="head-box"><canvas id="skinHead" width="8" height="8" title="Discohikorybrs"></canvas><span class="flag-badge" title="Colombia 🇨🇴"><i></i><i></i><i></i></span></div>
       <small class="gojo-nick">NICK</small>
       <strong class="gojo-name">Discohikorybrs</strong>
       <span class="gojo-roles">Minecraft / Discord</span>
@@ -517,6 +519,24 @@ document.querySelectorAll('.mob').forEach(m => {
   if (!w || !d) return;
   w.addEventListener('mouseenter', () => { d.style.opacity = '1'; });
   w.addEventListener('mouseleave', () => { d.style.opacity = '0'; });
+})();
+
+// Cara real desde la skin Gojo (gojo-skin.png): base + capa overlay
+(function () {
+  const c = document.getElementById('skinHead');
+  if (!c) return;
+  const x = c.getContext('2d');
+  x.imageSmoothingEnabled = false;
+  const img = new Image();
+  img.onload = () => {
+    try {
+      x.clearRect(0, 0, 8, 8);
+      x.drawImage(img, 8, 8, 8, 8, 0, 0, 8, 8);
+      x.drawImage(img, 40, 8, 8, 8, 0, 0, 8, 8);
+    } catch (e) {}
+  };
+  img.onerror = () => { c.style.display = 'none'; };
+  img.src = 'gojo-skin.png';
 })();
 
 // Terminal Interactiva
