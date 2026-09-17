@@ -1,4 +1,4 @@
-<!doctype html>
+}<!doctype html>
 <html lang="es">
 <head>
 <meta charset="utf-8">
@@ -421,11 +421,11 @@ document.querySelectorAll('.faq-question').forEach(q => {
 // SUPABASE AUTH & REVIEWS (Antispam / Anti-bots)
 // ==========================================
 const SUPABASE_URL = 'https://srxkiinmfjfjhbmkacax.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_0tZPMP4nKhsIjHg76oCUdw_0F71lkIB';
+const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_0tZPMP4nKhsIjHg760cUdw_0F71lkIB';
 const REDIRECT_URL = 'https://discohikory.github.io/Portafolio/#resenas';
 
 const { createClient } = supabase;
-const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const _supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
 const authPanel = document.getElementById('authPanel');
 const reviewForm = document.getElementById('reviewForm');
