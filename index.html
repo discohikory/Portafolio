@@ -432,18 +432,29 @@ document.querySelectorAll('.faq-question').forEach(q => {
 });
 
 // ==========================================
-// SUPABASE AUTH & REVIEWS (URL corregida y segura)
+// ==========================================
+// SUPABASE AUTH & REVIEWS
+// Si ves "Error al cargar reseñas", tu SUPABASE_URL no resuelve (proyecto pausado,
+// eliminado o ref mal copiado). Ve a supabase.com > tu proyecto > Settings > API
+// y pega aquí la Project URL y la publishable key. Mientras tanto la web usa modo local.
 // ==========================================
 const SUPABASE_URL = 'https://srxkiinmfjfjhbmkacax.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_0tZPMP4nKhsIjHg760cUdw_0F71lkIB';
 const REDIRECT_URL = 'https://discohikory.github.io/Portafolio/';
 
 let _supabase = null;
-if (typeof supabase === 'undefined' || !supabase.createClient) {
-  console.error('Supabase SDK no cargó. Revisa el CDN.');
-  document.getElementById('reviewsList').innerHTML = '<div class="empty-review glass">No se pudo cargar el SDK de Supabase. Revisa tu conexión.</div>';
-} else {
-  _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+let SUPABASE_OK = false;
+try {
+  if (typeof supabase === 'undefined' || !supabase.createClient) {
+    console.error('Supabase SDK no cargó. Revisa el CDN.');
+  } else {
+    _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+    SUPABASE_OK = true;
+  }
+} catch (e) {
+  console.error('Supabase init falló, modo local:', e);
+  _supabase = null;
+  SUPABASE_OK = false;
 }
 
 const authPanel = document.getElementById('authPanel');
@@ -555,28 +566,27 @@ logoutBtn.addEventListener('click', async () => {
 
 function escapeHtml(v){ const d = document.createElement('div'); d.textContent = v; return d.innerHTML; }
 
-async function cargarResenas() {
-  if (!_supabase) return;
-  const { data, error } = await _supabase
-    .from('reviews')
-    .select('*')
-    .order('created_at', { ascending: false });
-
-  if (error) {
-    reviewsList.innerHTML = '<div class="empty-review glass">Error al cargar reseñas de Supabase. Revisa RLS y la tabla reviews.</div>';
-    console.error(error);
-    return;
-  }
-
+// ---- Modo local (fallback cuando Supabase no responde) ----
+function getLocalReviews() {
+  try { return JSON.parse(localStorage.getItem('portafolio_reviews') || '[]'); }
+  catch (e) { return []; }
+}
+function saveLocalReview(r) {
+  const all = getLocalReviews();
+  all.unshift(r);
+  try { localStorage.setItem('portafolio_reviews', JSON.stringify(all.slice(0, 50))); } catch (e) {}
+}
+function renderReviews(data, mode) {
   reviewsList.innerHTML = '';
   if (!data || data.length === 0) {
-    reviewsList.innerHTML = '<div class="empty-review glass">Aún no hay reseñas globales. ¡Sé el primero! ⭐</div>';
+    reviewsList.innerHTML = mode === 'local'
+      ? '<div class="empty-review glass">Aún no hay reseñas locales. ¡Sé el primero! ⭐<br><small>Modo local: Supabase no responde. Revisa la URL en el código.</small></div>'
+      : '<div class="empty-review glass">Aún no hay reseñas globales. ¡Sé el primero! ⭐</div>';
     reviewAverage.textContent = "—";
     reviewStars.textContent = "☆☆☆☆☆";
     reviewCount.textContent = "0";
     return;
   }
-
   let total = 0;
   data.forEach(r => {
     const rating = Math.min(5, Math.max(1, Number(r.rating) || 0));
@@ -584,37 +594,73 @@ async function cargarResenas() {
     const date = r.created_at ? new Date(r.created_at) : new Date();
     const card = document.createElement('article');
     card.className = 'review-card glass';
-    card.innerHTML = `<div class="review-top"><strong>${escapeHtml(r.name || 'Anónimo')}</strong><span class="stars-color">${'★'.repeat(rating)}${'☆'.repeat(5-rating)}</span></div><p>${escapeHtml(r.message || '')}</p><small>${date.toLocaleDateString('es-CO')}</small>`;
+    card.innerHTML = `<div class="review-top"><strong>${escapeHtml(r.name || 'Anónimo')}</strong><span class="stars-color">${'★'.repeat(rating)}${'☆'.repeat(5-rating)}</span></div><p>${escapeHtml(r.message || '')}</p><small>${date.toLocaleDateString('es-CO')}${mode === 'local' ? ' · local' : ''}</small>`;
     reviewsList.appendChild(card);
   });
-
   const avg = total / data.length;
   reviewAverage.textContent = avg.toFixed(1);
   reviewStars.textContent = '★'.repeat(Math.round(avg)) + '☆'.repeat(5-Math.round(avg));
   reviewCount.textContent = data.length;
 }
+function enterLocalMode(reason) {
+  console.warn('Supabase no disponible, modo local:', reason);
+  SUPABASE_OK = false;
+  // En modo local no exigimos login para que la sección nunca quede bloqueada
+  authPanel.style.display = 'none';
+  reviewForm.style.display = 'flex';
+  if (!reviewName.value) {
+    reviewName.value = 'Invitado';
+    loggedInUser.textContent = 'Invitado (local)';
+  }
+  reviewStatus.textContent = 'Modo local activado (Supabase no responde). Tu reseña se guarda en este navegador.';
+  renderReviews(getLocalReviews(), 'local');
+}
+
+async function cargarResenas() {
+  if (!_supabase) { enterLocalMode('sin cliente'); return; }
+  try {
+    const { data, error } = await _supabase
+      .from('reviews')
+      .select('*')
+      .order('created_at', { ascending: false });
+    if (error) throw error;
+    SUPABASE_OK = true;
+    renderReviews(data, 'global');
+  } catch (err) {
+    console.error('cargarResenas falló:', err);
+    enterLocalMode(err && err.message ? err.message : err);
+  }
+}
 
 reviewForm.addEventListener('submit', async e => {
   e.preventDefault();
-  if (!_supabase) { reviewStatus.textContent = 'Supabase no disponible.'; return; }
-  const name = (reviewName.value || 'Anónimo').trim().slice(0, 60);
+  const name = (reviewName.value || 'Invitado').trim().slice(0, 60) || 'Invitado';
   const rating = Math.min(5, Math.max(1, Number(document.getElementById('reviewRating').value) || 5));
   const message = document.getElementById('reviewMessage').value.trim();
 
   if (message.length < 3) { reviewStatus.textContent = 'Escribe al menos 3 caracteres.'; return; }
   if (message.length > 500) { reviewStatus.textContent = 'Máximo 500 caracteres.'; return; }
 
-  const { error } = await _supabase
-    .from('reviews')
-    .insert([{ name, message, rating }]);
+  // Si estamos en modo local, guardar directo
+  if (!SUPABASE_OK || !_supabase) {
+    saveLocalReview({ name, message, rating, created_at: new Date().toISOString() });
+    reviewStatus.textContent = '¡Reseña guardada localmente! ⭐';
+    document.getElementById('reviewMessage').value = '';
+    renderReviews(getLocalReviews(), 'local');
+    return;
+  }
 
-  if (error) {
-    reviewStatus.textContent = 'Error al publicar en Supabase.';
-    console.error(error);
-  } else {
+  try {
+    const { error } = await _supabase.from('reviews').insert([{ name, message, rating }]);
+    if (error) throw error;
     reviewStatus.textContent = '¡Reseña publicada con éxito! ⭐';
     document.getElementById('reviewMessage').value = '';
     cargarResenas();
+  } catch (err) {
+    console.error('insert falló, guardo local:', err);
+    saveLocalReview({ name, message, rating, created_at: new Date().toISOString() });
+    reviewStatus.textContent = 'Supabase falló, guardada localmente. ⭐';
+    enterLocalMode(err && err.message ? err.message : err);
   }
 });
 
