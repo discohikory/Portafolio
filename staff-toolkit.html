@@ -127,7 +127,7 @@ footer strong{color:#fff}
         <label>Tipo<select id="genType"><option value="ticket">Ticket</option><option value="reporte">Reporte</option><option value="apelacion">Apelación</option><option value="advertencia">Advertencia</option></select></label>
         <label>Jugador<input id="genUser" maxlength="30" placeholder="Nick del jugador"></label>
         <label>Motivo / asunto<input id="genMotivo" maxlength="80" placeholder="Ej. uso de hacks"></label>
-        <label>Sanción o detalle<input id="genExtra" maxlength="80" placeholder="Ej. ban de 7 días"></label>
+        <div id="genDyn"></div>
         <button class="btn primary" id="genGo">Generar respuesta</button>
       </div>
       <div class="card glass">
@@ -298,16 +298,40 @@ paintReports();
 // ============ 4. GENERADOR ============
 const TPL={
  ticket:(u,m,e)=>`Hola ${u},\n\nGracias por contactarnos. Revisamos tu caso sobre "${m}" y te confirmamos lo siguiente: ${e}.\n\nSi necesitas algo más, responde a este mismo ticket.\n\nAtentamente,\n${STAFF} · Equipo Staff`,
- reporte:(u,m,e)=>`Hola ${u},\n\nRecibimos un reporte relacionado contigo por "${m}". Tras revisar la evidencia (${e}), se aplicará la medida correspondiente según el reglamento.\n\nPuedes apelar esta decisión abriendo un ticket.\n\nAtentamente,\n${STAFF} · Equipo Staff`,
- apelacion:(u,m,e)=>`Hola ${u},\n\nRevisamos tu apelación sobre "${m}". Decisión: ${e}.\n\nAgradecemos tu interés en resolver la situación de buena manera.\n\nAtentamente,\n${STAFF} · Equipo Staff`,
- advertencia:(u,m,e)=>`Hola ${u},\n\nEsto es una advertencia formal por "${m}". ${e}.\n\nSi la conducta continúa, se aplicarán sanciones mayores según el reglamento.\n\nAtentamente,\n${STAFF} · Equipo Staff`
+ reporte:(u,m,e)=>`Hola ${u},\n\nRecibimos un reporte relacionado contigo por "${m}". Tras revisar la evidencia, esta es nuestra decisión: ${e}.\n\nPuedes apelar esta decisión abriendo un ticket.\n\nAtentamente,\n${STAFF} · Equipo Staff`,
+ apelacion:(u,m,dec,e)=>{
+  if(dec==="aceptada")return `Hola ${u},\n\nRevisamos tu apelación sobre "${m}". Decisión: ACEPTADA. La sanción queda levantada y tu historial reflejará la corrección.\n\nGracias por usar los canales adecuados para apelar.\n\nAtentamente,\n${STAFF} · Equipo Staff`;
+  if(dec==="reducida")return `Hola ${u},\n\nRevisamos tu apelación sobre "${m}". Decisión: ACEPTADA PARCIALMENTE. Tu sanción se reduce a: ${e}.\n\nEsperamos no volver a verte por aquí por estos motivos.\n\nAtentamente,\n${STAFF} · Equipo Staff`;
+  return `Hola ${u},\n\nRevisamos tu apelación sobre "${m}". Decisión: RECHAZADA. La evidencia confirma lo ocurrido y la sanción se mantiene.\n\nPodrás volver a apelar cuando cumplas la sanción, aportando pruebas nuevas.\n\nAtentamente,\n${STAFF} · Equipo Staff`;
+ },
+ advertencia:(u,m,e)=>`Hola ${u},\n\nEsto es una advertencia formal por "${m}". Si la conducta continúa, ocurrirá lo siguiente: ${e}.\n\nEvita más sanciones jugando según el reglamento.\n\nAtentamente,\n${STAFF} · Equipo Staff`
 };
+const DYNCONF={
+ ticket:{label:"Resolución",ph:"Ej. se devolvieron tus items"},
+ reporte:{label:"Medida aplicada",ph:"Ej. mute de 12 horas al acusado"},
+ apelacion:{label:"Decisión",dec:true},
+ advertencia:{label:"Consecuencia si reincide",ph:"Ej. mute de 1 hora"}
+};
+function renderDyn(){
+  const t=document.getElementById('genType').value;
+  const c=DYNCONF[t];
+  const box=document.getElementById('genDyn');
+  if(c.dec){
+    box.innerHTML=`<label>Decisión<select id="genDec"><option value="aceptada">Aceptada (se levanta la sanción)</option><option value="reducida">Aceptada parcial (se reduce)</option><option value="rechazada">Rechazada (se mantiene)</option></select></label><label>Nueva sanción (solo si se reduce)<input id="genExtra" maxlength="80" placeholder="Ej. mute de 1 hora"></label>`;
+  }else{
+    box.innerHTML=`<label>${c.label}<input id="genExtra" maxlength="80" placeholder="${c.ph}"></label>`;
+  }
+}
+document.getElementById('genType').addEventListener('change',renderDyn);
+renderDyn();
 document.getElementById('genGo').addEventListener('click',()=>{
   const t=document.getElementById('genType').value;
   const u=document.getElementById('genUser').value.trim()||"[jugador]";
   const m=document.getElementById('genMotivo').value.trim()||"[motivo]";
-  const e=document.getElementById('genExtra').value.trim()||"[detalle]";
-  document.getElementById('genOut').textContent=TPL[t](u,m,e);
+  const decEl=document.getElementById('genDec');
+  const dec=decEl?decEl.value:"";
+  const e=document.getElementById('genExtra').value.trim()||(t==="apelacion"&&dec==="reducida"?"[nueva sanción]":"[detalle]");
+  document.getElementById('genOut').textContent=t==="apelacion"?TPL[t](u,m,dec,e):TPL[t](u,m,e);
 });
 // ============ 4b. ASISTENTE IA (Puter.js → Pollinations) ============
 function aiExtract(r){
@@ -338,6 +362,8 @@ document.getElementById('aiGo').addEventListener('click',async()=>{
   const e=document.getElementById('genExtra').value.trim()||"[detalle]";
   const t=document.getElementById('genType').selectedOptions[0].textContent;
   const d=document.getElementById('aiDraft').value.trim();
+  const decEl=document.getElementById('genDec');
+  const decTxt=decEl?` Decisión tomada: ${decEl.selectedOptions[0].textContent}.`:"";
   let prompt="";
   if(act==="mejorar"){
     if(d.length<5){document.getElementById('aiStatus').textContent="Pega primero tu borrador. ✍️";return}
@@ -345,7 +371,7 @@ document.getElementById('aiGo').addEventListener('click',async()=>{
   }else if(act==="seguimiento"){
     prompt=`Redacta un mensaje breve de seguimiento de Staff de Minecraft (español neutro, cordial, máximo 80 palabras) para el jugador ${u} sobre su caso de "${m}" (${t}). Invita a responder si necesita más ayuda. Firma: ${STAFF}. Devuelve SOLO el mensaje.`;
   }else{
-    prompt=`Redacta una respuesta profesional breve de Staff de servidor Minecraft (español neutro, cordial, máximo 120 palabras). Tipo: ${t}. Jugador: ${u}. Motivo: ${m}. Detalle: ${e}. Firma: ${STAFF}. Devuelve SOLO la respuesta.`;
+    prompt=`Redacta una respuesta profesional breve de Staff de servidor Minecraft (español neutro, cordial, máximo 120 palabras). Tipo: ${t}. Jugador: ${u}. Motivo: ${m}. Detalle: ${e}.${decTxt} Debe tener lógica interna (una apelación aceptada levanta la sanción; una rechazada la mantiene). Firma: ${STAFF}. Devuelve SOLO la respuesta.`;
   }
   const btn=document.getElementById('aiGo'),st=document.getElementById('aiStatus'),out=document.getElementById('aiOut');
   btn.disabled=true;st.textContent="Generando con IA… ⏳";out.style.display='none';
