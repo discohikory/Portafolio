@@ -5,7 +5,9 @@
 <meta name="theme-color" content="#04060d">
 <link rel="dns-prefetch" href="https://fonts.gstatic.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2064%2064%27%3E%3Crect%20width%3D%2764%27%20height%3D%2764%27%20rx%3D%2714%27%20fill%3D%27%232a1650%27%2F%3E%3Cpolygon%20points%3D%2732%2C10%2050%2C26%2032%2C56%2014%2C26%27%20fill%3D%27%2367e8f9%27%2F%3E%3Cpolyline%20points%3D%2714%2C26%2050%2C26%27%20fill%3D%27none%27%20stroke%3D%27%230e7490%27%20stroke-width%3D%272%27%2F%3E%3Cpolyline%20points%3D%2725%2C26%2032%2C56%2039%2C26%27%20fill%3D%27none%27%20stroke%3D%27%23e0faff%27%20stroke-width%3D%271.5%27%2F%3E%3C%2Fsvg%3E">
 <meta name="description" content="Portafolio profesional de Daniel Esteban Vera Fernandez (Discohikorybrs), Staff y Developer enfocado en comunidades de Minecraft y Discord.">
 <title>Discohikorybrs — Staff & Developer Portfolio</title>
@@ -26,6 +28,20 @@
 .review-more { background: none; border: none; color: #b39aff; cursor: pointer; font-size: 12px; padding: 0; margin-top: 6px; }
 #reviewMessage { max-height: 300px; }
 #charCount { color: var(--muted, #9da8c5); font-size: 11px; text-align: right; }
+
+/* PARCHE móvil: proyectos siempre visibles (el grid de 300px se desbordaba en pantallas angostas) */
+.project-grid { grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); }
+.project-card, .project-images { min-width: 0; }
+@media(max-width:850px){
+  main { padding: 0 16px; }
+  .section { padding: 48px 0; }
+  .project-body { padding: 18px; }
+  .project-images img { height: 170px; }
+  .reveal { transform: translateY(18px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1 !important; transform: none !important; }
+}
 
 /* ===== Tema Minecraft ===== */
 .eyebrow, .game-hud, .badge-bio, .term-btn { font-family: 'Press Start 2P', monospace; }
@@ -603,6 +619,17 @@
 // Revelación al hacer scroll
 const revealObserver = new IntersectionObserver(es => es.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); }), {threshold: 0.1});
 document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+// Respaldo móvil: si el observer no dispara (navegador viejo o error), revela igual lo visible
+if (!('IntersectionObserver' in window)) {
+  document.querySelectorAll('.reveal').forEach(el => el.classList.add('visible'));
+} else {
+  setTimeout(() => {
+    document.querySelectorAll('.reveal:not(.visible)').forEach(el => {
+      const r = el.getBoundingClientRect();
+      if (r.top < innerHeight && r.bottom > 0) el.classList.add('visible');
+    });
+  }, 2500);
+}
 window.addEventListener('scroll', () => { const p = document.querySelector('.scroll-progress'); if (p) p.style.transform = `scaleX(${scrollY / (document.documentElement.scrollHeight - innerHeight)})`; });
 
 // Resaltado de sección activa en el nav
