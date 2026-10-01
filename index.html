@@ -33,10 +33,15 @@
 .project-grid { grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); }
 .project-card, .project-images { min-width: 0; }
 @media(max-width:850px){
-  main { padding: 0 16px; }
+  main { padding: 0 16px; overflow-x: clip; }
   .section { padding: 48px 0; }
+  /* Herramientas siempre a 1 columna y visibles en móvil */
+  #proyectos .project-grid { display: grid !important; grid-template-columns: 1fr !important; gap: 14px; }
+  #proyectos, #proyectos .project-card { opacity: 1 !important; transform: none !important; }
+  .project-card, .project-images { min-width: 0; max-width: 100%; }
   .project-body { padding: 18px; }
-  .project-images img { height: 170px; }
+  .project-images img { height: 170px; width: 100%; object-fit: cover; }
+  .toolkit-thumb { min-height: 160px; font-size: 48px; }
   .reveal { transform: translateY(18px); }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -234,6 +239,7 @@
     <a href="#preguntas" class="magnetic">Preguntas</a>
     <a href="#resenas" class="magnetic">Reseñas</a>
     <a href="#contacto" class="magnetic">Contacto</a>
+    <button id="langBtn" type="button" class="magnetic" style="margin-left:8px;padding:6px 12px;border-radius:20px;border:1px solid rgba(139,92,246,.6);background:rgba(139,92,246,.15);color:#fff;font:700 12px Inter,sans-serif;cursor:pointer;letter-spacing:1px;" title="Cambiar idioma / Switch language">EN</button>
   </nav>
 </header>
 <main>
@@ -289,7 +295,7 @@
     <p>Soy <strong>Daniel Esteban Vera Fernandez</strong>, aunque dentro de las comunidades de Minecraft y Discord utilizo <strong>Discohikorybrs</strong> como mi alias profesional.</p>
     <p>Mi experiencia comenzó en <strong>2021</strong>, cuando entré a <strong>LatamMC</strong> como Soporte. Durante las primeras semanas fui ganando experiencia dentro del equipo y ascendí rápidamente a <strong>Moderador</strong>.</p>
     <p>Después de otras semanas de trabajo, el dueño principal del proyecto falleció debido a cáncer. El segundo dueño necesitaba una mano derecha para continuar con la gestión del servidor y asumí el cargo de <strong>CEO</strong>.</p>
-    <p>Entre <strong>2022 y 2024</strong> continué adquiriendo experiencia como <strong>Developer</strong>. En <strong>2025</strong> retomé activamente con proyectos como <strong>SpaceMain SMP, [ZX] Studios y TurtleNetwork</strong>. Posteriormente participé en <strong>VoidCraft / MineSnake</strong> y actualmente laboro en <strong>SkyLith Network, SylenMC Network y FoxMC</strong>.</p>
+    <p>Entre <strong>2022 y 2024</strong> continué adquiriendo experiencia como <strong>Developer</strong>. En <strong>2025</strong> retomé activamente con proyectos como <strong>SpaceMain SMP, [ZX] Studios y TurtleNetwork</strong>. Posteriormente participé en <strong>VoidCraft / MineSnake</strong> y actualmente laboro en <strong>SkyLith Network y SylenMC Network</strong>. También fui <strong>HEAD MANAGER</strong> en <strong>FoxMC</strong> durante 1 mes (sin pruebas disponibles).</p>
   </div>
 </section>
 
@@ -320,8 +326,8 @@
     <article class="timeline-item glass"><i></i><div><strong>2025 · TurtleNetwork</strong> &nbsp;&bull;&nbsp; <em>Moderador / Dev</em><p>Soporte y moderación general en la red.</p></div></article>
     <article class="timeline-item glass"><i></i><div><strong>2025–2026 · VoidCraft / MineSnake</strong> &nbsp;&bull;&nbsp; <em>Founder + Developer</em><p>Participé como <b>Founder + Lead Developer</b>.</p></div></article>
     <article class="timeline-item current glass"><i></i><div><strong>2026 · SkyLith Network</strong> &nbsp;&bull;&nbsp; <em>Sr. Mod</em><p>Actualmente laborando activamente como <b>Sr. Mod</b>.</p></div></article>
-    <article class="timeline-item current glass"><i></i><div><strong>2026 · SylenMC Network</strong> &nbsp;&bull;&nbsp; <em>Head Manager</em><p>Actualmente laborando activamente como <b>HEAD MANAGER</b>.</p></div></article>
-    <article class="timeline-item current glass"><i></i><div><strong>2026 · FoxMC</strong> &nbsp;&bull;&nbsp; <em>Owner + Head Manager</em><p>Actualmente laborando activamente como <b>OWNER y HEAD MANAGER</b>.</p></div></article>
+    <article class="timeline-item current glass"><i></i><div><strong>2026 · SylenMC Network</strong> &nbsp;&bull;&nbsp; <em>Owner + Head Manager</em><p>Actualmente laborando activamente como <b>OWNER y HEAD MANAGER</b>.</p></div></article>
+    <article class="timeline-item glass"><i></i><div><strong>2026 · FoxMC</strong> &nbsp;&bull;&nbsp; <em>Ex Head Manager</em><p>Fui <b>HEAD MANAGER</b> durante 1 mes (sin pruebas disponibles).</p></div></article>
   </div>
 </section>
 
@@ -355,13 +361,13 @@
       <div class="project-images gallery">
         <div class="toolkit-thumb sylen-thumb" aria-hidden="true"><span class="tk-icon">🏰</span><small>SYLENMC</small></div>
       </div>
-      <div class="project-body"><small>MINECRAFT</small><h3>SylenMC Network</h3><p><b>HEAD MANAGER</b> del servidor: gestión del staff y la comunidad.</p><a class="btn primary magnetic" href="https://discord.gg/uQFkw4ssKJ" target="_blank" rel="noopener" style="margin-top:12px;">Discord ↗</a></div>
+      <div class="project-body"><small>MINECRAFT</small><h3>SylenMC Network</h3><p><b>OWNER y HEAD MANAGER</b> del servidor: gestión del staff y la comunidad.</p><a class="btn primary magnetic" href="https://discord.gg/uQFkw4ssKJ" target="_blank" rel="noopener" style="margin-top:12px;">Discord ↗</a></div>
     </article>
     <article class="project-card glass">
       <div class="project-images gallery">
         <div class="toolkit-thumb sylen-thumb" aria-hidden="true"><span class="tk-icon">🦊</span><small>FOXMC</small></div>
       </div>
-      <div class="project-body"><small>MINECRAFT</small><h3>FoxMC</h3><p><b>OWNER y HEAD MANAGER</b> del servidor: gestión del staff y la comunidad.</p></div>
+      <div class="project-body"><small>MINECRAFT</small><h3>FoxMC</h3><p><b>Ex HEAD MANAGER</b> del servidor durante 1 mes (sin pruebas disponibles).</p></div>
     </article>
   </div>
   <h3 style="font:700 20px 'Space Grotesk';margin:26px 0 4px">🧰 Herramientas <small style="font:400 12px Inter,sans-serif;color:var(--muted,#9da8c5)">· mis webs</small></h3>
@@ -621,7 +627,7 @@
   <strong>— Discohikorybrs</strong>
 </section>
 
-<footer>© 2026 Daniel Esteban Vera Fernandez · <strong>Discohikorybrs</strong> · Hecho con ⛏️ y ❤️<div class="visits">👁 <span id="visitCount">…</span> visitas</div></footer>
+<footer>© 2026 Daniel Esteban Vera Fernandez · <strong>Discohikorybrs®</strong> · Todos los derechos reservados. Prohibida su reproducción sin autorización. · Hecho con ⛏️ y ❤️<div class="visits">👁 <span id="visitCount">…</span> visitas</div></footer>
 
 <button id="discoFab" type="button" title="Disco AI"><svg width="28" height="28" viewBox="0 0 64 64"><defs><radialGradient id="DGb" cx="35%" cy="30%"><stop offset="0%" stop-color="#e9d5ff"/><stop offset="45%" stop-color="#8b5cf6"/><stop offset="100%" stop-color="#1e1b4b"/></radialGradient><linearGradient id="DRb" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8b5cf6"/><stop offset=".5" stop-color="#22d3ee"/><stop offset="1" stop-color="#d946ef"/></linearGradient></defs><circle cx="32" cy="32" r="28" fill="none" stroke="url(#DRb)" stroke-width="4"/><circle cx="32" cy="32" r="19" fill="url(#DGb)"/><circle cx="26" cy="26" r="6" fill="#fff" opacity=".85"/><circle cx="40" cy="26" r="6" fill="#fff" opacity=".85"/><circle cx="26" cy="26" r="2.6" fill="#1e1b4b"/><circle cx="40" cy="26" r="2.6" fill="#1e1b4b"/><rect x="24" y="40" width="16" height="3" rx="1.5" fill="#22d3ee"/></svg></button>
 <div id="discoPanel" class="glass" style="display:none">
@@ -779,10 +785,18 @@ document.querySelectorAll('.mob').forEach(m => {
 const termResponses = {
   about: "Daniel Esteban Vera Fernandez (Discohikorybrs) — Staff & Developer con más de 4 años de experiencia en Minecraft y Discord.",
   skills: "Habilidades: Moderación avanzada, liderazgo de equipos, gestión de servidores, desarrollo en Minecraft y soporte técnico.",
-  timeline: "Trayectoria destacada: LatamMC → SpaceMain SMP → TurtleNetwork → VoidCraft → SkyLith Network → SylenMC Network → FoxMC.",
+  timeline: "Trayectoria destacada: LatamMC → SpaceMain SMP → TurtleNetwork → VoidCraft → SkyLith Network → SylenMC Network → FoxMC (ex).",
   contact: "Discord oficial: @discohikoryepb (ID: 1472738833018917028). ¡Escríbeme para colaborar!",
   clear: "Terminal limpia. Selecciona otro comando para explorar."
 };
+const termResponsesEN = {
+  about: "Daniel Esteban Vera Fernandez (Discohikorybrs) — Staff & Developer with 4+ years of experience in Minecraft and Discord.",
+  skills: "Skills: Advanced moderation, team leadership, server management, Minecraft development and technical support.",
+  timeline: "Career highlights: LatamMC → SpaceMain SMP → TurtleNetwork → VoidCraft → SkyLith Network → SylenMC Network → FoxMC (former).",
+  contact: "Official Discord: @discohikoryepb (ID: 1472738833018917028). Message me to collaborate!",
+  clear: "Terminal cleared. Select another command to explore."
+};
+function termDict(){return (window.__portaLang==="en")?termResponsesEN:termResponses}
 
 document.querySelectorAll('.term-btn').forEach(btn => {
   btn.addEventListener('click', () => {
@@ -791,10 +805,10 @@ document.querySelectorAll('.term-btn').forEach(btn => {
     const respEl = document.getElementById('terminalResponse');
     if (cmd === 'clear') {
       textEl.textContent = 'explore --portfolio';
-      respEl.textContent = termResponses.clear;
+      respEl.textContent = termDict().clear;
     } else {
       textEl.textContent = cmd + ' --execute';
-      respEl.textContent = termResponses[cmd] || "Comando ejecutado con éxito.";
+      respEl.textContent = termDict()[cmd] || ((window.__portaLang==="en")?"Command executed successfully.":"Comando ejecutado con éxito.");
     }
   });
 });
@@ -1408,7 +1422,7 @@ cargarResenas();
     say(text,'user');inp.value='';
     const w=say('Escribiendo… ⏳','bot');
     hist.push("Usuario: "+text);
-    const sys="Eres Disco AI, asistente de Discohikorybrs (Daniel Esteban Vera Fernandez), Staff y Developer Minecraft/Discord de Colombia, 4+ años desde 2021: LatamMC (Soporte→Moderador→CEO), 2022-24 Developer, 2025 SpaceMain/ZX/TurtleNetwork, VoidCraft/MineSnake Founder+Dev, 2026 SkyLith Sr. Mod, 2026 SylenMC Network HEAD MANAGER, 2026 FoxMC OWNER y HEAD MANAGER. Contacto: Discord @discohikoryepb. Español neutro, máximo 80 palabras, amable. Si no sabes algo, dilo y sugiere contactarlo.";
+    const sys="Eres Disco AI, asistente de Discohikorybrs (Daniel Esteban Vera Fernandez), Staff y Developer Minecraft/Discord de Colombia, 4+ años desde 2021: LatamMC (Soporte→Moderador→CEO), 2022-24 Developer, 2025 SpaceMain/ZX/TurtleNetwork, VoidCraft/MineSnake Founder+Dev, 2026 SkyLith Sr. Mod, 2026 SylenMC Network OWNER y HEAD MANAGER, ex HEAD MANAGER en FoxMC (1 mes, sin pruebas disponibles). Contacto: Discord @discohikoryepb. Español neutro, máximo 80 palabras, amable. Si no sabes algo, dilo y sugiere contactarlo.";
     try{
       const r=await q(sys+"\nHistorial: "+hist.slice(-4).join(" | ")+"\nPregunta: "+text);
       w.textContent=r;hist.push("Disco AI: "+r);
@@ -1429,6 +1443,168 @@ cargarResenas();
     if((e.metaKey&&e.altKey&&(k==='I'||k==='i'))){e.preventDefault();return false}
   },true);
   document.addEventListener('contextmenu',function(e){e.preventDefault()},true);
+})();
+<script>
+/* Portafolio ES/EN: el español es el contenido original del HTML, aquí solo va el inglés */
+(function(){
+var T=[
+['header nav a[href="#sobre-mi"]','Profile'],
+['header nav a[href="#virtudes"]','Strengths'],
+['header nav a[href="#experiencia"]','Journey'],
+['header nav a[href="#proyectos"]','Projects'],
+['header nav a[href="#minijuego"]','Minigame'],
+['header nav a[href="#preguntas"]','FAQ'],
+['header nav a[href="#resenas"]','Reviews'],
+['header nav a[href="#contacto"]','Contact'],
+['#inicio .alias','Professional alias: <strong>Discohikorybrs</strong>'],
+['#inicio .lead','I\'m a Staff member and Developer. I focus on Minecraft and Discord communities, combining moderation, organization, leadership and development.'],
+['#inicio .buttons a[href="#proyectos"]','See my experience'],
+['#inicio .buttons a[target="_blank"]','Contact me \u2197'],
+['#inicio .quick span:nth-child(2)','\u2726 4+ years of experience'],
+['#inicio .hero-card .status','Currently active \u00B7 Open to new projects'],
+['#sobre-mi h2','About me'],
+['#virtudes h2','Virtues and strengths'],
+['#experiencia h2','My journey'],
+['#proyectos h2','Projects and tools'],
+['#minijuego h2','Minigame: Steve Adventure!'],
+['#preguntas h2','Frequently Asked Questions (Interactive FAQ)'],
+['#resenas h2','Reviews'],
+['#contacto h2','Let\'s talk about your project.'],
+['#sobre-mi .about-box p:nth-child(1)','I\'m <strong>Daniel Esteban Vera Fernandez</strong>, although within Minecraft and Discord communities I use <strong>Discohikorybrs</strong> as my professional alias.'],
+['#sobre-mi .about-box p:nth-child(2)','My journey began in <strong>2021</strong>, when I joined <strong>LatamMC</strong> as Support. During the first weeks I gained experience within the team and quickly rose to <strong>Moderator</strong>.'],
+['#sobre-mi .about-box p:nth-child(3)','After more weeks of work, the main owner of the project passed away due to cancer. The second owner needed a right hand to keep managing the server, and I took on the role of <strong>CEO</strong>.'],
+['#sobre-mi .about-box p:nth-child(4)','Between <strong>2022 and 2024</strong> I kept gaining experience as a <strong>Developer</strong>. In <strong>2025</strong> I came back actively with projects such as <strong>SpaceMain SMP, [ZX] Studios and TurtleNetwork</strong>. Later I took part in <strong>VoidCraft / MineSnake</strong> and I currently work at <strong>SkyLith Network and SylenMC Network</strong>. I was also <strong>HEAD MANAGER</strong> at <strong>FoxMC</strong> for 1 month (no proof available).'],
+['.stat-card:nth-child(1) small','YEARS OF EXPERIENCE'],
+['.stat-card:nth-child(2) small','PROJECTS / KEY MILESTONES'],
+['.stat-card:nth-child(3) small','ACTIVE STAFF MEMBER'],
+['#virtudes .quality-card:nth-child(1) b','Responsible'],
+['#virtudes .quality-card:nth-child(1) span','I complete assigned tasks and duties with strong performance.'],
+['#virtudes .quality-card:nth-child(2) b','Committed'],
+['#virtudes .quality-card:nth-child(2) span','I engage with the project goals and contribute to the team.'],
+['#virtudes .quality-card:nth-child(3) b','Efficient'],
+['#virtudes .quality-card:nth-child(3) span','Practical, organized solutions to any problem.'],
+['#virtudes .quality-card:nth-child(4) b','Attentive'],
+['#virtudes .quality-card:nth-child(4) span','I look after the needs of users and teammates properly.'],
+['#virtudes .quality-card:nth-child(5) b','Teamwork'],
+['#virtudes .quality-card:nth-child(5) span','Smooth communication and adaptability with other Staff members.'],
+['#virtudes .quality-card:nth-child(6) b','Adaptability'],
+['#virtudes .quality-card:nth-child(6) span','Experience in multiple roles according to the server needs.'],
+['#experiencia .timeline-item:nth-child(1) p','I started as <b>Support</b>, rose to <b>Moderator</b> and took on the role of <b>CEO</b>.'],
+['#experiencia .timeline-item:nth-child(2) strong','2022\u20132024 \u00B7 Development'],
+['#experiencia .timeline-item:nth-child(2) p','Technical experience as a <b>Developer</b> across multiple servers.'],
+['#experiencia .timeline-item:nth-child(3) p','Active involvement in community management and development.'],
+['#experiencia .timeline-item:nth-child(4) em','Moderator / Dev'],
+['#experiencia .timeline-item:nth-child(4) p','General support and moderation across the network.'],
+['#experiencia .timeline-item:nth-child(5) p','I took part as <b>Founder + Lead Developer</b>.'],
+['#experiencia .timeline-item:nth-child(6) p','Currently working actively as <b>Sr. Mod</b>.'],
+['#experiencia .timeline-item:nth-child(7) p','Currently working actively as <b>OWNER and HEAD MANAGER</b>.'],
+['#experiencia .timeline-item:nth-child(8) em','Former Head Manager'],
+['#experiencia .timeline-item:nth-child(8) p','I was <b>HEAD MANAGER</b> for 1 month (no proof available).'],
+['#proyectos .evidence-note b','\uD83D\uDCC1 About my evidence'],
+['#proyectos .evidence-note p','Real screenshots from VoidCraft, QuarkCraft and SkyLith, synced correctly.'],
+['#proyectos > h3:nth-of-type(1)','\uD83C\uDFAE Projects <small style="font:400 12px Inter,sans-serif;color:var(--muted,#9da8c5)">\u00B7 servers I work at</small>'],
+['#proyectos > h3:nth-of-type(2)','\uD83E\uDDF0 Tools <small style="font:400 12px Inter,sans-serif;color:var(--muted,#9da8c5)">\u00B7 my websites</small>'],
+['#minijuego .game-box > p:nth-of-type(1)','<strong>Lore:</strong> The server portal broke and Steve got trapped between biomes. Cross the Desert, the Forest, the Nether, the End and reach the Village (500 pts) to reboot the portal. Catch coins \uD83D\uDCB0 for the shop.'],
+['#minijuego .game-box > p:nth-of-type(2)','Press <strong>Space</strong> or <strong>click</strong> to jump. Dodge obstacles, catch coins.'],
+['#minijuego .game-hud div:nth-child(1)','Level: ',1],
+['#minijuego .game-hud div:nth-child(2)','Biome: ',1],
+['#minijuego .game-hud div:nth-child(3)','Points: ',1],
+['#minijuego .game-hud div:nth-child(4)','Coins: ',1],
+['#minijuego .game-hud div:nth-child(5)','Best: ',1],
+['#gameOverlay span','Press SPACE or Click to Start the Adventure! \u26CF️'],
+['#shopBoots','\uD83E\uDD7E High jump (15 \uD83D\uDCB0)'],
+['#shopShield','\uD83D\uDEE1️ Shield x1 (20 \uD83D\uDCB0)'],
+['#shopSkin','\u2728 Golden skin (30 \uD83D\uDCB0)'],
+['#preguntas .faq-item:nth-child(1) .faq-question','What is your main experience in Minecraft and Discord? <span>+</span>'],
+['#preguntas .faq-item:nth-child(1) .faq-answer p','I have 4+ years of experience managing communities, moderating large servers, setting up bots and holding roles from Support to CEO and Developer.'],
+['#preguntas .faq-item:nth-child(2) .faq-question','How can I contact you about a project or Staff opening? <span>+</span>'],
+['#preguntas .faq-item:nth-child(2) .faq-answer p','You can message me directly on my official Discord <b>@discohikoryepb</b> (ID: 1472738833018917028) or through the quick contact button at the bottom of the page.'],
+['#preguntas .faq-item:nth-child(3) .faq-question','Which technologies or tools do you handle as a Developer? <span>+</span>'],
+['#preguntas .faq-item:nth-child(3) .faq-answer p','I have experience configuring Minecraft plugins, managing databases, optimizing servers and building community environments on Discord.'],
+['#preguntas .faq-item:nth-child(4) .faq-question','Are you currently available to join new teams? <span>+</span>'],
+['#preguntas .faq-item:nth-child(4) .faq-answer p','Yes! I am currently active and open to reviewing serious proposals from projects that need responsible, committed staff.'],
+['#resenas .reviews-head p','Sign in with Google or email to leave your bot-protected opinion.'],
+['#resenas .review-score small',' global reviews',2],
+['#reviewForm label:nth-of-type(1)','Your name ',1],
+['#reviewForm label:nth-of-type(2)','Rating ',1],
+['#reviewForm label:nth-of-type(3)','Your review ',1],
+['#gateBox > b','Step 1 \u00B7 Verify yourself (required to publish)'],
+['#gateBox > small:first-of-type','Google/Discord/GitHub login unlocks in phase 2 (requires backend with OAuth credentials). For now verify with the captcha:'],
+['#gateBtn','Unlock'],
+['#reviewRating option[value="5"]','\u2605\u2605\u2605\u2605\u2605 \u2014 5 Stars'],
+['#reviewRating option[value="4"]','\u2605\u2605\u2605\u2605\u2606 \u2014 4 Stars'],
+['#reviewRating option[value="3"]','\u2605\u2605\u2605\u2606\u2606 \u2014 3 Stars'],
+['#reviewRating option[value="2"]','\u2605\u2605\u2606\u2606\u2606 \u2014 2 Stars'],
+['#reviewRating option[value="1"]','\u2605\u2606\u2606\u2606\u2606 \u2014 1 Star'],
+['#reviewForm button[type="submit"]','Publish review \u2197'],
+['#reviewsList .empty-review','Loading reviews from the database\u2026'],
+['#reviewName','What is your name?',3],
+['#reviewMessage','Tell me briefly how it was to work with me... (max 500)',3],
+['#captchaA','Answer',3],
+['#contacto .eyebrow','SHALL WE WORK TOGETHER?'],
+['#contacto > p:nth-of-type(2)','Contact me directly on Discord.'],
+['.contact-btn','Contact me \u2197'],
+['.centered-quote p','\u201CTrue progress is not measured by the rank you reach, but by the mark you leave along the way.\u201D']
+];
+var C=[
+['VoidCraft',null,null,'I was <b>Founder + Lead Developer</b> on this semi-anarchic server.',null],
+['QuarkCraft',null,null,'I took part as a <b>Helper</b> with verified activity and rank.',null],
+['SkyLith Network',null,null,'Currently working as <b>Sr. Mod</b> of the network.',null],
+['SylenMC Network',null,null,'<b>OWNER and HEAD MANAGER</b> of the server: staff and community management.',null],
+['FoxMC',null,null,'<b>Former HEAD MANAGER</b> of the server for 1 month (no proof available).',null],
+['Staff Toolkit',null,'04 \u00B7 WEB TOOL','Staff tool: penalty calculator, tickets, reports and practical cases.','Open tool \u2197'],
+['Wiki de Comandos','Command Wiki','05 \u00B7 DOCUMENTATION','Minecraft and Discord command finder with permissions, examples and tutorials.','Open wiki \u2197'],
+['Quiz Staff',null,'06 \u00B7 TRAINING','Rules and judgment trivia with timer, streaks, ranks and AI analysis.','Play quiz \u2197'],
+['Status en vivo','Live Status','07 \u00B7 MONITORING','Real Java and Bedrock server status: players, version and MOTD.','Open monitor \u2197'],
+['Gu\u00EDa de Encantamientos','Enchantment Guide','08 \u00B7 GUIDE','Max levels, incompatibilities and perfect-set builder.','Open guide \u2197'],
+['Cr\u00F3nicas del Staff','Staff Chronicles','09 \u00B7 SERIES','My cinematic story: from LatamMC to SkyLith, SylenMC and FoxMC in 6 chapters.','Watch series \u2197'],
+['Centro de comunidad','Community Hub','10 \u00B7 COMMUNITY','Connect your Discord and Minecraft with an AI assistant and player finder.','Open hub \u2197'],
+['PlayerCards',null,null,'Rotating 3D skins and Discord cards ready for your bot.','Open \u2197'],
+['Radio Gamer',null,'12 \u00B7 MUSIC','Live generated ambience to play or stream without copyright.','Listen \u2197'],
+['Starter Pack',null,'13 \u00B7 BEGINNERS','Starter kit, personal signature and your first farm step by step.','Open pack \u2197'],
+['Aldeano IA','Villager AI','14 \u00B7 ROLEPLAY + AI','Talk to Boboldo: trading, haggling and zombie complaints.','Talk \u2197'],
+['Disco AI',null,'15 \u00B7 AI','Your virtual assistant: ask about me, my projects and contact.','Ask \u2197'],
+['Bingo Minecraft','Minecraft Bingo','16 \u00B7 GAME','Random cards, lines and blackout with timer.','Play \u2197'],
+['Generador de Semillas','Seed Generator','17 \u00B7 WORLDS','Create worlds and get your starter guide with AI.','Generate \u2197'],
+['Muro Fanarts','Fanart Wall','18 \u00B7 GLOBAL ART','Community art, visible to the whole world.','View wall \u2197'],
+['Staff Wiki',null,'19 \u00B7 HIERARCHY','Duties, limits and promotions across the 10 staff ranks.','Open wiki \u2197'],
+['Staff Academy',null,'20 \u00B7 ACADEMY','Courses, exams and diplomas to train Helpers.','Study \u2197'],
+['Developer Hub',null,null,'Plugins, tasks, bugs and versions for Developers.','Open hub \u2197'],
+['Aim Trainer',null,null,'Aim and CPS with records to warm up for PvP.','Train \u2197'],
+['Colores \u00A7','\u00A7 Colors','23 \u00B7 FORMATTING','Formatting codes with a real in-game preview.','Try it \u2197'],
+['Disco Chat',null,'24 \u00B7 COMMUNITY','Community chat with Discord style: channels, nicknames and online members.','Chat \u2197']
+];
+var S={};
+function pickNode(el,last){var n=Array.prototype.filter.call(el.childNodes,function(x){return x.nodeType===3&&/\S/.test(x.textContent)});if(!n.length)return null;return last?n[n.length-1]:n[0];}
+function init(){
+T.forEach(function(e,i){var el=document.querySelector(e[0]);if(!el)return;var m=e[2]||0;
+if(m===3){S['p'+i]=el.getAttribute('placeholder')||'';}
+else if(m===1||m===2){var t=pickNode(el,m===2);S['t'+i]=t?[t,t.textContent]:null;}
+else{S['h'+i]=el.innerHTML;}});
+C.forEach(function(c,i){var card=null;Array.prototype.forEach.call(document.querySelectorAll('#proyectos article.project-card'),function(a){var h=a.querySelector('h3');if(h&&h.textContent.trim()===c[0])card=a;});
+if(!card)return;var h=card.querySelector('h3'),sm=card.querySelector('.project-body small'),p=card.querySelector('.project-body p'),b=card.querySelector('a.btn');
+S['c'+i]=[card,h?h.innerHTML:null,sm?sm.innerHTML:null,p?p.innerHTML:null,b?b.textContent:null];});
+}
+function apply(l){
+window.__portaLang=l;
+try{document.documentElement.lang=l;}catch(e){}
+try{localStorage.setItem('porta-lang',l);}catch(e){}
+T.forEach(function(e,i){var el=document.querySelector(e[0]);if(!el)return;var m=e[2]||0,en=e[1];
+if(m===3){el.setAttribute('placeholder',l==='en'?en:(S['p'+i]||''));}
+else if(m===1||m===2){var s=S['t'+i];if(s)s[0].textContent=(l==='en'?en:s[1]);}
+else{el.innerHTML=(l==='en'?en:S['h'+i]);}});
+C.forEach(function(c,i){var s=S['c'+i];if(!s||!s[0])return;var card=s[0],h=card.querySelector('h3'),sm=card.querySelector('.project-body small'),p=card.querySelector('.project-body p'),b=card.querySelector('a.btn');
+if(l==='en'){if(h&&c[1])h.innerHTML=c[1];if(sm&&c[2])sm.innerHTML=c[2];if(p&&c[3])p.innerHTML=c[3];if(b&&c[4])b.textContent=c[4];}
+else{if(h&&s[1]!==null)h.innerHTML=s[1];if(sm&&s[2]!==null)sm.innerHTML=s[2];if(p&&s[3]!==null)p.innerHTML=s[3];if(b&&s[4]!==null)b.textContent=s[4];}});
+var tr=document.getElementById('terminalResponse');
+if(tr)tr.textContent=(l==='en')?'Welcome. Click the buttons below to run interactive commands.':'Bienvenido. Haz clic en los botones de abajo para ejecutar comandos interactivos.';
+var lb=document.getElementById('langBtn');if(lb)lb.textContent=(l==='en')?'ES':'EN';
+}
+init();
+var sv='es';try{sv=localStorage.getItem('porta-lang')||'es';}catch(e){}
+if(sv!=='es'&&sv!=='en')sv='es';
+apply(sv);
+document.getElementById('langBtn').addEventListener('click',function(){apply(window.__portaLang==='en'?'es':'en');});
 })();
 </script>
 </body>
